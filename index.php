@@ -1460,6 +1460,7 @@ function buildSeed() {
     projects: c.projects.map((p, i) => ({
       id: c.id + '-' + i,
       company: c.id,
+      companyDbId: c.dbId,
       companyName: c.name,
       companyColor: c.color,
       name: p.name,
@@ -1472,6 +1473,8 @@ function buildSeed() {
       progress: p.progress,
       currentUpdate: '',
       nextSteps: '',
+      assignee: null,
+      assigneeName: null,
       governance: seedGov(p.stage, p.health === 'complete')
     }))
   }));
@@ -1516,6 +1519,8 @@ function mapApiData(units, projects) {
           progress: Number(p.progress || 0),
           currentUpdate: p.current_update || '',
           nextSteps: p.next_steps || '',
+          assignee: p.assignee_id || null,
+          assigneeName: p.assignee_name || null,
           governance: normalizeGovernance(p.governance || [])
         }))
     };
@@ -1561,7 +1566,7 @@ function projectPayload(p) {
   return {
     id: p.id,
     name: p.name,
-    business_unit_id: p.companyDbId || co(p.company)?.dbId,
+    business_unit_id: p.companyDbId,
     stage: p.stage,
     status: p.health,
     owner: p.owner,
@@ -1691,32 +1696,41 @@ function renderHeader() {
 }
 
 function renderToolbar() {
-  // Populate assignee and business unit filters
-  const assignees = [...new Set(allProjects().map(p => p.owner).filter(Boolean))];
-  const sel = document.getElementById('fAssignee');
-  if (sel) {
-    sel.innerHTML = '<option value="">All assignees</option>' +
-      assignees.map(a => `<option value="${esc(a)}">${esc(a)}</option>`).join('');
-  }
+  // Populate business unit dropdown with database IDs
   const buSel = document.getElementById('fCompany');
   if (buSel) {
     const current = buSel.value;
     buSel.innerHTML = '<option value="">All business units</option>' +
-      DATA.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      DATA.map(c => `<option value="${c.dbId}">${c.name}</option>`).join('');
     buSel.value = current;
+  }
+
+  // Populate assignee dropdown with user IDs
+  const assigneeMap = {};
+  allProjects().forEach(p => {
+    if (p.assignee && !assigneeMap[p.assignee]) {
+      assigneeMap[p.assignee] = p.assigneeName || 'Unassigned';
+    }
+  });
+  const sel = document.getElementById('fAssignee');
+  if (sel) {
+    const current = sel.value;
+    sel.innerHTML = '<option value="">All assignees</option>' +
+      Object.entries(assigneeMap).map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join('');
+    sel.value = current;
   }
 }
 
 function getFiltered(scope) {
   const q = ($('search')?.value || '').trim().toLowerCase();
   const fst = $('fStatus')?.value || '';
-  const fco = $('fCompany')?.value || '';
-  const fAssignee = $('fAssignee')?.value || '';
+  const fco = $('fCompany')?.value || ''; // database ID
+  const fAssignee = $('fAssignee')?.value || ''; // user ID
   return scope.filter(p => {
     if (q && !p.name.toLowerCase().includes(q)) return false;
     if (fst && effStatus(p) !== fst) return false;
-    if (fco && p.company !== fco) return false;
-    if (fAssignee && p.assignee !== fAssignee) return false;
+    if (fco && p.companyDbId != fco) return false; // use '!=' to handle string vs int
+    if (fAssignee && p.assignee != fAssignee) return false;
     return true;
   });
 }
@@ -2005,9 +2019,10 @@ function loadView(viewName) {
   if (company) params.append('business_unit', company);
   if (status) params.append('status', status);
   if (assignee) params.append('assignee', assignee);
-  // If in company view, pass the selected unit
+  // If in company view, pass the selected unit ID
   if (screen === 'company' && selected) {
-    params.append('business_unit', selected);
+    const comp = co(selected);
+    if (comp) params.append('business_unit', comp.dbId);
   }
 
   fetch(`${url}?${params}`)
@@ -2127,7 +2142,7 @@ function drawerOverview(p) {
     <p style="font-size:12px;color:var(--muted)">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue is detected automatically).</p>
     <p style="margin-top:18px"><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>
   `;
-  // Populate assignee dropdown
+  // Populate assignee dropdown with users from the system (all users)
   const assignees = [...new Set(allProjects().map(p => p.owner).filter(Boolean))];
   const sel = document.getElementById('e-assignee');
   sel.innerHTML = '<option value="">None</option>' + assignees.map(a => `<option value="${esc(a)}" ${p.assignee === a ? 'selected' : ''}>${esc(a)}</option>`).join('');

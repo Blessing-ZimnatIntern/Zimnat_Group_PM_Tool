@@ -268,4 +268,38 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script>
+
+<!-- Curated Project List -->
+<section style="margin-top:48px;">
+    <h3 style="font-size:18px;font-weight:700;color:#1a2332;border-bottom:1px solid #e5e7eb;padding-bottom:8px;margin-bottom:16px;">Curated Project Overview</h3>
+    <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <thead>
+                <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                    <th style="padding:10px 14px;text-align:left;">Project</th>
+                    <th style="padding:10px 14px;text-align:left;">Business Unit</th>
+                    <th style="padding:10px 14px;text-align:left;">Status</th>
+                    <th style="padding:10px 14px;text-align:left;">Assignee</th>
+                    <th style="padding:10px 14px;text-align:right;">Progress</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach (array_slice($projects, 0, 10) as $p): ?>
+                    <tr style="border-bottom:1px solid #f3f4f6;">
+                        <td style="padding:10px 14px;font-weight:500;"><?= htmlspecialchars($p['name']) ?></td>
+                        <td style="padding:10px 14px;color:#4b5563;"><?= htmlspecialchars($p['business_unit']) ?></td>
+                        <td style="padding:10px 14px;">
+                            <span style="background:<?= getStatusColor($p['effective_status']) ?>;color:#fff;padding:2px 10px;border-radius:5px;font-size:12px;font-weight:600;">
+                                <?= ucfirst($p['effective_status']) ?>
+                            </span>
+                        </td>
+                        <td style="padding:10px 14px;color:#4b5563;"><?= htmlspecialchars($p['assignee_name'] ?? 'Unassigned') ?></td>
+                        <td style="padding:10px 14px;text-align:right;font-weight:600;color:#1f2937;"><?= $p['progress'] ?>%</td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</script
