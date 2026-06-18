@@ -15,18 +15,14 @@ try {
     $business_unit = $_GET['business_unit'] ?? null;
 
     $sql = "
-        SELECT 
-            p.id, p.name, p.gate_due AS start, p.completion_due AS end,
-            p.progress, p.status,
-            b.name AS business_unit,
-            u.full_name AS assignee_name,
-            CASE 
-                WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
-                ELSE p.status
-            END AS effective_status
+        SELECT p.id, p.name, p.gate_due AS start, p.completion_due AS end,
+               p.progress,
+               CASE 
+                   WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
+                   ELSE p.status
+               END AS effective_status
         FROM projects p
         JOIN business_units b ON p.business_unit_id = b.id
-        LEFT JOIN users u ON p.assignee_id = u.id
         WHERE p.deleted_at IS NULL
     ";
     $params = [];
@@ -64,16 +60,13 @@ try {
     ];
     while ($row = $result->fetch_assoc()) {
         if (!$row['start'] || !$row['end']) continue;
-        $color = $colorMap[$row['effective_status']] ?? '#6b7280';
         $tasks[] = [
             'id' => $row['id'],
             'name' => $row['name'],
             'start' => $row['start'],
             'end' => $row['end'],
-            'progress' => (int)$row['progress'],
-            'color' => $color,
-            'business_unit' => $row['business_unit'],
-            'assignee' => $row['assignee_name'] ?? 'Unassigned',
+            'progress' => (int)$row['progress'] / 100,
+            'custom_class' => 'gantt-' . $row['effective_status'],
         ];
     }
 

@@ -65,9 +65,11 @@ foreach ($events as $e) {
     ];
 }
 ?>
-<div class="view-content">
-    <h2>Calendar</h2>
-    <div id="calendarView"></div>
+<div class="view-content" style="padding:24px;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#1a2332;">Calendar</h2>
+    <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:20px;">
+        <div id="calendarView"></div>
+    </div>
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {

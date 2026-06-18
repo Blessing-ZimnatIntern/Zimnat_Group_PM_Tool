@@ -5,7 +5,6 @@ use App\Config\Database;
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-// Aggregate stats
 $statsSql = "
     SELECT 
         COUNT(*) AS total,
@@ -19,7 +18,6 @@ $statsSql = "
 ";
 $stats = $conn->query($statsSql)->fetch_assoc();
 
-// Per business unit
 $buSql = "
     SELECT b.name, COUNT(*) AS count
     FROM projects p
@@ -29,25 +27,28 @@ $buSql = "
 ";
 $buData = $conn->query($buSql)->fetch_all(MYSQLI_ASSOC);
 ?>
-<div class="view-content">
-    <h2>Reports</h2>
-    <div class="report-grid">
-        <div class="report-card">
-            <h3>Portfolio Summary</h3>
-            <ul>
-                <li>Total Projects: <?= $stats['total'] ?></li>
-                <li>Completed: <?= $stats['completed'] ?></li>
-                <li>On Track: <?= $stats['ontrack'] ?></li>
-                <li>At Risk: <?= $stats['atrisk'] ?></li>
-                <li>Behind: <?= $stats['behind'] ?></li>
-                <li>Overdue: <?= $stats['overdue'] ?></li>
+<div class="view-content" style="padding:24px;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#1a2332;">Reports</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+        <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:20px;">
+            <h3 style="font-size:16px;font-weight:600;color:#1f2937;margin-bottom:12px;">Portfolio Summary</h3>
+            <ul style="list-style:none;padding:0;font-size:14px;">
+                <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;"><span>Total Projects</span><span style="font-weight:600;"><?= $stats['total'] ?></span></li>
+                <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;"><span>Completed</span><span style="font-weight:600;color:#3b82f6;"><?= $stats['completed'] ?></span></li>
+                <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;"><span>On Track</span><span style="font-weight:600;color:#16a34a;"><?= $stats['ontrack'] ?></span></li>
+                <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;"><span>At Risk</span><span style="font-weight:600;color:#f59e0b;"><?= $stats['atrisk'] ?></span></li>
+                <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;"><span>Behind</span><span style="font-weight:600;color:#9ca3af;"><?= $stats['behind'] ?></span></li>
+                <li style="display:flex;justify-content:space-between;padding:4px 0;"><span>Overdue</span><span style="font-weight:600;color:#dc2626;"><?= $stats['overdue'] ?></span></li>
             </ul>
         </div>
-        <div class="report-card">
-            <h3>By Business Unit</h3>
-            <ul>
+        <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:20px;">
+            <h3 style="font-size:16px;font-weight:600;color:#1f2937;margin-bottom:12px;">By Business Unit</h3>
+            <ul style="list-style:none;padding:0;font-size:14px;">
                 <?php foreach ($buData as $bu): ?>
-                    <li><?= htmlspecialchars($bu['name']) ?>: <?= $bu['count'] ?></li>
+                    <li style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f3f4f6;">
+                        <span><?= htmlspecialchars($bu['name']) ?></span>
+                        <span style="font-weight:600;"><?= $bu['count'] ?></span>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         </div>

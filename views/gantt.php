@@ -61,14 +61,16 @@ foreach ($tasks as $t) {
         'name' => $t['name'],
         'start' => $t['start'],
         'end' => $t['end'],
-        'progress' => (int)$t['progress'],
-        'color' => $colorMap[$t['effective_status']] ?? '#6b7280',
+        'progress' => (int)$t['progress'] / 100,
+        'custom_class' => 'gantt-' . $t['effective_status'],
     ];
 }
 ?>
-<div class="view-content">
-    <h2>Gantt Chart</h2>
-    <div id="ganttChart"></div>
+<div class="view-content" style="padding:24px;">
+    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#1a2332;">Gantt Chart</h2>
+    <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:20px;">
+        <div id="ganttChart" style="height:400px;"></div>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
 <script>

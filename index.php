@@ -21,7 +21,7 @@
 
 <style>
   /* ================================================================
-     ORIGINAL CSS – FULLY PRESERVED
+     ORIGINAL CSS (complete) + NEW DASHBOARD STYLES
      ================================================================ */
   :root {
     --zimnat-primary: #12A052;
@@ -587,35 +587,28 @@
     box-shadow: 0 4px 16px rgba(18, 160, 82, 0.3);
     transform: translateY(-1px);
   }
+
+  /* Tabs – always visible */
+  .tabs-wrapper {
+    background: #12A052;
+    padding: 0 28px;
+    border-bottom: 1px solid #0e8a45;
+  }
   .tabs {
     display: flex;
     gap: 2px;
-    margin-top: 6px;
   }
   .tab {
     padding: 9px 16px;
     font-size: 13px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.78);
+    color: rgba(255,255,255,0.78);
     cursor: pointer;
     border-bottom: 2px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 6px;
     transition: all 0.15s;
   }
-  .tab:hover {
-    color: #fff;
-  }
-  .tab.active {
-    color: #fff;
-    border-bottom-color: #fff;
-    font-weight: 600;
-  }
-  .tab svg {
-    width: 15px;
-    height: 15px;
-  }
+  .tab:hover { color: #fff; }
+  .tab.active { color: #fff; border-bottom-color: #fff; font-weight: 600; }
 
   .toolbar {
     display: flex;
@@ -679,7 +672,7 @@
     padding: 0 0 40px;
   }
 
-  /* Cards and summary */
+  /* Cards and summary – original styles kept */
   .sample-note {
     margin: 16px 28px 0;
     background: #fef9e7;
@@ -842,910 +835,83 @@
     justify-self: start;
   }
 
-  .group {
-    margin-bottom: 2px;
-  }
-  .group-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 28px;
-    cursor: pointer;
-    user-select: none;
-    background: #fff;
-    border-radius: 8px;
-    margin: 4px 0;
-    transition: background 0.1s;
-  }
-  .group-head:hover {
-    background: var(--hover);
-  }
-  .group-bar {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .04em;
-    color: #fff;
-    padding: 3px 14px;
-    border-radius: 5px;
-  }
-  .group-count {
-    font-size: 12px;
-    color: var(--muted-2);
-  }
-  .gcaret {
-    color: var(--muted-2);
-    font-size: 10px;
-    transition: .15s;
-  }
-  .group.collapsed .gcaret {
-    transform: rotate(-90deg);
-  }
-  .group.collapsed .rows {
-    display: none;
-  }
-  .ltable {
-    min-width: 880px;
-  }
-  .lh,
-  .lrow {
-    display: grid;
-    grid-template-columns: minmax(220px, 1fr) 130px 110px 70px 110px 110px;
-    gap: 12px;
-    align-items: center;
-    padding: 9px 28px;
-  }
-  .lh {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .04em;
-    text-transform: uppercase;
-    color: var(--muted-2);
-    border-bottom: 1px solid var(--line);
-    background: #fff;
-    padding: 10px 28px;
-  }
-  .lrow {
-    border-bottom: 1px solid var(--line);
-    cursor: pointer;
-    background: #fff;
-    transition: background 0.1s;
-  }
-  .lrow:hover {
-    background: var(--hover);
-  }
-  .lname {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 500;
-    min-width: 0;
-  }
-  .lname .ptxt {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .flag {
-    width: 14px;
-    height: 14px;
-    flex-shrink: 0;
-  }
-  .avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 600;
-    display: grid;
-    place-items: center;
-  }
-  .pill {
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
-    padding: 3px 12px;
-    border-radius: 5px;
-    display: inline-block;
-  }
-  .due {
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-  .due.over {
-    color: var(--overdue);
-    font-weight: 600;
-  }
-  .gov-mini {
-    font-size: 11px;
-    color: var(--muted);
-  }
+  /* List / Board (original) */
+  .group { margin-bottom: 2px; }
+  .group-head { display: flex; align-items: center; gap: 10px; padding: 10px 28px; cursor: pointer; user-select: none; background: #fff; border-radius: 8px; margin: 4px 0; transition: background 0.1s; }
+  .group-head:hover { background: var(--hover); }
+  .group-bar { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: #fff; padding: 3px 14px; border-radius: 5px; }
+  .group-count { font-size: 12px; color: var(--muted-2); }
+  .gcaret { color: var(--muted-2); font-size: 10px; transition: .15s; }
+  .group.collapsed .gcaret { transform: rotate(-90deg); }
+  .group.collapsed .rows { display: none; }
+  .ltable { min-width: 880px; }
+  .lh, .lrow { display: grid; grid-template-columns: minmax(220px, 1fr) 130px 110px 70px 110px 110px; gap: 12px; align-items: center; padding: 9px 28px; }
+  .lh { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-2); border-bottom: 1px solid var(--line); background: #fff; padding: 10px 28px; }
+  .lrow { border-bottom: 1px solid var(--line); cursor: pointer; background: #fff; transition: background 0.1s; }
+  .lrow:hover { background: var(--hover); }
+  .lname { display: flex; align-items: center; gap: 10px; font-weight: 500; min-width: 0; }
+  .lname .ptxt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .flag { width: 14px; height: 14px; flex-shrink: 0; }
+  .avatar { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
+  .pill { font-size: 11px; font-weight: 600; color: #fff; padding: 3px 12px; border-radius: 5px; display: inline-block; }
+  .due { font-size: 12.5px; color: var(--muted); }
+  .due.over { color: var(--overdue); font-weight: 600; }
+  .gov-mini { font-size: 11px; color: var(--muted); }
 
-  .board {
-    display: flex;
-    gap: 16px;
-    padding: 20px 28px;
-    overflow-x: auto;
-    align-items: flex-start;
-  }
-  .col {
-    background: var(--side);
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    width: 260px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-  .col-head {
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 1px solid var(--line);
-  }
-  .col-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 3px;
-  }
-  .col-head .ct {
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .col-head .cc {
-    font-size: 11px;
-    color: var(--muted-2);
-    background: #fff;
-    border: 1px solid var(--line-2);
-    border-radius: 9px;
-    padding: 0 8px;
-  }
-  .col-body {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    min-height: 40px;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid var(--line-2);
-    border-radius: 9px;
-    padding: 12px 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  }
-  .card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-    transform: translateY(-1px);
-  }
-  .card .cn {
-    font-weight: 500;
-    font-size: 13.5px;
-    margin-bottom: 9px;
-    display: flex;
-    gap: 7px;
-  }
-  .card .cm {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+  .board { display: flex; gap: 16px; padding: 20px 28px; overflow-x: auto; align-items: flex-start; }
+  .col { background: var(--side); border: 1px solid var(--line); border-radius: 12px; width: 260px; flex-shrink: 0; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .col-head { padding: 12px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line); }
+  .col-dot { width: 9px; height: 9px; border-radius: 3px; }
+  .col-head .ct { font-size: 12px; font-weight: 700; }
+  .col-head .cc { font-size: 11px; color: var(--muted-2); background: #fff; border: 1px solid var(--line-2); border-radius: 9px; padding: 0 8px; }
+  .col-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 40px; }
+  .card { background: #fff; border: 1px solid var(--line-2); border-radius: 9px; padding: 12px 14px; cursor: pointer; transition: all 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .card .cn { font-weight: 500; font-size: 13.5px; margin-bottom: 9px; display: flex; gap: 7px; }
+  .card .cm { display: flex; align-items: center; justify-content: space-between; }
 
-  .scrim {
-    position: fixed;
-    inset: 0;
-    background: rgba(13, 31, 51, 0.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s;
-    z-index: 40;
-    backdrop-filter: blur(2px);
-  }
-  .scrim.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .drawer {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100vh;
-    width: 50%;
-    max-width: 680px;
-    min-width: 480px;
-    background: #fff;
-    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
-    transform: translateX(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 50;
-    display: flex;
-    flex-direction: column;
-  }
-  .drawer.open {
-    transform: none;
-  }
-  .dr-head {
-    padding: 22px 28px 0;
-    border-bottom: 1px solid var(--line);
-    background: #fff;
-  }
-  .dr-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  .dr-co {
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff;
-    padding: 2px 12px;
-    border-radius: 5px;
-    display: inline-block;
-    margin-bottom: 8px;
-  }
-  .dr-head h2 {
-    font-size: 20px;
-    margin: 0;
-    font-weight: 700;
-    color: var(--zimnat-primary);
-    letter-spacing: -0.3px;
-  }
-  .x {
-    background: none;
-    border: none;
-    font-size: 28px;
-    color: var(--muted);
-    cursor: pointer;
-    line-height: 1;
-    padding: 4px 10px;
-    border-radius: 6px;
-    transition: background 0.15s;
-  }
-  .x:hover {
-    background: var(--hover);
-  }
-  .dr-tabs {
-    display: flex;
-    gap: 4px;
-    margin-top: 16px;
-  }
-  .dr-tab {
-    padding: 9px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.15s;
-  }
-  .dr-tab:hover {
-    color: var(--text);
-  }
-  .dr-tab.active {
-    color: var(--cu);
-    border-bottom-color: var(--cu);
-    font-weight: 600;
-  }
-  .dr-body {
-    padding: 24px 28px;
-    overflow-y: auto;
-    flex: 1;
-    background: var(--bg);
-  }
+  /* Drawer */
+  .scrim { position: fixed; inset: 0; background: rgba(13,31,51,0.5); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 40; backdrop-filter: blur(2px); }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 50%; max-width: 680px; min-width: 480px; background: #fff; box-shadow: -8px 0 40px rgba(0,0,0,0.12); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 50; display: flex; flex-direction: column; }
+  .drawer.open { transform: none; }
+  .dr-head { padding: 22px 28px 0; border-bottom: 1px solid var(--line); background: #fff; }
+  .dr-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .dr-co { font-size: 11px; font-weight: 700; color: #fff; padding: 2px 12px; border-radius: 5px; display: inline-block; margin-bottom: 8px; }
+  .dr-head h2 { font-size: 20px; margin: 0; font-weight: 700; color: var(--zimnat-primary); letter-spacing: -0.3px; }
+  .x { background: none; border: none; font-size: 28px; color: var(--muted); cursor: pointer; line-height: 1; padding: 4px 10px; border-radius: 6px; transition: background 0.15s; }
+  .x:hover { background: var(--hover); }
+  .dr-tabs { display: flex; gap: 4px; margin-top: 16px; }
+  .dr-tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .dr-tab:hover { color: var(--text); }
+  .dr-tab.active { color: var(--cu); border-bottom-color: var(--cu); font-weight: 600; }
+  .dr-body { padding: 24px 28px; overflow-y: auto; flex: 1; background: var(--bg); }
+  .fld { margin-bottom: 18px; }
+  .fld label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 5px; }
+  .fld input, .fld select, .fld textarea { width: 100%; font-family: var(--font); font-size: 14px; border: 1px solid var(--line-2); border-radius: 8px; padding: 10px 14px; background: #fff; color: var(--text); transition: all 0.2s; }
+  .fld textarea { min-height: 96px; resize: vertical; }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: #12A052; box-shadow: 0 0 0 3px rgba(18,160,82,0.08); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rng { display: flex; align-items: center; gap: 12px; }
+  .rng input { flex: 1; }
+  .save-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .saved-tag { font-size: 12px; color: var(--ontrack); opacity: 0; transition: .2s; }
+  .saved-tag.show { opacity: 1; }
 
-  .fld {
-    margin-bottom: 18px;
-  }
-  .fld label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    margin-bottom: 5px;
-  }
-  .fld input,
-  .fld select,
-  .fld textarea {
-    width: 100%;
-    font-family: var(--font);
-    font-size: 14px;
-    border: 1px solid var(--line-2);
-    border-radius: 8px;
-    padding: 10px 14px;
-    background: #fff;
-    color: var(--text);
-    transition: all 0.2s;
-  }
-  .fld textarea {
-    min-height: 96px;
-    resize: vertical;
-  }
-  .fld input:focus,
-  .fld select:focus,
-  .fld textarea:focus {
-    outline: none;
-    border-color: #12A052;
-    box-shadow: 0 0 0 3px rgba(18, 160, 82, 0.08);
-  }
-  .two {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-  .rng {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .rng input {
-    flex: 1;
-  }
-  .save-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 6px;
-  }
-  .saved-tag {
-    font-size: 12px;
-    color: var(--ontrack);
-    opacity: 0;
-    transition: .2s;
-  }
-  .saved-tag.show {
-    opacity: 1;
-  }
+  /* Governance (unchanged) */
+  .gov-overall { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; font-size: 13px; background: #fff; padding: 14px 18px; border-radius: 10px; border: 1px solid var(--line); }
+  .gov-overall .bar { flex: 1; height: 8px; background: var(--line-2); border-radius: 5px; overflow: hidden; }
+  .gov-overall .bar i { display: block; height: 100%; background: var(--ontrack); }
+  .gstage { margin-bottom: 16px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; }
+  .gstage-h { padding: 10px 16px; background: var(--bg); font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .gstage-h .num { width: 22px; height: 22px; border-radius: 50%; background: #12A052; color: #fff; font-size: 11px; display: grid; place-items: center; font-weight: 700; }
+  .gstage-h .cur-tag { margin-left: auto; font-size: 10px; font-weight: 700; color: #fff; background: #4F8BBF; padding: 2px 10px; border-radius: 5px; }
+  .gitem { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); }
+  .gitem .gname { flex: 1; font-size: 13.5px; }
+  .gitem select { font-family: var(--font); font-size: 12.5px; border: 1px solid var(--line-2); border-radius: 6px; padding: 5px 10px; font-weight: 600; }
+  .gitem .none { font-size: 12px; color: var(--muted-2); padding: 10px 16px; }
 
-  .gov-overall {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    background: #fff;
-    padding: 14px 18px;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-  }
-  .gov-overall .bar {
-    flex: 1;
-    height: 8px;
-    background: var(--line-2);
-    border-radius: 5px;
-    overflow: hidden;
-  }
-  .gov-overall .bar i {
-    display: block;
-    height: 100%;
-    background: var(--ontrack);
-  }
-  .gstage {
-    margin-bottom: 16px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    overflow: hidden;
-    background: #fff;
-  }
-  .gstage-h {
-    padding: 10px 16px;
-    background: var(--bg);
-    font-weight: 600;
-    font-size: 13px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .gstage-h .num {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #12A052;
-    color: #fff;
-    font-size: 11px;
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-  }
-  .gstage-h .cur-tag {
-    margin-left: auto;
-    font-size: 10px;
-    font-weight: 700;
-    color: #fff;
-    background: #4F8BBF;
-    padding: 2px 10px;
-    border-radius: 5px;
-  }
-  .gitem {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    border-top: 1px solid var(--line);
-  }
-  .gitem .gname {
-    flex: 1;
-    font-size: 13.5px;
-  }
-  .gitem select {
-    font-family: var(--font);
-    font-size: 12.5px;
-    border: 1px solid var(--line-2);
-    border-radius: 6px;
-    padding: 5px 10px;
-    font-weight: 600;
-  }
-  .gitem .none {
-    font-size: 12px;
-    color: var(--muted-2);
-    padding: 10px 16px;
-  }
-
-  @media (max-width: 1024px) {
-    .drawer {
-      width: 60%;
-      min-width: 400px;
-    }
-  }
-  @media (max-width: 768px) {
-    .drawer {
-      width: 94vw;
-      min-width: auto;
-    }
-    .two {
-      grid-template-columns: 1fr;
-    }
-    .auth-container {
-      padding: 32px 24px;
-    }
-    .side {
-      width: 220px;
-    }
-    .co-grid {
-      grid-template-columns: 1fr;
-    }
-    .rail {
-      width: 0;
-    }
-    .topbar {
-      padding: 12px 16px;
-    }
-    .toolbar {
-      padding: 10px 16px;
-    }
-    .sumwrap {
-      padding: 14px 16px;
-    }
-    .lh,
-    .lrow {
-      padding: 8px 16px;
-      grid-template-columns: 1fr 80px 60px 50px 80px 80px;
-      font-size: 12px;
-    }
-    .attn-row {
-      grid-template-columns: 1fr 60px 90px 90px;
-      padding: 8px 14px;
-    }
-    .title-row h1 {
-      font-size: 1.8rem;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      transition: none !important;
-    }
-  }
-
-  .import-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 30, 50, 0.55);
-    backdrop-filter: blur(3px);
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-  .import-overlay.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .import-modal {
-    background: #fff;
-    border-radius: 16px;
-    padding: 32px;
-    width: 100%;
-    max-width: 460px;
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.2);
-    position: relative;
-  }
-  .import-modal h3 {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-  .import-modal p.sub {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-  .import-close {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    color: var(--muted);
-    cursor: pointer;
-    line-height: 1;
-    border-radius: 6px;
-    padding: 2px 8px;
-    transition: background 0.15s;
-  }
-  .import-close:hover {
-    background: var(--bg);
-  }
-  .drop-zone {
-    border: 2px dashed var(--line-2);
-    border-radius: 12px;
-    padding: 36px 24px;
-    text-align: center;
-    background: var(--bg);
-    transition: all 0.2s;
-    cursor: pointer;
-    position: relative;
-  }
-  .drop-zone:hover,
-  .drop-zone.dragover {
-    border-color: #12A052;
-    background: rgba(18, 160, 82, 0.05);
-  }
-  .drop-zone.file-selected {
-    border-color: #12A052;
-    background: rgba(18, 160, 82, 0.06);
-  }
-  .drop-zone .dz-icon {
-    font-size: 36px;
-    margin-bottom: 10px;
-  }
-  .drop-zone .dz-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .drop-zone .dz-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-  .drop-zone .dz-types {
-    font-size: 11px;
-    color: var(--muted-2);
-    font-weight: 500;
-  }
-  .drop-zone input[type=file] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-  }
-  .dz-browse {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 18px;
-    border: 1px solid var(--line-2);
-    border-radius: 8px;
-    background: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    cursor: pointer;
-    margin-bottom: 12px;
-    transition: all 0.15s;
-    font-family: var(--font);
-  }
-  .dz-browse:hover {
-    background: var(--bg);
-    border-color: #12A052;
-    color: #12A052;
-  }
-  .dz-file-name {
-    font-size: 13px;
-    color: #12A052;
-    font-weight: 600;
-    margin-top: 8px;
-    display: none;
-  }
-  .import-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    justify-content: flex-end;
-  }
-
-  .ring-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 8px;
-  }
-  .ring-card {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  }
-  .ring-card:hover {
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-    border-color: #12A052;
-  }
-  .ring-svg-wrap {
-    position: relative;
-    width: 80px;
-    height: 80px;
-    flex-shrink: 0;
-  }
-  .ring-svg-wrap svg {
-    transform: rotate(-90deg);
-  }
-  .ring-pct {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: -0.5px;
-    flex-direction: column;
-  }
-  .ring-pct small {
-    display: block;
-    font-size: 9px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 0;
-    margin-top: 1px;
-  }
-  .ring-info .ri-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 3px;
-  }
-  .ring-info .ri-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .ring-info .ri-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: #fff;
-    padding: 2px 10px;
-    border-radius: 5px;
-    display: inline-block;
-  }
-  @media (max-width: 600px) {
-    .ring-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .bu-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 9px;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-  }
-  .bu-icon svg {
-    width: 20px;
-    height: 20px;
-  }
-  .space-icon.bu {
-    width: 28px;
-    height: 28px;
-    border-radius: 7px;
-    display: grid;
-    place-items: center;
-    background: transparent;
-  }
-  .space-icon.bu svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  .drill-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.28);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.18s ease;
-    z-index: 55;
-  }
-  .drill-overlay.open {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  .drill-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: min(480px, 94vw);
-    height: 100vh;
-    background: #fff;
-    z-index: 56;
-    box-shadow: -22px 0 50px rgba(15, 23, 42, 0.18);
-    transform: translateX(105%);
-    transition: transform 0.22s ease;
-    display: flex;
-    flex-direction: column;
-  }
-  .drill-panel.open {
-    transform: translateX(0);
-  }
-  .drill-head {
-    padding: 20px 22px 14px;
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-  }
-  .drill-head h3 {
-    font-size: 18px;
-    margin: 0 0 4px;
-  }
-  .drill-head p {
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-  }
-  .drill-close {
-    border: 1px solid var(--line);
-    background: #fff;
-    border-radius: 8px;
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
-    font-size: 20px;
-    color: var(--muted);
-  }
-  .drill-body {
-    overflow: auto;
-    padding: 12px;
-  }
-  .drill-item {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 8px 12px;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
-  }
-  .drill-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-    border-color: rgba(18, 160, 82, 0.35);
-  }
-  .drill-title {
-    font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .drill-meta {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    color: var(--muted);
-    font-size: 12px;
-  }
-  .drill-progress {
-    font-size: 12px;
-    color: var(--muted);
-    justify-self: end;
-  }
-  .empty-state {
-    color: var(--muted);
-    text-align: center;
-    padding: 40px 16px;
-    border: 1px dashed var(--line-2);
-    border-radius: 8px;
-    background: var(--bg);
-  }
-
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    right: 0;
-    background: #fff;
-    min-width: 140px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-    border-radius: 8px;
-    z-index: 10;
-    border: 1px solid var(--line);
-    overflow: hidden;
-  }
-  .dropdown-menu.show {
-    display: block;
-  }
-  .dropdown-menu a {
-    display: block;
-    padding: 8px 16px;
-    color: var(--text);
-    text-decoration: none;
-    font-size: 13px;
-  }
-  .dropdown-menu a:hover {
-    background: var(--hover);
-  }
-
-  #calendar {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 16px;
-  }
-  #gantt-container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    margin-top: 16px;
-  }
-  .gantt-container {
-    width: 100%;
-    overflow-x: auto;
-  }
-  .gantt-ontrack {
-    fill: #2E7D32;
-  }
-  .gantt-behind {
-    fill: #F9A825;
-  }
-  .gantt-atrisk {
-    fill: #FB8C00;
-  }
-  .gantt-overdue {
-    fill: #D32F2F;
-  }
-  .gantt-complete {
-    fill: #1976D2;
-  }
-
-  /* ----- NEW DASHBOARD STYLES ----- */
+  /* NEW DASHBOARD STYLES */
   .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -1760,10 +926,7 @@
     transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
   }
-  .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
-  }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
   .stat-number { font-size: 28px; font-weight: 800; line-height: 1.2; }
   .stat-label { font-size: 13px; color: #6b7280; margin-top: 4px; }
   .stat-color-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
@@ -1826,14 +989,75 @@
   }
   .chart-card canvas { max-height: 200px; width: 100% !important; }
 
+  /* Responsive */
   @media (max-width: 1024px) {
-    .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-grid { grid-template-columns: repeat(2,1fr); }
     .charts-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 768px) {
     .dashboard-grid { grid-template-columns: 1fr; }
     .ring-grid-custom { grid-template-columns: 1fr 1fr; }
+    .tabs-wrapper { padding: 0 16px; }
+    .tab { padding: 6px 12px; font-size: 12px; }
   }
+
+  /* Import modal (unchanged) */
+  .import-overlay { position: fixed; inset: 0; background: rgba(10,30,50,0.55); backdrop-filter: blur(3px); z-index: 100; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .import-overlay.open { opacity: 1; pointer-events: auto; }
+  .import-modal { background: #fff; border-radius: 16px; padding: 32px; width: 100%; max-width: 460px; box-shadow: 0 24px 80px rgba(0,0,0,0.2); position: relative; }
+  .import-modal h3 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .import-modal p.sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+  .import-close { position: absolute; top: 16px; right: 18px; background: none; border: none; font-size: 24px; color: var(--muted); cursor: pointer; line-height: 1; border-radius: 6px; padding: 2px 8px; transition: background 0.15s; }
+  .import-close:hover { background: var(--bg); }
+  .drop-zone { border: 2px dashed var(--line-2); border-radius: 12px; padding: 36px 24px; text-align: center; background: var(--bg); transition: all 0.2s; cursor: pointer; position: relative; }
+  .drop-zone:hover, .drop-zone.dragover { border-color: #12A052; background: rgba(18,160,82,0.05); }
+  .drop-zone.file-selected { border-color: #12A052; background: rgba(18,160,82,0.06); }
+  .drop-zone .dz-icon { font-size: 36px; margin-bottom: 10px; }
+  .drop-zone .dz-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .drop-zone .dz-sub { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+  .drop-zone .dz-types { font-size: 11px; color: var(--muted-2); font-weight: 500; }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .dz-browse { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border: 1px solid var(--line-2); border-radius: 8px; background: #fff; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; margin-bottom: 12px; transition: all 0.15s; font-family: var(--font); }
+  .dz-browse:hover { background: var(--bg); border-color: #12A052; color: #12A052; }
+  .dz-file-name { font-size: 13px; color: #12A052; font-weight: 600; margin-top: 8px; display: none; }
+  .import-actions { display: flex; gap: 8px; margin-top: 20px; justify-content: flex-end; }
+
+  /* Drill panel, ring icons, etc. */
+  .drill-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.28); opacity: 0; pointer-events: none; transition: opacity 0.18s ease; z-index: 55; }
+  .drill-overlay.open { opacity: 1; pointer-events: auto; }
+  .drill-panel { position: fixed; top: 0; right: 0; width: min(480px, 94vw); height: 100vh; background: #fff; z-index: 56; box-shadow: -22px 0 50px rgba(15,23,42,0.18); transform: translateX(105%); transition: transform 0.22s ease; display: flex; flex-direction: column; }
+  .drill-panel.open { transform: translateX(0); }
+  .drill-head { padding: 20px 22px 14px; border-bottom: 1px solid var(--line); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .drill-head h3 { font-size: 18px; margin: 0 0 4px; }
+  .drill-head p { margin: 0; color: var(--muted); font-size: 13px; }
+  .drill-close { border: 1px solid var(--line); background: #fff; border-radius: 8px; width: 34px; height: 34px; cursor: pointer; font-size: 20px; color: var(--muted); }
+  .drill-body { overflow: auto; padding: 12px; }
+  .drill-item { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease; }
+  .drill-item:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(15,23,42,0.08); border-color: rgba(18,160,82,0.35); }
+  .drill-title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .drill-meta { display: flex; gap: 8px; align-items: center; color: var(--muted); font-size: 12px; }
+  .drill-progress { font-size: 12px; color: var(--muted); justify-self: end; }
+  .empty-state { color: var(--muted); text-align: center; padding: 40px 16px; border: 1px dashed var(--line-2); border-radius: 8px; background: var(--bg); }
+
+  .bu-icon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; }
+  .bu-icon svg { width: 20px; height: 20px; }
+  .space-icon.bu { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: transparent; }
+  .space-icon.bu svg { width: 16px; height: 16px; }
+
+  .dropdown { position: relative; display: inline-block; }
+  .dropdown-menu { display: none; position: absolute; right: 0; background: #fff; min-width: 140px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); border-radius: 8px; z-index: 10; border: 1px solid var(--line); overflow: hidden; }
+  .dropdown-menu.show { display: block; }
+  .dropdown-menu a { display: block; padding: 8px 16px; color: var(--text); text-decoration: none; font-size: 13px; }
+  .dropdown-menu a:hover { background: var(--hover); }
+
+  #calendar { background: #fff; padding: 20px; border-radius: 12px; margin-top: 16px; }
+  #ganttChart { height: 400px; }
+
+  .gantt-ontrack { fill: #16a34a; }
+  .gantt-behind { fill: #9ca3af; }
+  .gantt-atrisk { fill: #f59e0b; }
+  .gantt-overdue { fill: #dc2626; }
+  .gantt-complete { fill: #3b82f6; }
 </style>
 </head>
 <body>
@@ -1923,6 +1147,9 @@
           <button class="pill-btn primary" id="addProjectBtn">+ Add Project</button>
         </div>
       </div>
+    </div>
+    <!-- TABS WRAPPER – ALWAYS VISIBLE -->
+    <div class="tabs-wrapper">
       <div class="tabs" id="tabs"></div>
     </div>
     <div class="toolbar" id="toolbar">
@@ -1981,7 +1208,7 @@
 </aside>
 
 <!-- ============================================================ -->
-<!-- DRAWER - HALF SCREEN -->
+<!-- DRAWER -->
 <!-- ============================================================ -->
 <div class="scrim" id="scrim"></div>
 <div class="drawer" id="drawer">
@@ -2001,7 +1228,7 @@
 
 <script>
 // ================================================================
-// COMPLETE JAVASCRIPT
+// COMPLETE APPLICATION JAVASCRIPT
 // ================================================================
 
 // ----- AUTHENTICATION (original) -----
@@ -2172,7 +1399,7 @@ function seedGov(stage, complete) {
   return g;
 }
 
-// ----- SEED DATA -----
+// ----- SEED DATA (fallback) -----
 const RAW = [
   {
     id: 'zfs',
@@ -2379,13 +1606,13 @@ function govPct(p) { const items = GOVERNANCE.filter(g => p.governance[g.id] !==
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
 // ----- STATE -----
-let screen = 'portfolio';
-let selected = null;
-let view = 'list';
+let screen = 'portfolio';      // 'portfolio' or 'company'
+let selected = null;          // current business unit id
+let view = 'list';            // for company view (list/board)
+let currentTab = 'dashboard'; // 'dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'
 let collapsed = {};
 let drawerTab = 'overview';
 let openId = null;
-let currentTabView = 'dashboard';
 
 // ----- RENDER FUNCTIONS -----
 function renderSidebar() {
@@ -2425,43 +1652,46 @@ function renderSidebar() {
 }
 
 function renderHeader() {
-  if (screen === 'portfolio') {
-    $('mainTitle').textContent = 'Project Management';
-    $('tabs').innerHTML = [
-      ['list', 'List'],
-      ['board', 'Board'],
-      ['calendar', 'Calendar'],
-      ['gantt', 'Gantt'],
-      ['report', 'Reports'],
-      ['mail', 'Mail']
-    ].map(([v, l]) => `<div class="tab ${currentTabView === v ? 'active' : ''}" data-view="${v}">${l}</div>`).join('');
-    $('tabs').querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-      const viewName = t.getAttribute('data-view');
-      currentTabView = viewName;
-      $('tabs').querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      t.classList.add('active');
+  // Always show all tabs
+  const tabs = ['dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'];
+  const labels = {
+    dashboard: 'Dashboard',
+    list: 'List',
+    board: 'Board',
+    calendar: 'Calendar',
+    gantt: 'Gantt',
+    report: 'Reports',
+    mail: 'Mail'
+  };
+  $('tabs').innerHTML = tabs.map(tab =>
+    `<div class="tab ${currentTab === tab ? 'active' : ''}" data-view="${tab}">${labels[tab]}</div>`
+  ).join('');
+
+  $('tabs').querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      const viewName = this.dataset.view;
+      currentTab = viewName;
+      $('tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
       if (viewName === 'dashboard') {
-        renderPortfolio();
+        renderContent();
       } else {
         loadView(viewName);
       }
-    }));
+    });
+  });
+
+  // Set main title
+  if (screen === 'portfolio') {
+    $('mainTitle').textContent = 'Project Management';
   } else {
     const c = co(selected);
-    $('mainTitle').textContent = c.name;
-    $('tabs').innerHTML = [
-      ['list', 'List'],
-      ['board', 'Board']
-    ].map(([v, l]) => `<div class="tab ${view === v ? 'active' : ''}" data-view="${v}">${l}</div>`).join('');
-    $('tabs').querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-      view = t.getAttribute('data-view');
-      renderAll();
-    }));
+    $('mainTitle').textContent = c ? c.name : 'Business Unit';
   }
 }
 
 function renderToolbar() {
-  // Populate assignee and business unit filters from DATA
+  // Populate assignee and business unit filters
   const assignees = [...new Set(allProjects().map(p => p.owner).filter(Boolean))];
   const sel = document.getElementById('fAssignee');
   if (sel) {
@@ -2511,8 +1741,8 @@ function buIcon(id) {
   return icons[key] || icons.zfs;
 }
 
-// ----- ENHANCED renderPortfolio with charts and rings -----
-function renderPortfolio() {
+// ----- ENHANCED renderDashboard (portfolio) -----
+function renderDashboard() {
   const projs = getFiltered(allProjects());
   const { c, avg, total } = statBlock(projs);
 
@@ -2537,7 +1767,7 @@ function renderPortfolio() {
   });
   html += `</div>`;
 
-  // Ring cards (one per status)
+  // Ring cards
   const statusKeys = ['ontrack', 'behind', 'atrisk', 'overdue', 'complete'];
   const labels = {
     ontrack: 'On Track',
@@ -2614,7 +1844,7 @@ function renderPortfolio() {
 
   $('content').innerHTML = html;
 
-  // Render charts using embedded function
+  // Render charts
   renderCharts(c, total, projs);
 
   // Attach click handlers
@@ -2693,7 +1923,7 @@ function renderCharts(c, total, filteredProjects) {
   }
 }
 
-// ----- COMPANY VIEW (unchanged) -----
+// ----- COMPANY VIEW (original) -----
 function renderCompany() {
   const comp = co(selected);
   if (!comp) return;
@@ -2721,12 +1951,37 @@ function renderCompany() {
   wireBoard();
 }
 
-function listHtml(projs) { /* same as original */ }
-function wireList() { /* same */ }
-function boardHtml(projs) { /* same */ }
-function wireBoard() { /* same */ }
+function listHtml(projs) {
+  let html = `<div class="ltable">`;
+  STAGES.forEach(st => {
+    const items = projs.filter(p => p.stage === st.id);
+    if (!items.length) return;
+    const colKey = selected + st.id;
+    const isCol = collapsed[colKey];
+    html += `<div class="group ${isCol ? 'collapsed' : ''}" data-st="${st.id}"><div class="group-head"><span class="gcaret">▼</span><span class="group-bar" style="background:var(--cu)">${st.label.toUpperCase()}</span><span class="group-count">${items.length}</span></div>
+      <div class="rows"><div class="lh"><span>Project</span><span>Status</span><span>Owner</span><span>Gov</span><span>Gate due</span><span>Completion</span></div>
+      ${items.map(p => { const es = effStatus(p), go = gateOverdue(p); return `<div class="lrow" data-pid="${p.id}"><div class="lname">${flag(p.prio)}<span class="ptxt">${esc(p.name)}</span></div><div><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div><div>${av(p.owner)}</div><div class="gov-mini">${govPct(p)}%</div><div class="due ${go ? 'over' : ''}">${fmt(p.gateDue)}${go ? ' ⚠' : ''}</div><div class="due ${p.compDue < TODAY && es !== 'complete' ? 'over' : ''}">${fmt(p.compDue)}</div></div>`; }).join('')}</div></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function wireList() {
+  $('content').querySelectorAll('.group-head').forEach(h => h.addEventListener('click', () => { const st = h.closest('.group').getAttribute('data-st'); collapsed[selected + st] = !collapsed[selected + st]; renderCompany(); }));
+  $('content').querySelectorAll('.lrow').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
+}
 
-// ----- VIEW LOADER -----
+function boardHtml(projs) {
+  return `<div class="board">` + STAGES.map(st => {
+    const items = projs.filter(p => p.stage === st.id);
+    return `<div class="col"><div class="col-head"><span class="col-dot" style="background:var(--cu)"></span><span class="ct">${st.label}</span><span class="cc">${items.length}</span></div>
+      <div class="col-body">${items.map(p => { const es = effStatus(p); return `<div class="card" data-pid="${p.id}"><div class="cn">${flag(p.prio)}<span>${esc(p.name)}</span></div><div class="cm">${av(p.owner)}<span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div>`; }).join('') || '<div style="color:var(--muted-2);font-size:12px;padding:4px;text-align:center">—</div>'}</div></div>`;
+  }).join('') + `</div>`;
+}
+function wireBoard() {
+  $('content').querySelectorAll('.card').forEach(c => c.addEventListener('click', () => openDrawer(c.getAttribute('data-pid'))));
+}
+
+// ----- VIEW LOADER (AJAX) -----
 function loadView(viewName) {
   const urlMap = {
     'list': 'views/list.php',
@@ -2738,8 +1993,8 @@ function loadView(viewName) {
   };
   const url = urlMap[viewName];
   if (!url) {
-    currentTabView = 'dashboard';
-    renderPortfolio();
+    currentTab = 'dashboard';
+    renderContent();
     return;
   }
 
@@ -2750,6 +2005,10 @@ function loadView(viewName) {
   if (company) params.append('business_unit', company);
   if (status) params.append('status', status);
   if (assignee) params.append('assignee', assignee);
+  // If in company view, pass the selected unit
+  if (screen === 'company' && selected) {
+    params.append('business_unit', selected);
+  }
 
   fetch(`${url}?${params}`)
     .then(res => {
@@ -2758,21 +2017,46 @@ function loadView(viewName) {
     })
     .then(html => {
       $('content').innerHTML = html;
+      // Execute scripts in the loaded view (calendar/gantt)
       $('content').querySelectorAll('script').forEach(script => eval(script.textContent));
+      // Attach click handlers for project rows
       $('content').querySelectorAll('.project-row, .lrow, .card, .attn-row').forEach(el => {
         el.addEventListener('click', function(e) {
           const pid = this.dataset.pid || this.getAttribute('data-pid');
           if (pid) openDrawer(pid);
         });
       });
-      currentTabView = viewName;
+      currentTab = viewName;
     })
     .catch(err => {
       $('content').innerHTML = `<div style="padding:20px;color:red;">Error loading view: ${err.message}</div>`;
     });
 }
 
-// ----- DRILL-DOWN (unchanged) -----
+function renderContent() {
+  if (screen === 'portfolio') {
+    if (currentTab === 'dashboard') {
+      renderDashboard();
+    } else {
+      loadView(currentTab);
+    }
+  } else {
+    if (currentTab === 'dashboard') {
+      renderCompany();
+    } else {
+      loadView(currentTab);
+    }
+  }
+}
+
+function renderAll() {
+  renderSidebar();
+  renderHeader();
+  renderToolbar();
+  renderContent();
+}
+
+// ----- DRILL-DOWN -----
 function openDrill(title, statusKey, scope) {
   const projects = (statusKey === 'all' ? scope : scope.filter(p => effStatus(p) === statusKey)).slice().sort((a, b) => (a.companyName || '').localeCompare(b.companyName || '') || (a.compDue || '').localeCompare(b.compDue || ''));
   $('drillTitle').textContent = title === 'Projects' ? 'Projects' : `${title} Projects`;
@@ -2789,7 +2073,7 @@ function closeDrill() {
 $('drillOverlay').addEventListener('click', closeDrill);
 $('drillClose').addEventListener('click', closeDrill);
 
-// ----- DRAWER (unchanged) -----
+// ----- DRAWER -----
 function openDrawer(id) {
   openId = id;
   drawerTab = 'overview';
@@ -2806,18 +2090,119 @@ $('scrim').addEventListener('click', closeDrawer);
 $('drClose').addEventListener('click', closeDrawer);
 $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.addEventListener('click', () => { drawerTab = t.getAttribute('data-dt'); renderDrawer(); }));
 
-function renderDrawer() { /* same as original */ }
-function drawerOverview(p) { /* same as original */ }
-function drawerUpdates(p) { /* same */ }
-function drawerGov(p) { /* same */ }
+function renderDrawer() {
+  const p = findP(openId);
+  if (!p) return;
+  $('drCo').textContent = p.companyName;
+  $('drCo').style.background = p.companyColor;
+  $('drName').textContent = p.name;
+  $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-dt') === drawerTab));
+  if (drawerTab === 'overview') drawerOverview(p);
+  else if (drawerTab === 'updates') drawerUpdates(p);
+  else drawerGov(p);
+}
+
+function drawerOverview(p) {
+  const es = effStatus(p);
+  $('drBody').innerHTML = `
+    <div class="fld"><label>Assigned To</label><input id="e-owner" value="${esc(p.owner)}"></div>
+    ${es === 'overdue' ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Completion date has passed — this project is overdue.</div>` : ''}
+    <div class="fld"><label>Project name</label><input id="e-name" value="${esc(p.name)}"></div>
+    <div class="two">
+      <div class="fld"><label>Priority</label><select id="e-prio">${Object.keys(PRIO).map(k => `<option value="${k}" ${p.prio === k ? 'selected' : ''}>${k[0].toUpperCase() + k.slice(1)}</option>`).join('')}</select></div>
+      <div class="fld"><label>Stage gate</label><select id="e-stage">${STAGES.map(s => `<option value="${s.id}" ${p.stage === s.id ? 'selected' : ''}>${s.label}</option>`).join('')}</select></div>
+    </div>
+    <div class="two">
+      <div class="fld"><label>Status</label><select id="e-health">${['ontrack', 'atrisk', 'behind', 'complete'].map(k => `<option value="${k}" ${p.health === k ? 'selected' : ''}>${HEALTH[k].label}</option>`).join('')}</select></div>
+      <div class="fld"><label>Assignee</label><select id="e-assignee"><option value="">None</option></select></div>
+    </div>
+    <div class="two">
+      <div class="fld"><label>Stage gate due date</label><input type="date" id="e-gate" value="${p.gateDue || ''}"></div>
+      <div class="fld"><label>Project completion date</label><input type="date" id="e-comp" value="${p.compDue || ''}"></div>
+    </div>
+    <div class="fld">
+      <label>Progress — <span id="pv">${p.progress}</span>%</label>
+      <div class="rng"><input type="range" id="e-prog" min="0" max="100" value="${p.progress}"></div>
+    </div>
+    <p style="font-size:12px;color:var(--muted)">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue is detected automatically).</p>
+    <p style="margin-top:18px"><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>
+  `;
+  // Populate assignee dropdown
+  const assignees = [...new Set(allProjects().map(p => p.owner).filter(Boolean))];
+  const sel = document.getElementById('e-assignee');
+  sel.innerHTML = '<option value="">None</option>' + assignees.map(a => `<option value="${esc(a)}" ${p.assignee === a ? 'selected' : ''}>${esc(a)}</option>`).join('');
+  const upd = (k, v, patch = null) => { p[k] = v; renderSidebar(); renderContent(); persistProject(p, patch || {}).catch(err => alert(err.message)); };
+  document.getElementById('e-owner').addEventListener('change', e => upd('owner', e.target.value, { owner: e.target.value }));
+  document.getElementById('e-name').addEventListener('change', e => upd('name', e.target.value, { name: e.target.value }));
+  document.getElementById('e-prio').addEventListener('change', e => upd('prio', e.target.value, { priority: e.target.value }));
+  document.getElementById('e-stage').addEventListener('change', e => upd('stage', e.target.value, { stage: e.target.value }));
+  document.getElementById('e-health').addEventListener('change', e => { upd('health', e.target.value, { status: e.target.value }); drawerOverview(p); });
+  document.getElementById('e-assignee').addEventListener('change', e => upd('assignee', e.target.value, { assignee: e.target.value }));
+  document.getElementById('e-gate').addEventListener('change', e => upd('gateDue', e.target.value, { gate_due: e.target.value || null }));
+  document.getElementById('e-comp').addEventListener('change', e => { upd('compDue', e.target.value, { completion_due: e.target.value || null }); drawerOverview(p); });
+  document.getElementById('e-prog').addEventListener('input', e => { p.progress = +e.target.value; document.getElementById('pv').textContent = e.target.value; });
+  document.getElementById('e-prog').addEventListener('change', e => { renderSidebar(); renderContent(); persistProject(p, { progress: +e.target.value }).catch(err => alert(err.message)); });
+  document.getElementById('e-del').addEventListener('click', async () => {
+    if (!confirm('Delete this project? This cannot be undone.')) return;
+    try {
+      await apiRequest(`api/projects/delete.php?id=${encodeURIComponent(p.id)}`, { method: 'DELETE', headers: {} });
+      const c = co(p.company);
+      c.projects = c.projects.filter(x => x.id !== p.id);
+      closeDrawer();
+      renderAll();
+    } catch (err) { alert(err.message); }
+  });
+}
+
+function drawerUpdates(p) {
+  $('drBody').innerHTML = `
+    <div class="fld"><label>Current update / comment</label><textarea id="e-upd" placeholder="Where things stand right now…">${esc(p.currentUpdate)}</textarea></div>
+    <div class="fld"><label>Next steps</label><textarea id="e-next" placeholder="What happens next, and who owns it…">${esc(p.nextSteps)}</textarea></div>
+    <div class="save-row"><button class="pill-btn primary" id="e-save">Save Update</button><span class="saved-tag" id="savedTag">Saved ✓</span></div>
+  `;
+  document.getElementById('e-save').addEventListener('click', async () => {
+    p.currentUpdate = document.getElementById('e-upd').value;
+    p.nextSteps = document.getElementById('e-next').value;
+    try { await persistProject(p, { current_update: p.currentUpdate, next_steps: p.nextSteps }); } catch (err) { alert(err.message); return; }
+    const t = document.getElementById('savedTag');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1600);
+  });
+}
+
+function drawerGov(p) {
+  let html = `<div class="gov-overall"><span>Governance <b>${govPct(p)}%</b> signed off</span><div class="bar"><i style="width:${govPct(p)}%"></i></div></div>`;
+  STAGES.forEach((s, i) => {
+    const items = GOVERNANCE.filter(g => g.stage === s.id);
+    html += `<div class="gstage"><div class="gstage-h"><span class="num">${i + 1}</span>${s.label}${p.stage === s.id ? '<span class="cur-tag">CURRENT</span>' : ''}</div>`;
+    html += items.length ? items.map(it => `<div class="gitem"><span class="gname">${it.label}</span><select data-gid="${it.id}">${Object.entries(GOV_ST).map(([k, v]) => `<option value="${k}" ${p.governance[it.id] === k ? 'selected' : ''}>${v.l}</option>`).join('')}</select></div>`).join('') : `<div class="none">No formal deliverable at this gate.</div>`;
+    html += `</div>`;
+  });
+  $('drBody').innerHTML = html;
+  $('drBody').querySelectorAll('select[data-gid]').forEach(sel => {
+    const setColor = () => { sel.style.color = GOV_ST[sel.value].c; };
+    setColor();
+    sel.addEventListener('change', () => {
+      const gid = sel.getAttribute('data-gid');
+      p.governance[gid] = sel.value;
+      setColor();
+      renderSidebar();
+      renderContent();
+      apiRequest('api/governance/update.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, item_key: apiGovKey(gid), status: apiGovStatus(sel.value) }) }).catch(err => alert(err.message));
+      drawerGov(p);
+    });
+  });
+}
 
 // ----- NAVIGATION -----
 $('navPortfolio').addEventListener('click', () => {
   screen = 'portfolio';
-  currentTabView = 'dashboard';
-  $('tabs').querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+  selected = null;
+  currentTab = 'dashboard';
   renderAll();
 });
+
+// Business unit clicks are handled in renderSidebar
 
 function renderAll() {
   renderSidebar();
@@ -2826,46 +2211,166 @@ function renderAll() {
   renderContent();
 }
 
-function renderContent() {
-  if (screen === 'portfolio') {
-    if (currentTabView === 'dashboard') {
-      renderPortfolio();
-    } else {
-      loadView(currentTabView);
+// ----- ADD PROJECT -----
+$('addProjectBtn').addEventListener('click', async () => {
+  const cid = (screen === 'company' && selected) ? selected : DATA[0].id;
+  const c = co(cid);
+  if (!c) return;
+  const np = {
+    id: cid + '-n' + uid(),
+    company: cid,
+    companyDbId: c.dbId,
+    companyName: c.name,
+    companyColor: c.color,
+    name: 'Untitled Project',
+    stage: 'initiation',
+    health: 'ontrack',
+    owner: '',
+    prio: 'normal',
+    gateDue: '',
+    compDue: '',
+    progress: 0,
+    currentUpdate: '',
+    nextSteps: '',
+    governance: seedGov('initiation', false)
+  };
+  try {
+    if (c.dbId) {
+      const payload = await apiRequest('api/projects/create.php', {
+        method: 'POST',
+        body: JSON.stringify({ name: np.name, business_unit_id: c.dbId, stage: np.stage, status: np.health, owner: np.owner, priority: np.prio, progress: np.progress })
+      });
+      np.id = payload.id || payload.data?.id || np.id;
     }
-  } else {
-    renderCompany();
+    c.projects.push(np);
+  } catch (err) { alert(err.message); return; }
+  selected = cid;
+  screen = 'company';
+  renderAll();
+  openDrawer(np.id);
+  setTimeout(() => { const el = document.getElementById('e-name'); if (el) { el.focus(); el.select(); } }, 150);
+});
+
+// ----- IMPORT, EXPORT, SHARE -----
+function initImport() {
+  const overlay = document.getElementById('importOverlay');
+  document.getElementById('importBtn').addEventListener('click', () => overlay.classList.add('open'));
+  document.getElementById('importClose').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
+  document.getElementById('importCancelBtn').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) { overlay.classList.remove('open'); resetImport(); } });
+  function resetImport() {
+    document.getElementById('importFile').value = '';
+    document.getElementById('dzFileName').style.display = 'none';
+    document.getElementById('dzFileName').textContent = '';
+    document.getElementById('dropZone').classList.remove('file-selected');
+    document.getElementById('importConfirmBtn').disabled = true;
+    document.getElementById('importConfirmBtn').style.opacity = '0.5';
+    document.getElementById('importConfirmBtn').style.cursor = 'not-allowed';
   }
+  document.getElementById('importFile').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      document.getElementById('dzFileName').textContent = '✓ ' + file.name;
+      document.getElementById('dzFileName').style.display = 'block';
+      document.getElementById('dropZone').classList.add('file-selected');
+      document.getElementById('importConfirmBtn').disabled = false;
+      document.getElementById('importConfirmBtn').style.opacity = '1';
+      document.getElementById('importConfirmBtn').style.cursor = 'pointer';
+    }
+  });
+  const dropZone = document.getElementById('dropZone');
+  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.csv'))) {
+      document.getElementById('dzFileName').textContent = '✓ ' + file.name;
+      document.getElementById('dzFileName').style.display = 'block';
+      document.getElementById('dropZone').classList.add('file-selected');
+      document.getElementById('importConfirmBtn').disabled = false;
+      document.getElementById('importConfirmBtn').style.opacity = '1';
+      document.getElementById('importConfirmBtn').style.cursor = 'pointer';
+    } else alert('Please upload a .xlsx or .csv file.');
+  });
+  document.getElementById('importConfirmBtn').addEventListener('click', () => {
+    const fileInput = document.getElementById('importFile');
+    const file = fileInput.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('api/import/excel.php', { method: 'POST', body: formData, credentials: 'same-origin' })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || data.error || 'Import completed');
+        if (data.status === 'success') {
+          overlay.classList.remove('open');
+          resetImport();
+          loadData();
+        }
+      }).catch(err => alert('Import error: ' + err.message));
+  });
 }
 
-// ----- ADD PROJECT (unchanged) -----
-$('addProjectBtn').addEventListener('click', async () => { /* same as original */ });
-
-// ----- IMPORT, EXPORT, SHARE (unchanged) -----
-function initImport() { /* same as original */ }
 document.addEventListener('DOMContentLoaded', function() {
-  // Export dropdown toggle, share, import init
-  // ... same as original
+  // Export dropdown toggle
+  document.addEventListener('click', function(e) {
+    const menu = document.getElementById('exportMenu');
+    if (e.target.closest('#exportDropdownBtn')) {
+      menu.classList.toggle('show');
+    } else if (!e.target.closest('.dropdown')) {
+      menu.classList.remove('show');
+    }
+  });
+  // Export links
+  document.querySelectorAll('#exportMenu a[data-export]').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const type = this.dataset.export;
+      if (type === 'print') {
+        window.print();
+      } else {
+        const params = new URLSearchParams();
+        const search = document.getElementById('search').value;
+        const company = document.getElementById('fCompany').value;
+        const status = document.getElementById('fStatus').value;
+        const assignee = document.getElementById('fAssignee').value;
+        if (search) params.append('search', search);
+        if (company) params.append('unit', company);
+        if (status) params.append('status', status);
+        if (assignee) params.append('assignee', assignee);
+        window.location.href = `api/export/${type}.php?${params.toString()}`;
+      }
+      document.getElementById('exportMenu').classList.remove('show');
+    });
+  });
+  // Share
+  document.getElementById('shareBtn').addEventListener('click', function() {
+    fetch('api/share/create.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ report_type: 'portfolio', expires_in: 7 }),
+      credentials: 'same-origin'
+    }).then(res => res.json()).then(data => {
+      if (data.status === 'success') alert('Shareable link:\n' + data.url);
+      else alert('Error creating share link: ' + (data.error || 'Unknown error'));
+    }).catch(err => alert('Share error: ' + err.message));
+  });
   initImport();
 
   // Filter change events
   document.getElementById('fCompany').addEventListener('change', function() {
-    if (screen === 'portfolio') {
-      if (currentTabView === 'dashboard') renderPortfolio();
-      else loadView(currentTabView);
-    } else renderCompany();
+    if (currentTab === 'dashboard') renderContent();
+    else loadView(currentTab);
   });
   document.getElementById('fStatus').addEventListener('change', function() {
-    if (screen === 'portfolio') {
-      if (currentTabView === 'dashboard') renderPortfolio();
-      else loadView(currentTabView);
-    } else renderCompany();
+    if (currentTab === 'dashboard') renderContent();
+    else loadView(currentTab);
   });
   document.getElementById('fAssignee').addEventListener('change', function() {
-    if (screen === 'portfolio') {
-      if (currentTabView === 'dashboard') renderPortfolio();
-      else loadView(currentTabView);
-    } else renderCompany();
+    if (currentTab === 'dashboard') renderContent();
+    else loadView(currentTab);
   });
 });
 
@@ -2883,6 +2388,5 @@ loadData = async function() {
 initApp();
 console.log('🏢 Zimnat Project Management Portal loaded successfully!');
 </script>
-
 </body>
 </html>

@@ -15,16 +15,11 @@ try {
     $business_unit = $_GET['business_unit'] ?? null;
 
     $sql = "
-        SELECT 
-            p.id, p.name AS title,
-            p.gate_due AS start,
-            p.completion_due AS end,
-            p.status,
-            b.name AS business_unit,
-            CASE 
-                WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
-                ELSE p.status
-            END AS effective_status
+        SELECT p.id, p.name AS title, p.gate_due AS start, p.completion_due AS end,
+               CASE 
+                   WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
+                   ELSE p.status
+               END AS effective_status
         FROM projects p
         JOIN business_units b ON p.business_unit_id = b.id
         WHERE p.deleted_at IS NULL
@@ -72,10 +67,6 @@ try {
             'end' => $row['end'],
             'color' => $color,
             'textColor' => '#fff',
-            'extendedProps' => [
-                'business_unit' => $row['business_unit'],
-                'status' => $row['effective_status'],
-            ],
         ];
     }
 
