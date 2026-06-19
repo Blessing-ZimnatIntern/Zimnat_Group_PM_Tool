@@ -67,7 +67,11 @@ try {
             CASE 
                 WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
                 ELSE p.status
-            END AS effective_status
+            END AS effective_status,
+            CASE 
+                WHEN p.gate_due < CURDATE() AND p.status != 'complete' THEN 1
+                ELSE 0
+            END AS is_gate_overdue
         FROM projects p
         WHERE $where
         ORDER BY p.completion_due ASC, p.name
@@ -86,6 +90,7 @@ try {
         'behind' => 0,
         'complete' => 0,
         'overdue' => 0,
+        'gate_overdue' => 0,
         'avg_progress' => 0,
         'stage_distribution' => [
             'initiation' => 0,
@@ -103,6 +108,7 @@ try {
         $status = $row['effective_status'];
         $stats[$status]++;
         $stats['stage_distribution'][$row['stage']]++;
+        if ((int)$row['is_gate_overdue'] === 1) $stats['gate_overdue']++;
         $totalProgress += (int)$row['progress'];
         $projects[] = $row;
     }

@@ -34,7 +34,7 @@ try {
 
     if ($assignee) {
         $sql .= " AND p.assignee_id = ?";
-        $params[] = $assignee;
+        $params[] = (int)$assignee;
         $types .= 'i';
     }
     if ($status) {

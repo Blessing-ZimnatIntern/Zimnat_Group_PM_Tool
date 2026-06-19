@@ -5,9 +5,9 @@ use App\Config\Database;
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-$assignee = $_GET['assignee'] ?? null;
-$status = $_GET['status'] ?? null;
-$business_unit = $_GET['business_unit'] ?? null;
+$assignee = isset($_GET['assignee']) ? (int)$_GET['assignee'] : null;
+$status = isset($_GET['status']) ? $_GET['status'] : null;
+$business_unit = isset($_GET['business_unit']) ? (int)$_GET['business_unit'] : null;
 
 $sql = "
     SELECT 
@@ -74,16 +74,18 @@ foreach ($events as $e) {
         <div id="calendarView"></div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendarView');
-    if (<?= count($eventsJson) ?> === 0) {
+    var events = <?= json_encode($eventsJson) ?>;
+    if (events.length === 0) {
         calendarEl.innerHTML = '<p style="color:#6b7280;text-align:center;padding:40px;">No events to display.</p>';
         return;
     }
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
-        events: <?= json_encode($eventsJson) ?>,
+        events: events,
         eventClick: function(info) {
             if (typeof openDrawer === 'function') {
                 openDrawer(info.event.id);

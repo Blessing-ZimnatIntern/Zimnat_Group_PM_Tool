@@ -835,6 +835,24 @@
     justify-self: start;
   }
 
+  @media print {
+    .side, .rail, .topbar, .toolbar, .tabs-wrapper, .title-actions, .side-footer,
+    .scrim, .drawer, .drill-overlay, .drill-panel, .import-overlay {
+        display: none !important;
+    }
+    .main { margin: 0 !important; padding: 0 !important; }
+    .content { padding: 20px !important; overflow: visible !important; }
+    body { background: #fff !important; }
+    .ltable, .board, .sumwrap, .dashboard-grid, .charts-grid, .attn {
+        page-break-inside: avoid;
+    }
+    .stat-card, .ring-card-custom, .chart-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+  }
+
   /* List / Board (original) */
   .group { margin-bottom: 2px; }
   .group-head { display: flex; align-items: center; gap: 10px; padding: 10px 28px; cursor: pointer; user-select: none; background: #fff; border-radius: 8px; margin: 4px 0; transition: background 0.1s; }
@@ -999,6 +1017,12 @@
     .ring-grid-custom { grid-template-columns: 1fr 1fr; }
     .tabs-wrapper { padding: 0 16px; }
     .tab { padding: 6px 12px; font-size: 12px; }
+  }
+
+  @media print {
+    .side, .rail, .topbar, .toolbar, .tabs-wrapper, .title-actions, .footer, .scrim, .drawer, .drill-overlay, .drill-panel { display: none !important; }
+    .main { margin: 0 !important; padding: 0 !important; }
+    .content { padding: 20px !important; }
   }
 
   /* Import modal (unchanged) */
@@ -1228,10 +1252,10 @@
 
 <script>
 // ================================================================
-// COMPLETE APPLICATION JAVASCRIPT
+// ZIMNAT PROJECT MANAGEMENT – PHASE 1 (CORRECTED)
 // ================================================================
 
-// ----- AUTHENTICATION (original) -----
+// ----- AUTHENTICATION -----
 const loginScreen = document.getElementById('loginScreen');
 const registerScreen = document.getElementById('registerScreen');
 const mainApp = document.getElementById('mainApp');
@@ -1243,348 +1267,295 @@ const registerError = document.getElementById('registerError');
 const registerSuccess = document.getElementById('registerSuccess');
 
 document.getElementById('showRegister').addEventListener('click', (e) => {
-  e.preventDefault();
-  loginScreen.style.display = 'none';
-  registerScreen.style.display = 'flex';
-  loginError.classList.remove('show');
-  registerError.classList.remove('show');
+    e.preventDefault();
+    loginScreen.style.display = 'none';
+    registerScreen.style.display = 'flex';
+    loginError.classList.remove('show');
+    registerError.classList.remove('show');
 });
 document.getElementById('showLogin').addEventListener('click', (e) => {
-  e.preventDefault();
-  registerScreen.style.display = 'none';
-  loginScreen.style.display = 'flex';
-  registerError.classList.remove('show');
-  loginError.classList.remove('show');
+    e.preventDefault();
+    registerScreen.style.display = 'none';
+    loginScreen.style.display = 'flex';
+    registerError.classList.remove('show');
+    loginError.classList.remove('show');
 });
 document.getElementById('forgotPassword').addEventListener('click', (e) => {
-  e.preventDefault();
-  loginError.textContent = 'Please contact your IT administrator to reset your password.';
-  loginError.classList.add('show');
+    e.preventDefault();
+    loginError.textContent = 'Please contact your IT administrator to reset your password.';
+    loginError.classList.add('show');
 });
 
 loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  loginError.classList.remove('show');
-  loginSuccess.classList.remove('show');
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  if (!email || !password) {
-    loginError.textContent = 'Please enter both email and password.';
-    loginError.classList.add('show');
-    return;
-  }
-  try {
-    const response = await fetch('api/auth/login.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-    const data = await response.json();
-    if (data.status === 'success') {
-      loginScreen.style.display = 'none';
-      mainApp.classList.add('active');
-      initApp();
-    } else {
-      loginError.textContent = data.error || 'Login failed';
-      loginError.classList.add('show');
+    e.preventDefault();
+    loginError.classList.remove('show');
+    loginSuccess.classList.remove('show');
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    if (!email || !password) {
+        loginError.textContent = 'Please enter both email and password.';
+        loginError.classList.add('show');
+        return;
     }
-  } catch (err) {
-    loginError.textContent = 'Network error. Please try again.';
-    loginError.classList.add('show');
-  }
+    try {
+        const response = await fetch('api/auth/login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            loginScreen.style.display = 'none';
+            mainApp.classList.add('active');
+            initApp();
+        } else {
+            loginError.textContent = data.error || 'Login failed';
+            loginError.classList.add('show');
+        }
+    } catch (err) {
+        loginError.textContent = 'Network error. Please try again.';
+        loginError.classList.add('show');
+    }
 });
 
 registerForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  registerError.classList.remove('show');
-  registerSuccess.classList.remove('show');
-  const fullName = document.getElementById('regFullName').value;
-  const username = document.getElementById('regUsername').value;
-  const email = document.getElementById('regEmail').value;
-  const password = document.getElementById('regPassword').value;
-  if (!fullName || !username || !email || !password) {
-    registerError.textContent = 'All fields are required.';
-    registerError.classList.add('show');
-    return;
-  }
-  if (password.length < 8) {
-    registerError.textContent = 'Password must be at least 8 characters.';
-    registerError.classList.add('show');
-    return;
-  }
-  try {
-    const response = await fetch('api/auth/register.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ full_name: fullName, username, email, password })
-    });
-    const data = await response.json();
-    if (data.status === 'success') {
-      registerSuccess.textContent = 'Account created! Redirecting to login...';
-      registerSuccess.classList.add('show');
-      setTimeout(() => {
-        registerSuccess.classList.remove('show');
-        registerScreen.style.display = 'none';
-        loginScreen.style.display = 'flex';
-        document.getElementById('loginEmail').value = email;
-      }, 1000);
-    } else {
-      registerError.textContent = data.error || 'Registration failed';
-      registerError.classList.add('show');
+    e.preventDefault();
+    registerError.classList.remove('show');
+    registerSuccess.classList.remove('show');
+    const fullName = document.getElementById('regFullName').value;
+    const username = document.getElementById('regUsername').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
+    if (!fullName || !username || !email || !password) {
+        registerError.textContent = 'All fields are required.';
+        registerError.classList.add('show');
+        return;
     }
-  } catch (err) {
-    registerError.textContent = 'Network error. Please try again.';
-    registerError.classList.add('show');
-  }
+    if (password.length < 8) {
+        registerError.textContent = 'Password must be at least 8 characters.';
+        registerError.classList.add('show');
+        return;
+    }
+    try {
+        const response = await fetch('api/auth/register.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name: fullName, username, email, password })
+        });
+        const data = await response.json();
+        if (data.status === 'success') {
+            registerSuccess.textContent = 'Account created! Redirecting to login...';
+            registerSuccess.classList.add('show');
+            setTimeout(() => {
+                registerSuccess.classList.remove('show');
+                registerScreen.style.display = 'none';
+                loginScreen.style.display = 'flex';
+                document.getElementById('loginEmail').value = email;
+            }, 1000);
+        } else {
+            registerError.textContent = data.error || 'Registration failed';
+            registerError.classList.add('show');
+        }
+    } catch (err) {
+        registerError.textContent = 'Network error. Please try again.';
+        registerError.classList.add('show');
+    }
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  if (confirm('Are you sure you want to logout?')) {
-    fetch('api/auth/logout.php', { method: 'POST' }).then(() => {
-      mainApp.classList.remove('active');
-      loginScreen.style.display = 'flex';
-      registerScreen.style.display = 'none';
-    });
-  }
+    if (confirm('Are you sure you want to logout?')) {
+        fetch('api/auth/logout.php', { method: 'POST' }).then(() => {
+            mainApp.classList.remove('active');
+            loginScreen.style.display = 'flex';
+            registerScreen.style.display = 'none';
+        });
+    }
 });
 
 // ----- APP DATA & CONFIG -----
 const STAGES = [
-  { id: 'initiation', label: 'Initiation' },
-  { id: 'planning', label: 'Planning' },
-  { id: 'execution', label: 'Execution / Development' },
-  { id: 'qa', label: 'Quality Assurance' },
-  { id: 'uat', label: 'User Acceptance Testing' },
-  { id: 'closure', label: 'Project Closure' }
+    { id: 'initiation', label: 'Initiation' },
+    { id: 'planning', label: 'Planning' },
+    { id: 'execution', label: 'Execution / Development' },
+    { id: 'qa', label: 'Quality Assurance' },
+    { id: 'uat', label: 'User Acceptance Testing' },
+    { id: 'closure', label: 'Project Closure' }
 ];
 const STAGE_IDX = Object.fromEntries(STAGES.map((s, i) => [s.id, i]));
 const GOVERNANCE = [
-  { id: 'boscard', label: 'BOSCARD', stage: 'initiation' },
-  { id: 'brd', label: 'Business Requirements Document (BRD)', stage: 'planning' },
-  { id: 'plan', label: 'Project Plan / Gantt / Development Plan', stage: 'planning' },
-  { id: 'qa', label: 'QA Testing Report', stage: 'qa' },
-  { id: 'uat', label: 'UAT Sign-offs', stage: 'uat' },
-  { id: 'golive', label: 'Go-live Change Request Sign-off', stage: 'closure' },
-  { id: 'closure', label: 'Closure Report Sign-off', stage: 'closure' }
+    { id: 'boscard', label: 'BOSCARD', stage: 'initiation' },
+    { id: 'brd', label: 'Business Requirements Document (BRD)', stage: 'planning' },
+    { id: 'plan', label: 'Project Plan / Gantt / Development Plan', stage: 'planning' },
+    { id: 'qa', label: 'QA Testing Report', stage: 'qa' },
+    { id: 'uat', label: 'UAT Sign-offs', stage: 'uat' },
+    { id: 'golive', label: 'Go-live Change Request Sign-off', stage: 'closure' },
+    { id: 'closure', label: 'Closure Report Sign-off', stage: 'closure' }
 ];
 const HEALTH = {
-  ontrack: { label: 'On Track', color: '#16a34a' },
-  behind: { label: 'Behind', color: '#9ca3af' },
-  atrisk: { label: 'At Risk', color: '#f59e0b' },
-  overdue: { label: 'Overdue', color: '#dc2626' },
-  complete: { label: 'Complete', color: '#3b82f6' }
+    ontrack: { label: 'On Track', color: '#16a34a' },
+    behind: { label: 'Behind', color: '#9ca3af' },
+    atrisk: { label: 'At Risk', color: '#f59e0b' },
+    overdue: { label: 'Overdue', color: '#dc2626' },
+    complete: { label: 'Complete', color: '#3b82f6' }
 };
 const GOV_ST = {
-  pending: { l: 'Pending', c: '#9aa8b9' },
-  progress: { l: 'In progress', c: '#2a5a8c' },
-  signed: { l: 'Signed off', c: '#2d9b6e' },
-  na: { l: 'N/A', c: '#d1d9e6' }
+    pending: { l: 'Pending', c: '#9aa8b9' },
+    progress: { l: 'In progress', c: '#2a5a8c' },
+    signed: { l: 'Signed off', c: '#2d9b6e' },
+    na: { l: 'N/A', c: '#d1d9e6' }
 };
 const PRIO = {
-  urgent: '#dc2626',
-  high: '#f59e0b',
-  normal: '#3b82f6',
-  low: '#9ca3af'
+    urgent: '#dc2626',
+    high: '#f59e0b',
+    normal: '#3b82f6',
+    low: '#9ca3af'
 };
 const AV = ['#1a3a5c', '#2d9b6e', '#e8a838', '#2a5a8c', '#dc3545', '#6c5ce7', '#00b894'];
 const TODAY = new Date().toISOString().split('T')[0];
 
-function seedGov(stage, complete) {
-  const si = STAGE_IDX[stage];
-  const g = {};
-  GOVERNANCE.forEach(it => {
-    const gi = STAGE_IDX[it.stage];
-    g[it.id] = complete ? 'signed' : gi < si ? 'signed' : gi === si ? 'progress' : 'pending';
-  });
-  return g;
-}
-
-// ----- SEED DATA (fallback) -----
-const RAW = [
-  {
-    id: 'zfs',
-    name: 'ZFS',
-    color: '#1a3a5c',
-    projects: [
-      { name: 'Core banking system upgrade', stage: 'execution', health: 'behind', owner: 'TM', prio: 'high', gateDue: '2026-06-30', compDue: '2026-09-20', progress: 55 },
-      { name: 'Branch network expansion – Phase 2', stage: 'initiation', health: 'ontrack', owner: 'RC', prio: 'normal', gateDue: '2026-07-10', compDue: '2026-12-01', progress: 5 },
-      { name: 'AML compliance review 2026', stage: 'qa', health: 'atrisk', owner: 'KP', prio: 'urgent', gateDue: '2026-06-12', compDue: '2026-08-15', progress: 60 },
-      { name: 'Mobile app v3 launch', stage: 'uat', health: 'ontrack', owner: 'AB', prio: 'high', gateDue: '2026-07-05', compDue: '2026-08-15', progress: 80 },
-      { name: 'FY25 audit close-out', stage: 'closure', health: 'complete', owner: 'TM', prio: 'normal', gateDue: '2026-05-30', compDue: '2026-05-30', progress: 100 }
-    ]
-  },
-  {
-    id: 'zam',
-    name: 'ZAM',
-    color: '#2d9b6e',
-    projects: [
-      { name: 'Unit trust onboarding portal', stage: 'execution', health: 'ontrack', owner: 'NM', prio: 'high', gateDue: '2026-07-15', compDue: '2026-10-05', progress: 60 },
-      { name: 'Portfolio rebalancing automation', stage: 'planning', health: 'ontrack', owner: 'SD', prio: 'normal', gateDue: '2026-07-01', compDue: '2026-11-22', progress: 18 },
-      { name: 'Client reporting redesign', stage: 'execution', health: 'atrisk', owner: 'NM', prio: 'normal', gateDue: '2026-06-28', compDue: '2026-09-30', progress: 35 },
-      { name: 'Q2 investment committee pack', stage: 'closure', health: 'complete', owner: 'SD', prio: 'low', gateDue: '2026-06-02', compDue: '2026-06-02', progress: 100 }
-    ]
-  },
-  {
-    id: 'zgi',
-    name: 'ZGI',
-    color: '#e8a838',
-    projects: [
-      { name: 'Claims processing system', stage: 'qa', health: 'behind', owner: 'BC', prio: 'urgent', gateDue: '2026-06-08', compDue: '2026-08-25', progress: 48 },
-      { name: 'Motor policy pricing model', stage: 'initiation', health: 'ontrack', owner: 'LM', prio: 'high', gateDue: '2026-07-20', compDue: '2026-11-12', progress: 10 },
-      { name: 'Reinsurance treaty renewal', stage: 'planning', health: 'atrisk', owner: 'BC', prio: 'high', gateDue: '2026-06-30', compDue: '2026-09-01', progress: 25 },
-      { name: 'Broker portal integration', stage: 'execution', health: 'ontrack', owner: 'LM', prio: 'normal', gateDue: '2026-07-12', compDue: '2026-10-08', progress: 42 }
-    ]
-  },
-  {
-    id: 'zla',
-    name: 'ZLA',
-    color: '#6c5ce7',
-    projects: [
-      { name: 'Life policy admin migration', stage: 'execution', health: 'behind', owner: 'FK', prio: 'urgent', gateDue: '2026-06-20', compDue: '2026-10-18', progress: 30 },
-      { name: 'Funeral cover product launch', stage: 'initiation', health: 'ontrack', owner: 'PT', prio: 'high', gateDue: '2026-08-01', compDue: '2026-12-20', progress: 0 },
-      { name: 'Actuarial valuation H1', stage: 'closure', health: 'complete', owner: 'FK', prio: 'normal', gateDue: '2026-06-05', compDue: '2026-06-05', progress: 100 },
-      { name: 'Agent commission platform', stage: 'planning', health: 'atrisk', owner: 'PT', prio: 'normal', gateDue: '2026-06-25', compDue: '2026-09-28', progress: 20 }
-    ]
-  }
-];
-
 // ----- DATA LAYER -----
 let DATA = [];
-
-function buildSeed() {
-  return RAW.map(c => ({
-    id: c.id,
-    dbId: { zfs: 1, zam: 2, zgi: 3, zla: 4 }[c.id] || null,
-    name: c.name,
-    color: c.color,
-    projects: c.projects.map((p, i) => ({
-      id: c.id + '-' + i,
-      company: c.id,
-      companyDbId: c.dbId,
-      companyName: c.name,
-      companyColor: c.color,
-      name: p.name,
-      stage: p.stage,
-      health: p.health,
-      owner: p.owner,
-      prio: p.prio,
-      gateDue: p.gateDue,
-      compDue: p.compDue,
-      progress: p.progress,
-      currentUpdate: '',
-      nextSteps: '',
-      assignee: null,
-      assigneeName: null,
-      governance: seedGov(p.stage, p.health === 'complete')
-    }))
-  }));
-}
+let USERS = [];
+let loadError = null;
 
 async function loadData() {
-  try {
-    const response = await fetch('api/projects/list.php', { credentials: 'same-origin' });
-    const payload = await response.json();
-    if (!response.ok || payload.status !== 'success') throw new Error(payload.error || 'Unable to load projects');
-    DATA = mapApiData(payload.data.business_units, payload.data.projects);
-  } catch (error) {
-    console.warn('API data unavailable, loading sample projects:', error);
-    DATA = buildSeed();
-  }
-  renderAll();
+    try {
+        const response = await fetch('api/projects/list.php', { credentials: 'same-origin' });
+        const payload = await response.json();
+        if (!response.ok || payload.status !== 'success') {
+            throw new Error(payload.error || 'Unable to load projects');
+        }
+
+        try {
+            const userRes = await fetch('api/users/list.php', { credentials: 'same-origin' });
+            const userData = await userRes.json();
+            USERS = userData.data || [];
+        } catch (e) {
+            console.warn('Could not fetch users, using empty list', e);
+            USERS = [];
+        }
+
+        DATA = mapApiData(payload.data.business_units, payload.data.projects);
+        loadError = null;
+    } catch (error) {
+        console.error('Failed to load data:', error);
+        loadError = error.message;
+        DATA = [];
+        USERS = [];
+    }
+    renderAll();
 }
 
 function mapApiData(units, projects) {
-  return units.map(unit => {
-    const slug = (unit.slug || unit.name.toLowerCase().replace(/[^a-z0-9]+/g, '')).trim();
+    return units.map(unit => {
+        const slug = (unit.slug || unit.name.toLowerCase().replace(/[^a-z0-9]+/g, '')).trim();
+        return {
+            dbId: Number(unit.id),
+            id: slug || 'unit-' + unit.id,
+            name: unit.name,
+            color: unit.color || '#12A052',
+            projects: projects
+                .filter(p => Number(p.business_unit_id) === Number(unit.id))
+                .map(p => mapApiProject(p))
+        };
+    });
+}
+
+// 🔥 NEW: Map a single project from API
+function mapApiProject(p) {
     return {
-      dbId: Number(unit.id),
-      id: slug || 'unit-' + unit.id,
-      name: unit.name,
-      color: unit.color || '#12A052',
-      projects: projects
-        .filter(p => Number(p.business_unit_id) === Number(unit.id))
-        .map(p => ({
-          id: p.id,
-          company: slug || 'unit-' + unit.id,
-          companyDbId: Number(unit.id),
-          companyName: unit.name,
-          companyColor: unit.color || '#12A052',
-          name: p.name || '',
-          stage: p.stage || 'initiation',
-          health: p.status || 'ontrack',
-          owner: p.owner || '',
-          prio: p.priority || 'normal',
-          gateDue: p.gate_due || '',
-          compDue: p.completion_due || '',
-          progress: Number(p.progress || 0),
-          currentUpdate: p.current_update || '',
-          nextSteps: p.next_steps || '',
-          assignee: p.assignee_id || null,
-          assigneeName: p.assignee_name || null,
-          governance: normalizeGovernance(p.governance || [])
-        }))
+        id: p.id,
+        company: p.business_unit_slug || 'unit-' + p.business_unit_id,
+        companyDbId: p.business_unit_id,
+        companyName: p.business_unit_name,
+        companyColor: p.business_unit_color,
+        name: p.name || '',
+        stage: p.stage || 'initiation',
+        health: p.status || 'ontrack',
+        owner: p.owner || '',
+        assignee_id: p.assignee_id || null,
+        prio: p.priority || 'normal',
+        gateDue: p.gate_due || '',
+        compDue: p.completion_due || '',
+        progress: Number(p.progress || 0),
+        currentUpdate: p.current_update || '',
+        nextSteps: p.next_steps || '',
+        is_gate_overdue: p.is_gate_overdue || 0,
+        governance: normalizeGovernance(p.governance || [])
     };
-  });
 }
 
 function normalizeGovernance(items) {
-  const g = {};
-  GOVERNANCE.forEach(item => g[item.id] = 'pending');
-  items.forEach(item => {
-    const key = normalizeGovKey(item.item_key || item.governance_item || '');
-    if (key && g[key] !== undefined) g[key] = normalizeGovStatus(item.status);
-  });
-  return g;
+    const g = {};
+    GOVERNANCE.forEach(item => g[item.id] = 'pending');
+    items.forEach(item => {
+        const key = normalizeGovKey(item.item_key || item.governance_item || '');
+        if (key && g[key] !== undefined) g[key] = normalizeGovStatus(item.status);
+    });
+    return g;
 }
 function normalizeGovKey(key) {
-  return ({ qa_report: 'qa', uat_signoff: 'uat', golive_cr: 'golive', closure_report: 'closure' })[key] || key;
+    return ({ qa_report: 'qa', uat_signoff: 'uat', golive_cr: 'golive', closure_report: 'closure' })[key] || key;
 }
 function apiGovKey(key) {
-  return ({ qa: 'qa_report', uat: 'uat_signoff', golive: 'golive_cr', closure: 'closure_report' })[key] || key;
+    return ({ qa: 'qa_report', uat: 'uat_signoff', golive: 'golive_cr', closure: 'closure_report' })[key] || key;
 }
 function normalizeGovStatus(status) {
-  return ({ in_progress: 'progress', progress: 'progress', signed_off: 'signed', signed: 'signed', na: 'na', 'n/a': 'na' })[(status || '').toLowerCase()] || 'pending';
+    return ({ in_progress: 'progress', progress: 'progress', signed_off: 'signed', signed: 'signed', na: 'na', 'n/a': 'na' })[(status || '').toLowerCase()] || 'pending';
 }
 function apiGovStatus(status) {
-  return ({ progress: 'progress', signed: 'signed', na: 'na' })[status] || 'pending';
+    return ({ progress: 'progress', signed: 'signed', na: 'na' })[status] || 'pending';
 }
 
+// ----- API HELPERS -----
 async function apiRequest(url, options = {}) {
-  const response = await fetch(url, {
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-    ...options
-  });
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok || payload.status === 'error' || payload.error) {
-    throw new Error(payload.error || payload.message || 'Request failed');
-  }
-  return payload;
+    const response = await fetch(url, {
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.status === 'error' || payload.error) {
+        throw new Error(payload.error || payload.message || 'Request failed');
+    }
+    return payload;
 }
 
 function projectPayload(p) {
-  return {
-    id: p.id,
-    name: p.name,
-    business_unit_id: p.companyDbId,
-    stage: p.stage,
-    status: p.health,
-    owner: p.owner,
-    priority: p.prio,
-    gate_due: p.gateDue || null,
-    completion_due: p.compDue || null,
-    progress: p.progress,
-    current_update: p.currentUpdate,
-    next_steps: p.nextSteps
-  };
+    return {
+        id: p.id,
+        name: p.name,
+        business_unit_id: p.companyDbId || co(p.company)?.dbId,
+        stage: p.stage,
+        status: p.health,
+        owner: p.owner,
+        assignee_id: p.assignee_id || null,
+        priority: p.prio,
+        gate_due: p.gateDue || null,
+        completion_due: p.compDue || null,
+        progress: p.progress,
+        current_update: p.currentUpdate,
+        next_steps: p.nextSteps
+    };
 }
 
+// 🔥 FIXED: persistProject now updates the local project object
 async function persistProject(p, patch = {}) {
-  if (!p.id || String(p.id).includes('-n')) return;
-  await apiRequest('api/projects/update.php', {
-    method: 'PUT',
-    body: JSON.stringify({ ...projectPayload(p), ...patch })
-  });
+    if (!p.id || String(p.id).includes('-n')) return;
+    const payload = { ...projectPayload(p), ...patch };
+    const response = await apiRequest('api/projects/update.php', {
+        method: 'PUT',
+        body: JSON.stringify({ id: p.id, ...payload })
+    });
+    if (response.data) {
+        // Merge updated fields back into local project
+        const updated = mapApiProject(response.data);
+        Object.assign(p, updated);
+        renderSidebar();
+        renderContent();
+        renderDrawer();
+    }
+    return response;
 }
 
 // ----- HELPERS -----
@@ -1593,12 +1564,12 @@ const co = id => DATA.find(c => c.id === id);
 const allProjects = () => DATA.flatMap(c => c.projects);
 
 function findP(id) {
-  for (const c of DATA) {
-    for (const p of c.projects) {
-      if (p.id === id) return p;
+    for (const c of DATA) {
+        for (const p of c.projects) {
+            if (p.id === id) return p;
+        }
     }
-  }
-  return null;
+    return null;
 }
 function avC(i) { let s = 0; for (const ch of i) s += ch.charCodeAt(0); return AV[s % AV.length]; }
 function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
@@ -1606,802 +1577,864 @@ function fmt(d) { if (!d) return '—'; return new Date(d + 'T00:00:00').toLocal
 function flag(p) { return `<svg class="flag" viewBox="0 0 24 24" fill="${PRIO[p]}"><path d="M5 3v18M5 4h12l-2 4 2 4H5"/></svg>`; }
 function av(i) { return `<span class="avatar" style="background:${avC(i)}">${esc(i)}</span>`; }
 function effStatus(p) { if (p.health === 'complete') return 'complete'; if (p.compDue && p.compDue < TODAY) return 'overdue'; return p.health; }
-function gateOverdue(p) { return p.gateDue && p.gateDue < TODAY && effStatus(p) !== 'complete'; }
+function gateOverdue(p) { return p.is_gate_overdue == 1; }
 function govPct(p) { const items = GOVERNANCE.filter(g => p.governance[g.id] !== 'na'); if (!items.length) return 100; const signed = items.filter(g => p.governance[g.id] === 'signed').length; return Math.round(signed / items.length * 100); }
 function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 5); }
 
 // ----- STATE -----
-let screen = 'portfolio';      // 'portfolio' or 'company'
-let selected = null;          // current business unit id
-let view = 'list';            // for company view (list/board)
-let currentTab = 'dashboard'; // 'dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'
+let screen = 'portfolio';
+let selected = null;
+let view = 'list';
+let currentTab = 'dashboard';
 let collapsed = {};
 let drawerTab = 'overview';
 let openId = null;
 
 // ----- RENDER FUNCTIONS -----
 function renderSidebar() {
-  $('navPortfolio').classList.toggle('active', screen === 'portfolio');
-  $('spaces').innerHTML = DATA.map(c => {
-    const icon = buIcon(c.id);
-    return `
-    <div class="space ${c.id === selected ? 'open' : ''}" data-id="${c.id}">
-      <div class="space-row ${c.id === selected && screen === 'company' ? 'active' : ''}" data-space="${c.id}">
-        <span class="caret">▶</span>
-        <span class="space-icon bu" style="background:${icon.bg}">${icon.svg}</span>
-        <span class="space-name">${c.name}</span>
-        <span class="space-count">${c.projects.length}</span>
-      </div>
-      <div class="projlist">${c.projects.map(p => `
-        <div class="proj-row" data-pid="${p.id}" title="${esc(p.name)}">
-          <span class="pdot" style="background:${HEALTH[effStatus(p)].color}"></span>
-          <span>${esc(p.name)}</span>
-        </div>
-      `).join('')}</div>
-    </div>`;
-  }).join('');
-  $('spaces').querySelectorAll('.space-row').forEach(r => r.addEventListener('click', () => {
-    const id = r.getAttribute('data-space');
-    if (id === selected && screen === 'company') {
-      r.closest('.space').classList.toggle('open');
-    } else {
-      selected = id;
-      screen = 'company';
-      renderAll();
+    if (loadError) {
+        $('spaces').innerHTML = `<div style="color:var(--zimnat-danger);padding:12px;">⚠️ ${esc(loadError)}</div>`;
+        return;
     }
-  }));
-  $('spaces').querySelectorAll('.proj-row').forEach(r => r.addEventListener('click', e => {
-    e.stopPropagation();
-    openDrawer(r.getAttribute('data-pid'));
-  }));
+    $('navPortfolio').classList.toggle('active', screen === 'portfolio');
+    $('spaces').innerHTML = DATA.map(c => {
+        const icon = buIcon(c.id);
+        return `
+        <div class="space ${c.id === selected ? 'open' : ''}" data-id="${c.id}">
+            <div class="space-row ${c.id === selected && screen === 'company' ? 'active' : ''}" data-space="${c.id}">
+                <span class="caret">▶</span>
+                <span class="space-icon bu" style="background:${icon.bg}">${icon.svg}</span>
+                <span class="space-name">${c.name}</span>
+                <span class="space-count">${c.projects.length}</span>
+            </div>
+            <div class="projlist">${c.projects.map(p => `
+                <div class="proj-row" data-pid="${p.id}" title="${esc(p.name)}">
+                    <span class="pdot" style="background:${HEALTH[effStatus(p)].color}"></span>
+                    <span>${esc(p.name)}</span>
+                </div>
+            `).join('')}</div>
+        </div>`;
+    }).join('');
+    $('spaces').querySelectorAll('.space-row').forEach(r => r.addEventListener('click', () => {
+        const id = r.getAttribute('data-space');
+        if (id === selected && screen === 'company') {
+            r.closest('.space').classList.toggle('open');
+        } else {
+            selected = id;
+            screen = 'company';
+            renderAll();
+        }
+    }));
+    $('spaces').querySelectorAll('.proj-row').forEach(r => r.addEventListener('click', e => {
+        e.stopPropagation();
+        openDrawer(r.getAttribute('data-pid'));
+    }));
 }
 
 function renderHeader() {
-  // Always show all tabs
-  const tabs = ['dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'];
-  const labels = {
-    dashboard: 'Dashboard',
-    list: 'List',
-    board: 'Board',
-    calendar: 'Calendar',
-    gantt: 'Gantt',
-    report: 'Reports',
-    mail: 'Mail'
-  };
-  $('tabs').innerHTML = tabs.map(tab =>
-    `<div class="tab ${currentTab === tab ? 'active' : ''}" data-view="${tab}">${labels[tab]}</div>`
-  ).join('');
+    const tabs = ['dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'];
+    const labels = {
+        dashboard: 'Dashboard',
+        list: 'List',
+        board: 'Board',
+        calendar: 'Calendar',
+        gantt: 'Gantt',
+        report: 'Reports',
+        mail: 'Mail'
+    };
+    $('tabs').innerHTML = tabs.map(tab =>
+        `<div class="tab ${currentTab === tab ? 'active' : ''}" data-view="${tab}">${labels[tab]}</div>`
+    ).join('');
 
-  $('tabs').querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      const viewName = this.dataset.view;
-      currentTab = viewName;
-      $('tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      if (viewName === 'dashboard') {
-        renderContent();
-      } else {
-        loadView(viewName);
-      }
+    $('tabs').querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const viewName = this.dataset.view;
+            currentTab = viewName;
+            $('tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            if (viewName === 'dashboard') {
+                renderContent();
+            } else {
+                loadView(viewName);
+            }
+        });
     });
-  });
 
-  // Set main title
-  if (screen === 'portfolio') {
-    $('mainTitle').textContent = 'Project Management';
-  } else {
-    const c = co(selected);
-    $('mainTitle').textContent = c ? c.name : 'Business Unit';
-  }
+    if (screen === 'portfolio') {
+        $('mainTitle').textContent = 'Project Management';
+    } else {
+        const c = co(selected);
+        $('mainTitle').textContent = c ? c.name : 'Business Unit';
+    }
 }
 
+// 🔥 FIXED: renderToolbar shows ALL users, not just assigned
 function renderToolbar() {
-  // Populate business unit dropdown with database IDs
-  const buSel = document.getElementById('fCompany');
-  if (buSel) {
-    const current = buSel.value;
-    buSel.innerHTML = '<option value="">All business units</option>' +
-      DATA.map(c => `<option value="${c.dbId}">${c.name}</option>`).join('');
-    buSel.value = current;
-  }
-
-  // Populate assignee dropdown with user IDs
-  const assigneeMap = {};
-  allProjects().forEach(p => {
-    if (p.assignee && !assigneeMap[p.assignee]) {
-      assigneeMap[p.assignee] = p.assigneeName || 'Unassigned';
+    if (loadError) return;
+    const sel = document.getElementById('fAssignee');
+    if (sel) {
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">All assignees</option>';
+        USERS.forEach(u => {
+            sel.innerHTML += `<option value="${u.id}">${esc(u.full_name)}</option>`;
+        });
+        sel.value = currentVal;
     }
-  });
-  const sel = document.getElementById('fAssignee');
-  if (sel) {
-    const current = sel.value;
-    sel.innerHTML = '<option value="">All assignees</option>' +
-      Object.entries(assigneeMap).map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join('');
-    sel.value = current;
-  }
+    const buSel = document.getElementById('fCompany');
+    if (buSel) {
+        const current = buSel.value;
+        buSel.innerHTML = '<option value="">All business units</option>' +
+            DATA.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        buSel.value = current;
+    }
 }
 
 function getFiltered(scope) {
-  const q = ($('search')?.value || '').trim().toLowerCase();
-  const fst = $('fStatus')?.value || '';
-  const fco = $('fCompany')?.value || ''; // database ID
-  const fAssignee = $('fAssignee')?.value || ''; // user ID
-  return scope.filter(p => {
-    if (q && !p.name.toLowerCase().includes(q)) return false;
-    if (fst && effStatus(p) !== fst) return false;
-    if (fco && p.companyDbId != fco) return false; // use '!=' to handle string vs int
-    if (fAssignee && p.assignee != fAssignee) return false;
-    return true;
-  });
+    const q = ($('search')?.value || '').trim().toLowerCase();
+    const fst = $('fStatus')?.value || '';
+    const fco = $('fCompany')?.value || '';
+    const fAssignee = $('fAssignee')?.value || '';
+
+    return scope.filter(p => {
+        if (q && !p.name.toLowerCase().includes(q)) return false;
+        if (fst && effStatus(p) !== fst) return false;
+        if (fco && p.company !== fco) return false;
+        if (fAssignee && String(p.assignee_id) !== fAssignee) return false;
+        return true;
+    });
 }
 
 function statBlock(projs) {
-  const c = { ontrack: 0, atrisk: 0, behind: 0, overdue: 0, complete: 0 };
-  projs.forEach(p => c[effStatus(p)]++);
-  const avg = projs.length ? Math.round(projs.reduce((a, p) => a + p.progress, 0) / projs.length) : 0;
-  return { c, avg, total: projs.length };
+    const c = { ontrack: 0, atrisk: 0, behind: 0, overdue: 0, complete: 0 };
+    projs.forEach(p => c[effStatus(p)]++);
+    const avg = projs.length ? Math.round(projs.reduce((a, p) => a + p.progress, 0) / projs.length) : 0;
+    return { c, avg, total: projs.length };
 }
 
 function buIcon(id) {
-  const key = (id || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
-  const icons = {
-    zfs: { bg: '#1a3a5c', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="13" width="3" height="5" rx="0.5"/><rect x="7.5" y="9" width="3" height="9" rx="0.5"/><rect x="13" y="5" width="3" height="13" rx="0.5"/><polyline points="3.5,12 8.5,8 14,4" stroke="#7eb8e8" stroke-width="1.3"/><polyline points="14,4 17,3 16,6" fill="#7eb8e8" stroke="#7eb8e8" stroke-width="0.8"/></svg>` },
-    zam: { bg: '#0a5c6e', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.3)"/><circle cx="10" cy="10" r="5" stroke="rgba(255,255,255,0.15)"/><path d="M4,14 Q7,5 16,6" stroke="#7ee8f0" stroke-width="2"/><circle cx="15.5" cy="6.2" r="1.5" fill="#7ee8f0"/></svg>` },
-    zgi: { bg: '#1a5c2e', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2L3 5v5c0 4 3.2 6.8 7 8 3.8-1.2 7-4 7-8V5L10 2z"/><polyline points="7,10 9,12.5 13,8" stroke="#a8e6c0" stroke-width="1.8"/><path d="M6,5.5h8" stroke="rgba(255,255,255,0.35)" stroke-width="1"/></svg>` },
-    zla: { bg: '#5c1a3a', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 17 C10 17 3 13 3 8a4 4 0 018-1 4 4 0 018 1c0 5-7 9-7 9z" fill="rgba(255,255,255,0.15)"/><circle cx="10" cy="6" r="2" fill="rgba(255,180,160,0.8)" stroke="rgba(255,200,180,0.9)" stroke-width="0.8"/></svg>` },
-    groupprojects: { bg: '#5b8def', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg>` },
-    ictinitiatives: { bg: '#2bb673', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2" y="4" width="16" height="10" rx="1.5"/><path d="M8 8l4 2-4 2V8z" fill="#fff" stroke="none"/><line x1="6" y1="16" x2="14" y2="16" stroke-width="1.2"/><line x1="10" y1="14" x2="10" y2="16" stroke-width="1.2"/></svg>` }
-  };
-  return icons[key] || icons.zfs;
+    const key = (id || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+    const icons = {
+        zfs: { bg: '#1a3a5c', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="13" width="3" height="5" rx="0.5"/><rect x="7.5" y="9" width="3" height="9" rx="0.5"/><rect x="13" y="5" width="3" height="13" rx="0.5"/><polyline points="3.5,12 8.5,8 14,4" stroke="#7eb8e8" stroke-width="1.3"/><polyline points="14,4 17,3 16,6" fill="#7eb8e8" stroke="#7eb8e8" stroke-width="0.8"/></svg>` },
+        zam: { bg: '#0a5c6e', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><circle cx="10" cy="10" r="7.5" stroke="rgba(255,255,255,0.3)"/><circle cx="10" cy="10" r="5" stroke="rgba(255,255,255,0.15)"/><path d="M4,14 Q7,5 16,6" stroke="#7ee8f0" stroke-width="2"/><circle cx="15.5" cy="6.2" r="1.5" fill="#7ee8f0"/></svg>` },
+        zgi: { bg: '#1a5c2e', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2L3 5v5c0 4 3.2 6.8 7 8 3.8-1.2 7-4 7-8V5L10 2z"/><polyline points="7,10 9,12.5 13,8" stroke="#a8e6c0" stroke-width="1.8"/><path d="M6,5.5h8" stroke="rgba(255,255,255,0.35)" stroke-width="1"/></svg>` },
+        zla: { bg: '#5c1a3a', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 17 C10 17 3 13 3 8a4 4 0 018-1 4 4 0 018 1c0 5-7 9-7 9z" fill="rgba(255,255,255,0.15)"/><circle cx="10" cy="6" r="2" fill="rgba(255,180,160,0.8)" stroke="rgba(255,200,180,0.9)" stroke-width="0.8"/></svg>` },
+        groupprojects: { bg: '#5b8def', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2" y="2" width="6" height="6" rx="1"/><rect x="12" y="2" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg>` },
+        ictinitiatives: { bg: '#2bb673', svg: `<svg viewBox="0 0 20 20" fill="none" stroke="#fff" stroke-width="1.6"><rect x="2" y="4" width="16" height="10" rx="1.5"/><path d="M8 8l4 2-4 2V8z" fill="#fff" stroke="none"/><line x1="6" y1="16" x2="14" y2="16" stroke-width="1.2"/><line x1="10" y1="14" x2="10" y2="16" stroke-width="1.2"/></svg>` }
+    };
+    return icons[key] || icons.zfs;
 }
 
-// ----- ENHANCED renderDashboard (portfolio) -----
+// ----- DASHBOARD (portfolio) -----
 function renderDashboard() {
-  const projs = getFiltered(allProjects());
-  const { c, avg, total } = statBlock(projs);
+    if (loadError) {
+        $('content').innerHTML = `<div style="padding:40px;text-align:center;color:var(--zimnat-danger);">⚠️ ${esc(loadError)}</div>`;
+        return;
+    }
+    const projs = getFiltered(allProjects());
+    const { c, avg, total } = statBlock(projs);
 
-  // Statistics cards
-  const stats = [
-    { label: 'Total Projects', value: total, color: '#1a4a7a' },
-    { label: 'On Track', value: c.ontrack, color: HEALTH.ontrack.color },
-    { label: 'Overdue', value: c.overdue, color: HEALTH.overdue.color },
-    { label: 'Behind', value: c.behind, color: HEALTH.behind.color },
-    { label: 'At Risk', value: c.atrisk, color: HEALTH.atrisk.color },
-    { label: 'Complete', value: c.complete, color: HEALTH.complete.color },
-  ];
+    const stats = [
+        { label: 'Total Projects', value: total, color: '#1a4a7a' },
+        { label: 'On Track', value: c.ontrack, color: HEALTH.ontrack.color },
+        { label: 'Overdue', value: c.overdue, color: HEALTH.overdue.color },
+        { label: 'Behind', value: c.behind, color: HEALTH.behind.color },
+        { label: 'At Risk', value: c.atrisk, color: HEALTH.atrisk.color },
+        { label: 'Complete', value: c.complete, color: HEALTH.complete.color },
+    ];
 
-  let html = `<div class="dashboard-grid">`;
-  stats.forEach(stat => {
-    html += `
-      <div class="stat-card" data-drill="${stat.label.toLowerCase().replace(' ', '')}" data-title="${esc(stat.label)}">
-        <div class="stat-number" style="color:${stat.color}">${stat.value}</div>
-        <div class="stat-label"><span class="stat-color-dot" style="background:${stat.color}"></span>${stat.label}</div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  // Ring cards
-  const statusKeys = ['ontrack', 'behind', 'atrisk', 'overdue', 'complete'];
-  const labels = {
-    ontrack: 'On Track',
-    behind: 'Behind',
-    atrisk: 'At Risk',
-    overdue: 'Overdue',
-    complete: 'Complete'
-  };
-  const colors = {
-    ontrack: '#16a34a',
-    behind: '#9ca3af',
-    atrisk: '#f59e0b',
-    overdue: '#dc2626',
-    complete: '#3b82f6'
-  };
-
-  html += `<div class="ring-grid-custom">`;
-  statusKeys.forEach(key => {
-    const count = c[key] || 0;
-    const percent = total ? Math.round((count / total) * 100) : 0;
-    const circumference = 2 * Math.PI * 40;
-    const dash = (percent / 100) * circumference;
-    const offset = circumference - dash;
-
-    html += `
-      <div class="ring-card-custom" data-drill="${key}" data-title="${labels[key]}">
-        <div class="ring-wrapper-custom">
-          <svg width="120" height="120" viewBox="0 0 120 120">
-            <circle cx="60" cy="60" r="40" fill="none" stroke="#e5e7eb" stroke-width="12"/>
-            <circle cx="60" cy="60" r="40" fill="none" stroke="${colors[key]}" stroke-width="12"
-              stroke-dasharray="${dash} ${circumference}"
-              stroke-dashoffset="${offset}"
-              stroke-linecap="round"
-              style="transition: stroke-dashoffset 1s ease;"
-            />
-          </svg>
-          <div class="ring-center-custom">${percent}%<small>${labels[key]}</small></div>
-        </div>
-        <div class="ring-breakdown-custom">
-          <span><span class="dot" style="background:${colors[key]}"></span>${labels[key]}</span>
-          <span>${count} (${percent}%)</span>
-        </div>
-      </div>
-    `;
-  });
-  html += `</div>`;
-
-  // Charts
-  html += `<div class="charts-grid">
-    <div class="chart-card">
-      <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Status Distribution</h4>
-      <canvas id="statusDonutChart"></canvas>
-    </div>
-    <div class="chart-card">
-      <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Progress Distribution</h4>
-      <canvas id="progressBarChart"></canvas>
-    </div>
-  </div>`;
-
-  // Needs attention
-  const attn = projs.filter(p => ['overdue', 'behind', 'atrisk'].includes(effStatus(p)))
-    .sort((a, b) => (a.compDue || '').localeCompare(b.compDue || ''));
-  html += `
-    <div class="sec-title" style="margin:24px 0 12px;padding:0 24px;">Needs Attention (${attn.length})</div>
-    <div class="attn" style="margin:0 24px 24px;">${attn.length ? attn.map(p => `
-      <div class="attn-row" data-pid="${p.id}">
-        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flag(p.prio)} ${esc(p.name)}</span>
-        <span class="co" style="background:${p.companyColor}">${p.companyName}</span>
-        <span class="pill" style="background:${HEALTH[effStatus(p)].color}">${HEALTH[effStatus(p)].label}</span>
-        <span class="due ${p.compDue < TODAY ? 'over' : ''}">Due ${fmt(p.compDue)}</span>
-      </div>
-    `).join('') : `<div style="padding:16px;color:var(--muted)">Nothing flagged. 🎉</div>`}</div>
-  `;
-
-  $('content').innerHTML = html;
-
-  // Render charts
-  renderCharts(c, total, projs);
-
-  // Attach click handlers
-  $('content').querySelectorAll('.stat-card, .ring-card-custom').forEach(el => {
-    el.addEventListener('click', function() {
-      const key = this.dataset.drill;
-      const title = this.dataset.title;
-      openDrill(title, key, projs);
+    let html = `<div class="dashboard-grid">`;
+    stats.forEach(stat => {
+        html += `
+            <div class="stat-card" data-drill="${stat.label.toLowerCase().replace(' ', '')}" data-title="${esc(stat.label)}">
+                <div class="stat-number" style="color:${stat.color}">${stat.value}</div>
+                <div class="stat-label"><span class="stat-color-dot" style="background:${stat.color}"></span>${stat.label}</div>
+            </div>
+        `;
     });
-  });
-  $('content').querySelectorAll('.attn-row').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
+    html += `</div>`;
+
+    const statusKeys = ['ontrack', 'behind', 'atrisk', 'overdue', 'complete'];
+    const labels = {
+        ontrack: 'On Track',
+        behind: 'Behind',
+        atrisk: 'At Risk',
+        overdue: 'Overdue',
+        complete: 'Complete'
+    };
+    const colors = {
+        ontrack: '#16a34a',
+        behind: '#9ca3af',
+        atrisk: '#f59e0b',
+        overdue: '#dc2626',
+        complete: '#3b82f6'
+    };
+
+    html += `<div class="ring-grid-custom">`;
+    statusKeys.forEach(key => {
+        const count = c[key] || 0;
+        const percent = total ? Math.round((count / total) * 100) : 0;
+        const circumference = 2 * Math.PI * 40;
+        const dash = (percent / 100) * circumference;
+        const offset = circumference - dash;
+
+        html += `
+            <div class="ring-card-custom" data-drill="${key}" data-title="${labels[key]}">
+                <div class="ring-wrapper-custom">
+                    <svg width="120" height="120" viewBox="0 0 120 120">
+                        <circle cx="60" cy="60" r="40" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+                        <circle cx="60" cy="60" r="40" fill="none" stroke="${colors[key]}" stroke-width="12"
+                            stroke-dasharray="${dash} ${circumference}"
+                            stroke-dashoffset="${offset}"
+                            stroke-linecap="round"
+                            style="transition: stroke-dashoffset 1s ease;"
+                        />
+                    </svg>
+                    <div class="ring-center-custom">${percent}%<small>${labels[key]}</small></div>
+                </div>
+                <div class="ring-breakdown-custom">
+                    <span><span class="dot" style="background:${colors[key]}"></span>${labels[key]}</span>
+                    <span>${count} (${percent}%)</span>
+                </div>
+            </div>
+        `;
+    });
+    html += `</div>`;
+
+    html += `<div class="charts-grid">
+        <div class="chart-card">
+            <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Status Distribution</h4>
+            <canvas id="statusDonutChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Progress Distribution</h4>
+            <canvas id="progressBarChart"></canvas>
+        </div>
+    </div>`;
+
+    const attn = projs.filter(p => ['overdue', 'behind', 'atrisk'].includes(effStatus(p)) || gateOverdue(p))
+        .sort((a, b) => (a.compDue || '').localeCompare(b.compDue || ''));
+    html += `
+        <div class="sec-title" style="margin:24px 0 12px;padding:0 24px;">Needs Attention (${attn.length})</div>
+        <div class="attn" style="margin:0 24px 24px;">${attn.length ? attn.map(p => `
+            <div class="attn-row" data-pid="${p.id}">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flag(p.prio)} ${esc(p.name)}</span>
+                <span class="co" style="background:${p.companyColor}">${p.companyName}</span>
+                <span class="pill" style="background:${HEALTH[effStatus(p)].color}">${HEALTH[effStatus(p)].label}</span>
+                <span class="due ${p.compDue < TODAY ? 'over' : ''}">Due ${fmt(p.compDue)}</span>
+            </div>
+        `).join('') : `<div style="padding:16px;color:var(--muted)">Nothing flagged. 🎉</div>`}</div>
+    `;
+
+    $('content').innerHTML = html;
+    renderCharts(c, total, projs);
+
+    $('content').querySelectorAll('.stat-card, .ring-card-custom').forEach(el => {
+        el.addEventListener('click', function() {
+            const key = this.dataset.drill;
+            const title = this.dataset.title;
+            openDrill(title, key, projs);
+        });
+    });
+    $('content').querySelectorAll('.attn-row').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
 }
 
-// ----- Chart rendering (embedded) -----
+// ----- CHARTS -----
 function renderCharts(c, total, filteredProjects) {
-  // Donut chart
-  const ctx1 = document.getElementById('statusDonutChart');
-  if (ctx1) {
-    if (window._statusDonut) window._statusDonut.destroy();
-    window._statusDonut = new Chart(ctx1, {
-      type: 'doughnut',
-      data: {
-        labels: ['On Track', 'Behind', 'At Risk', 'Overdue', 'Complete'],
-        datasets: [{
-          data: [c.ontrack || 0, c.behind || 0, c.atrisk || 0, c.overdue || 0, c.complete || 0],
-          backgroundColor: ['#16a34a', '#9ca3af', '#f59e0b', '#dc2626', '#3b82f6'],
-          borderWidth: 1,
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const count = context.parsed;
-                const percent = total ? Math.round((count / total) * 100) : 0;
-                return `${context.label}: ${count} (${percent}%)`;
-              }
+    const ctx1 = document.getElementById('statusDonutChart');
+    if (ctx1) {
+        if (window._statusDonut) window._statusDonut.destroy();
+        window._statusDonut = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['On Track', 'Behind', 'At Risk', 'Overdue', 'Complete'],
+                datasets: [{
+                    data: [c.ontrack || 0, c.behind || 0, c.atrisk || 0, c.overdue || 0, c.complete || 0],
+                    backgroundColor: ['#16a34a', '#9ca3af', '#f59e0b', '#dc2626', '#3b82f6'],
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 10, font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const count = context.parsed;
+                                const percent = total ? Math.round((count / total) * 100) : 0;
+                                return `${context.label}: ${count} (${percent}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%',
             }
-          }
-        },
-        cutout: '65%',
-      }
-    });
-  }
+        });
+    }
 
-  // Bar chart – progress buckets
-  const ctx2 = document.getElementById('progressBarChart');
-  if (ctx2) {
-    if (window._progressBar) window._progressBar.destroy();
-    const buckets = [0, 25, 50, 75, 100];
-    const counts = buckets.map(b => filteredProjects.filter(p => p.progress >= b && p.progress < (b+25)).length);
-    window._progressBar = new Chart(ctx2, {
-      type: 'bar',
-      data: {
-        labels: ['0-24%', '25-49%', '50-74%', '75-99%', '100%'],
-        datasets: [{
-          label: 'Projects',
-          data: counts,
-          backgroundColor: '#3b82f6',
-          borderRadius: 4,
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { beginAtZero: true, grid: { display: false } },
-          y: { grid: { display: false } }
-        }
-      }
-    });
-  }
+    const ctx2 = document.getElementById('progressBarChart');
+    if (ctx2) {
+        if (window._progressBar) window._progressBar.destroy();
+        const buckets = [0, 25, 50, 75, 100];
+        const counts = buckets.map(b => filteredProjects.filter(p => p.progress >= b && p.progress < (b+25)).length);
+        window._progressBar = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['0-24%', '25-49%', '50-74%', '75-99%', '100%'],
+                datasets: [{
+                    label: 'Projects',
+                    data: counts,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { display: false } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+    }
 }
 
-// ----- COMPANY VIEW (original) -----
+// ----- COMPANY VIEW -----
 function renderCompany() {
-  const comp = co(selected);
-  if (!comp) return;
-  const projs = getFiltered(comp.projects);
-  const { c, avg, total } = statBlock(projs);
-  const cards = [
-    ['Projects', total, comp.color, 'all'],
-    ['On Track', c.ontrack, HEALTH.ontrack.color, 'ontrack'],
-    ['Overdue', c.overdue, HEALTH.overdue.color, 'overdue'],
-    ['Behind Schedule', c.behind, HEALTH.behind.color, 'behind'],
-    ['At Risk', c.atrisk, HEALTH.atrisk.color, 'atrisk'],
-    ['Complete', c.complete, HEALTH.complete.color, 'complete']
-  ];
-  const stg = {};
-  STAGES.forEach(s => stg[s.id] = 0);
-  comp.projects.forEach(p => stg[p.stage]++);
-  let html = `<div class="sumwrap" style="padding-bottom:6px"><div class="stat-row">${cards.map(([l, n, col, key]) => `
-      <div class="scard" data-drill="${key}" data-title="${esc(l)}"><div class="n" style="color:${col}">${n}</div><div class="l">${l}</div></div>
-    `).join('')}</div>
-    <div class="sec-title" style="margin:18px 0 10px">Stage Gate Distribution</div>
-    <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">${STAGES.map(s => `<span style="background:var(--bg);padding:4px 12px;border-radius:6px;border:1px solid var(--line)"><b>${stg[s.id]}</b> ${s.label}</span>`).join('')}</div></div>`;
-  $('content').innerHTML = html + (view === 'list' ? listHtml(projs) : boardHtml(projs));
-  $('content').querySelectorAll('.scard[data-drill]').forEach(card => card.addEventListener('click', () => openDrill(`${card.dataset.title} Projects`, card.dataset.drill, projs)));
-  wireList();
-  wireBoard();
+    if (loadError) {
+        $('content').innerHTML = `<div style="padding:40px;text-align:center;color:var(--zimnat-danger);">⚠️ ${esc(loadError)}</div>`;
+        return;
+    }
+    const comp = co(selected);
+    if (!comp) {
+        $('content').innerHTML = `<div style="padding:40px;text-align:center;color:var(--muted);">Select a business unit</div>`;
+        return;
+    }
+    const projs = getFiltered(comp.projects);
+    const { c, avg, total } = statBlock(projs);
+    const cards = [
+        ['Projects', total, comp.color, 'all'],
+        ['On Track', c.ontrack, HEALTH.ontrack.color, 'ontrack'],
+        ['Overdue', c.overdue, HEALTH.overdue.color, 'overdue'],
+        ['Behind Schedule', c.behind, HEALTH.behind.color, 'behind'],
+        ['At Risk', c.atrisk, HEALTH.atrisk.color, 'atrisk'],
+        ['Complete', c.complete, HEALTH.complete.color, 'complete']
+    ];
+    const stg = {};
+    STAGES.forEach(s => stg[s.id] = 0);
+    comp.projects.forEach(p => stg[p.stage]++);
+    let html = `<div class="sumwrap" style="padding-bottom:6px"><div class="stat-row">${cards.map(([l, n, col, key]) => `
+            <div class="scard" data-drill="${key}" data-title="${esc(l)}"><div class="n" style="color:${col}">${n}</div><div class="l">${l}</div></div>
+        `).join('')}</div>
+        <div class="sec-title" style="margin:18px 0 10px">Stage Gate Distribution</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">${STAGES.map(s => `<span style="background:var(--bg);padding:4px 12px;border-radius:6px;border:1px solid var(--line)"><b>${stg[s.id]}</b> ${s.label}</span>`).join('')}</div></div>`;
+    $('content').innerHTML = html + (view === 'list' ? listHtml(projs) : boardHtml(projs));
+    $('content').querySelectorAll('.scard[data-drill]').forEach(card => card.addEventListener('click', () => openDrill(`${card.dataset.title} Projects`, card.dataset.drill, projs)));
+    wireList();
+    wireBoard();
 }
 
+// ----- LIST HTML (with gate overdue) -----
 function listHtml(projs) {
-  let html = `<div class="ltable">`;
-  STAGES.forEach(st => {
-    const items = projs.filter(p => p.stage === st.id);
-    if (!items.length) return;
-    const colKey = selected + st.id;
-    const isCol = collapsed[colKey];
-    html += `<div class="group ${isCol ? 'collapsed' : ''}" data-st="${st.id}"><div class="group-head"><span class="gcaret">▼</span><span class="group-bar" style="background:var(--cu)">${st.label.toUpperCase()}</span><span class="group-count">${items.length}</span></div>
-      <div class="rows"><div class="lh"><span>Project</span><span>Status</span><span>Owner</span><span>Gov</span><span>Gate due</span><span>Completion</span></div>
-      ${items.map(p => { const es = effStatus(p), go = gateOverdue(p); return `<div class="lrow" data-pid="${p.id}"><div class="lname">${flag(p.prio)}<span class="ptxt">${esc(p.name)}</span></div><div><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div><div>${av(p.owner)}</div><div class="gov-mini">${govPct(p)}%</div><div class="due ${go ? 'over' : ''}">${fmt(p.gateDue)}${go ? ' ⚠' : ''}</div><div class="due ${p.compDue < TODAY && es !== 'complete' ? 'over' : ''}">${fmt(p.compDue)}</div></div>`; }).join('')}</div></div>`;
-  });
-  html += `</div>`;
-  return html;
+    let html = `<div class="ltable">`;
+    STAGES.forEach(st => {
+        const items = projs.filter(p => p.stage === st.id);
+        if (!items.length) return;
+        const colKey = selected + st.id;
+        const isCol = collapsed[colKey];
+        html += `<div class="group ${isCol ? 'collapsed' : ''}" data-st="${st.id}"><div class="group-head"><span class="gcaret">▼</span><span class="group-bar" style="background:var(--cu)">${st.label.toUpperCase()}</span><span class="group-count">${items.length}</span></div>
+            <div class="rows"><div class="lh"><span>Project</span><span>Status</span><span>Owner</span><span>Gov</span><span>Gate due</span><span>Completion</span></div>
+            ${items.map(p => { const es = effStatus(p); const gateFlag = gateOverdue(p); return `<div class="lrow" data-pid="${p.id}"><div class="lname">${flag(p.prio)}<span class="ptxt">${esc(p.name)}</span></div><div><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div><div>${av(p.owner)}</div><div class="gov-mini">${govPct(p)}%</div><div class="due ${gateFlag ? 'over' : ''}">${fmt(p.gateDue)}${gateFlag ? ' ⚠' : ''}</div><div class="due ${p.compDue < TODAY && es !== 'complete' ? 'over' : ''}">${fmt(p.compDue)}</div></div>`; }).join('')}</div></div>`;
+    });
+    html += `</div>`;
+    return html;
 }
+
 function wireList() {
-  $('content').querySelectorAll('.group-head').forEach(h => h.addEventListener('click', () => { const st = h.closest('.group').getAttribute('data-st'); collapsed[selected + st] = !collapsed[selected + st]; renderCompany(); }));
-  $('content').querySelectorAll('.lrow').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
+    $('content').querySelectorAll('.group-head').forEach(h => h.addEventListener('click', () => { const st = h.closest('.group').getAttribute('data-st'); collapsed[selected + st] = !collapsed[selected + st]; renderCompany(); }));
+    $('content').querySelectorAll('.lrow').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
 }
 
 function boardHtml(projs) {
-  return `<div class="board">` + STAGES.map(st => {
-    const items = projs.filter(p => p.stage === st.id);
-    return `<div class="col"><div class="col-head"><span class="col-dot" style="background:var(--cu)"></span><span class="ct">${st.label}</span><span class="cc">${items.length}</span></div>
-      <div class="col-body">${items.map(p => { const es = effStatus(p); return `<div class="card" data-pid="${p.id}"><div class="cn">${flag(p.prio)}<span>${esc(p.name)}</span></div><div class="cm">${av(p.owner)}<span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div>`; }).join('') || '<div style="color:var(--muted-2);font-size:12px;padding:4px;text-align:center">—</div>'}</div></div>`;
-  }).join('') + `</div>`;
+    return `<div class="board">` + STAGES.map(st => {
+        const items = projs.filter(p => p.stage === st.id);
+        return `<div class="col"><div class="col-head"><span class="col-dot" style="background:var(--cu)"></span><span class="ct">${st.label}</span><span class="cc">${items.length}</span></div>
+            <div class="col-body">${items.map(p => { const es = effStatus(p); return `<div class="card" data-pid="${p.id}"><div class="cn">${flag(p.prio)}<span>${esc(p.name)}</span></div><div class="cm">${av(p.owner)}<span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div>`; }).join('') || '<div style="color:var(--muted-2);font-size:12px;padding:4px;text-align:center">—</div>'}</div></div>`;
+    }).join('') + `</div>`;
 }
 function wireBoard() {
-  $('content').querySelectorAll('.card').forEach(c => c.addEventListener('click', () => openDrawer(c.getAttribute('data-pid'))));
+    $('content').querySelectorAll('.card').forEach(c => c.addEventListener('click', () => openDrawer(c.getAttribute('data-pid'))));
 }
 
-// ----- VIEW LOADER (AJAX) -----
+// 🔥 FIXED: loadView passes numeric business_unit ID
 function loadView(viewName) {
-  const urlMap = {
-    'list': 'views/list.php',
-    'board': 'views/board.php',
-    'calendar': 'views/calendar.php',
-    'gantt': 'views/gantt.php',
-    'report': 'views/reports.php',
-    'mail': 'views/mail.php'
-  };
-  const url = urlMap[viewName];
-  if (!url) {
-    currentTab = 'dashboard';
-    renderContent();
-    return;
-  }
+    const urlMap = {
+        'list': 'views/list.php',
+        'board': 'views/board.php',
+        'calendar': 'views/calendar.php',
+        'gantt': 'views/gantt.php',
+        'report': 'views/reports.php',
+        'mail': 'views/mail.php'
+    };
+    const url = urlMap[viewName];
+    if (!url) {
+        currentTab = 'dashboard';
+        renderContent();
+        return;
+    }
 
-  const params = new URLSearchParams();
-  const company = document.getElementById('fCompany').value;
-  const status = document.getElementById('fStatus').value;
-  const assignee = document.getElementById('fAssignee').value;
-  if (company) params.append('business_unit', company);
-  if (status) params.append('status', status);
-  if (assignee) params.append('assignee', assignee);
-  // If in company view, pass the selected unit ID
-  if (screen === 'company' && selected) {
-    const comp = co(selected);
-    if (comp) params.append('business_unit', comp.dbId);
-  }
+    const params = new URLSearchParams();
+    const company = document.getElementById('fCompany').value;
+    const status = document.getElementById('fStatus').value;
+    const assignee = document.getElementById('fAssignee').value;
+    if (company) params.append('business_unit', company);
+    if (status) params.append('status', status);
+    if (assignee) params.append('assignee', assignee);
+    if (screen === 'company' && selected) {
+        const unit = co(selected);
+        if (unit) params.append('business_unit', unit.dbId); // 🔥 FIX: send numeric ID
+    }
 
-  fetch(`${url}?${params}`)
-    .then(res => {
-      if (!res.ok) throw new Error('Failed to load view');
-      return res.text();
-    })
-    .then(html => {
-      $('content').innerHTML = html;
-      // Execute scripts in the loaded view (calendar/gantt)
-      $('content').querySelectorAll('script').forEach(script => eval(script.textContent));
-      // Attach click handlers for project rows
-      $('content').querySelectorAll('.project-row, .lrow, .card, .attn-row').forEach(el => {
-        el.addEventListener('click', function(e) {
-          const pid = this.dataset.pid || this.getAttribute('data-pid');
-          if (pid) openDrawer(pid);
+    fetch(`${url}?${params}`)
+        .then(res => {
+            if (!res.ok) throw new Error('Failed to load view');
+            return res.text();
+        })
+        .then(html => {
+            $('content').innerHTML = html;
+            $('content').querySelectorAll('script').forEach(script => eval(script.textContent));
+            $('content').querySelectorAll('.project-row, .lrow, .card, .attn-row').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    const pid = this.dataset.pid || this.getAttribute('data-pid');
+                    if (pid) openDrawer(pid);
+                });
+            });
+            currentTab = viewName;
+        })
+        .catch(err => {
+            $('content').innerHTML = `<div style="padding:20px;color:red;">Error loading view: ${err.message}</div>`;
         });
-      });
-      currentTab = viewName;
-    })
-    .catch(err => {
-      $('content').innerHTML = `<div style="padding:20px;color:red;">Error loading view: ${err.message}</div>`;
-    });
 }
 
 function renderContent() {
-  if (screen === 'portfolio') {
-    if (currentTab === 'dashboard') {
-      renderDashboard();
+    if (screen === 'portfolio') {
+        if (currentTab === 'dashboard') {
+            renderDashboard();
+        } else {
+            loadView(currentTab);
+        }
     } else {
-      loadView(currentTab);
+        if (currentTab === 'dashboard') {
+            renderCompany();
+        } else {
+            loadView(currentTab);
+        }
     }
-  } else {
-    if (currentTab === 'dashboard') {
-      renderCompany();
-    } else {
-      loadView(currentTab);
-    }
-  }
 }
 
+// 🔥 FIXED: renderAll updates the business unit filter dropdown
 function renderAll() {
-  renderSidebar();
-  renderHeader();
-  renderToolbar();
-  renderContent();
+    renderSidebar();
+    renderHeader();
+    renderToolbar();
+    // Set the business unit filter to match the current view
+    const buFilter = document.getElementById('fCompany');
+    if (screen === 'company' && selected) {
+        const unit = co(selected);
+        if (unit) buFilter.value = unit.id;
+    } else {
+        buFilter.value = '';
+    }
+    renderContent();
 }
 
 // ----- DRILL-DOWN -----
 function openDrill(title, statusKey, scope) {
-  const projects = (statusKey === 'all' ? scope : scope.filter(p => effStatus(p) === statusKey)).slice().sort((a, b) => (a.companyName || '').localeCompare(b.companyName || '') || (a.compDue || '').localeCompare(b.compDue || ''));
-  $('drillTitle').textContent = title === 'Projects' ? 'Projects' : `${title} Projects`;
-  $('drillSub').textContent = `${projects.length} project${projects.length !== 1 ? 's' : ''}`;
-  $('drillBody').innerHTML = projects.length ? projects.map(p => { const es = effStatus(p); return `<div class="drill-item" data-pid="${p.id}"><div><div class="drill-title">${esc(p.name)}</div><div class="drill-meta"><span>${esc(p.companyName)}</span><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div><div class="drill-progress">${p.progress}%</div></div>`; }).join('') : `<div class="empty-state">No ${title.toLowerCase()} projects</div>`;
-  $('drillBody').querySelectorAll('.drill-item').forEach(item => item.addEventListener('click', () => { closeDrill(); openDrawer(item.dataset.pid); }));
-  $('drillOverlay').classList.add('open');
-  $('drillPanel').classList.add('open');
+    const projects = (statusKey === 'all' ? scope : scope.filter(p => effStatus(p) === statusKey || (statusKey === 'overdue' && gateOverdue(p)))).slice().sort((a, b) => (a.companyName || '').localeCompare(b.companyName || '') || (a.compDue || '').localeCompare(b.compDue || ''));
+    $('drillTitle').textContent = title === 'Projects' ? 'Projects' : `${title} Projects`;
+    $('drillSub').textContent = `${projects.length} project${projects.length !== 1 ? 's' : ''}`;
+    $('drillBody').innerHTML = projects.length ? projects.map(p => { const es = effStatus(p); return `<div class="drill-item" data-pid="${p.id}"><div><div class="drill-title">${esc(p.name)}</div><div class="drill-meta"><span>${esc(p.companyName)}</span><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div><div class="drill-progress">${p.progress}%</div></div>`; }).join('') : `<div class="empty-state">No ${title.toLowerCase()} projects</div>`;
+    $('drillBody').querySelectorAll('.drill-item').forEach(item => item.addEventListener('click', () => { closeDrill(); openDrawer(item.dataset.pid); }));
+    $('drillOverlay').classList.add('open');
+    $('drillPanel').classList.add('open');
 }
 function closeDrill() {
-  $('drillOverlay').classList.remove('open');
-  $('drillPanel').classList.remove('open');
+    $('drillOverlay').classList.remove('open');
+    $('drillPanel').classList.remove('open');
 }
 $('drillOverlay').addEventListener('click', closeDrill);
 $('drillClose').addEventListener('click', closeDrill);
 
 // ----- DRAWER -----
 function openDrawer(id) {
-  openId = id;
-  drawerTab = 'overview';
-  renderDrawer();
-  $('scrim').classList.add('open');
-  $('drawer').classList.add('open');
+    openId = id;
+    drawerTab = 'overview';
+    renderDrawer();
+    $('scrim').classList.add('open');
+    $('drawer').classList.add('open');
 }
 function closeDrawer() {
-  $('scrim').classList.remove('open');
-  $('drawer').classList.remove('open');
-  openId = null;
+    $('scrim').classList.remove('open');
+    $('drawer').classList.remove('open');
+    openId = null;
 }
 $('scrim').addEventListener('click', closeDrawer);
 $('drClose').addEventListener('click', closeDrawer);
 $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.addEventListener('click', () => { drawerTab = t.getAttribute('data-dt'); renderDrawer(); }));
 
 function renderDrawer() {
-  const p = findP(openId);
-  if (!p) return;
-  $('drCo').textContent = p.companyName;
-  $('drCo').style.background = p.companyColor;
-  $('drName').textContent = p.name;
-  $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-dt') === drawerTab));
-  if (drawerTab === 'overview') drawerOverview(p);
-  else if (drawerTab === 'updates') drawerUpdates(p);
-  else drawerGov(p);
+    const p = findP(openId);
+    if (!p) return;
+    $('drCo').textContent = p.companyName;
+    $('drCo').style.background = p.companyColor;
+    $('drName').textContent = p.name;
+    $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-dt') === drawerTab));
+    if (drawerTab === 'overview') drawerOverview(p);
+    else if (drawerTab === 'updates') drawerUpdates(p);
+    else drawerGov(p);
 }
 
+// 🔥 FIXED: drawerOverview with Create/Delete button and async save
 function drawerOverview(p) {
-  const es = effStatus(p);
-  $('drBody').innerHTML = `
-    <div class="fld"><label>Assigned To</label><input id="e-owner" value="${esc(p.owner)}"></div>
-    ${es === 'overdue' ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Completion date has passed — this project is overdue.</div>` : ''}
-    <div class="fld"><label>Project name</label><input id="e-name" value="${esc(p.name)}"></div>
-    <div class="two">
-      <div class="fld"><label>Priority</label><select id="e-prio">${Object.keys(PRIO).map(k => `<option value="${k}" ${p.prio === k ? 'selected' : ''}>${k[0].toUpperCase() + k.slice(1)}</option>`).join('')}</select></div>
-      <div class="fld"><label>Stage gate</label><select id="e-stage">${STAGES.map(s => `<option value="${s.id}" ${p.stage === s.id ? 'selected' : ''}>${s.label}</option>`).join('')}</select></div>
-    </div>
-    <div class="two">
-      <div class="fld"><label>Status</label><select id="e-health">${['ontrack', 'atrisk', 'behind', 'complete'].map(k => `<option value="${k}" ${p.health === k ? 'selected' : ''}>${HEALTH[k].label}</option>`).join('')}</select></div>
-      <div class="fld"><label>Assignee</label><select id="e-assignee"><option value="">None</option></select></div>
-    </div>
-    <div class="two">
-      <div class="fld"><label>Stage gate due date</label><input type="date" id="e-gate" value="${p.gateDue || ''}"></div>
-      <div class="fld"><label>Project completion date</label><input type="date" id="e-comp" value="${p.compDue || ''}"></div>
-    </div>
-    <div class="fld">
-      <label>Progress — <span id="pv">${p.progress}</span>%</label>
-      <div class="rng"><input type="range" id="e-prog" min="0" max="100" value="${p.progress}"></div>
-    </div>
-    <p style="font-size:12px;color:var(--muted)">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue is detected automatically).</p>
-    <p style="margin-top:18px"><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>
-  `;
-  // Populate assignee dropdown with users from the system (all users)
-  const assignees = [...new Set(allProjects().map(p => p.owner).filter(Boolean))];
-  const sel = document.getElementById('e-assignee');
-  sel.innerHTML = '<option value="">None</option>' + assignees.map(a => `<option value="${esc(a)}" ${p.assignee === a ? 'selected' : ''}>${esc(a)}</option>`).join('');
-  const upd = (k, v, patch = null) => { p[k] = v; renderSidebar(); renderContent(); persistProject(p, patch || {}).catch(err => alert(err.message)); };
-  document.getElementById('e-owner').addEventListener('change', e => upd('owner', e.target.value, { owner: e.target.value }));
-  document.getElementById('e-name').addEventListener('change', e => upd('name', e.target.value, { name: e.target.value }));
-  document.getElementById('e-prio').addEventListener('change', e => upd('prio', e.target.value, { priority: e.target.value }));
-  document.getElementById('e-stage').addEventListener('change', e => upd('stage', e.target.value, { stage: e.target.value }));
-  document.getElementById('e-health').addEventListener('change', e => { upd('health', e.target.value, { status: e.target.value }); drawerOverview(p); });
-  document.getElementById('e-assignee').addEventListener('change', e => upd('assignee', e.target.value, { assignee: e.target.value }));
-  document.getElementById('e-gate').addEventListener('change', e => upd('gateDue', e.target.value, { gate_due: e.target.value || null }));
-  document.getElementById('e-comp').addEventListener('change', e => { upd('compDue', e.target.value, { completion_due: e.target.value || null }); drawerOverview(p); });
-  document.getElementById('e-prog').addEventListener('input', e => { p.progress = +e.target.value; document.getElementById('pv').textContent = e.target.value; });
-  document.getElementById('e-prog').addEventListener('change', e => { renderSidebar(); renderContent(); persistProject(p, { progress: +e.target.value }).catch(err => alert(err.message)); });
-  document.getElementById('e-del').addEventListener('click', async () => {
-    if (!confirm('Delete this project? This cannot be undone.')) return;
-    try {
-      await apiRequest(`api/projects/delete.php?id=${encodeURIComponent(p.id)}`, { method: 'DELETE', headers: {} });
-      const c = co(p.company);
-      c.projects = c.projects.filter(x => x.id !== p.id);
-      closeDrawer();
-      renderAll();
-    } catch (err) { alert(err.message); }
-  });
+    const es = effStatus(p);
+    const gateFlag = gateOverdue(p);
+    const isNew = p.id.includes('-n');
+
+    let html = `
+        <div class="fld"><label>Assigned To (Owner)</label><input id="e-owner" value="${esc(p.owner)}"></div>
+        ${gateFlag ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Stage gate due date has passed!</div>` : ''}
+        ${es === 'overdue' ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Completion date has passed — this project is overdue.</div>` : ''}
+        <div class="fld"><label>Project name <span style="color:red;">*</span></label><input id="e-name" value="${esc(p.name)}" ${isNew ? 'required' : ''}></div>
+        <div class="two">
+            <div class="fld"><label>Priority</label><select id="e-prio">${Object.keys(PRIO).map(k => `<option value="${k}" ${p.prio === k ? 'selected' : ''}>${k[0].toUpperCase() + k.slice(1)}</option>`).join('')}</select></div>
+            <div class="fld"><label>Stage gate</label><select id="e-stage">${STAGES.map(s => `<option value="${s.id}" ${p.stage === s.id ? 'selected' : ''}>${s.label}</option>`).join('')}</select></div>
+        </div>
+        <div class="two">
+            <div class="fld"><label>Status</label><select id="e-health">${['ontrack', 'atrisk', 'behind', 'complete'].map(k => `<option value="${k}" ${p.health === k ? 'selected' : ''}>${HEALTH[k].label}</option>`).join('')}</select></div>
+            <div class="fld"><label>Assignee (User)</label><select id="e-assignee"><option value="">None</option>${USERS.map(u => `<option value="${u.id}" ${p.assignee_id == u.id ? 'selected' : ''}>${esc(u.full_name)}</option>`).join('')}</select></div>
+        </div>
+        <div class="two">
+            <div class="fld"><label>Stage gate due date</label><input type="date" id="e-gate" value="${p.gateDue || ''}"></div>
+            <div class="fld"><label>Project completion date</label><input type="date" id="e-comp" value="${p.compDue || ''}"></div>
+        </div>
+        <div class="fld">
+            <label>Progress — <span id="pv">${p.progress}</span>%</label>
+            <div class="rng"><input type="range" id="e-prog" min="0" max="100" value="${p.progress}"></div>
+        </div>
+        <p style="font-size:12px;color:var(--muted)">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue & Gate overdue are detected automatically).</p>
+    `;
+
+    if (isNew) {
+        html += `<p style="margin-top:18px"><button class="pill-btn primary" id="e-create">Create Project</button></p>`;
+    } else {
+        html += `<p style="margin-top:18px"><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>`;
+    }
+
+    $('drBody').innerHTML = html;
+
+    // 🔥 Async upd function
+    const upd = async (k, v, patch = null) => {
+        p[k] = v;
+        try {
+            await persistProject(p, patch || {});
+        } catch (err) {
+            alert('Update failed: ' + err.message);
+        }
+    };
+
+    // Bind events
+    document.getElementById('e-owner').addEventListener('change', e => upd('owner', e.target.value, { owner: e.target.value }));
+    document.getElementById('e-name').addEventListener('change', e => upd('name', e.target.value, { name: e.target.value }));
+    document.getElementById('e-prio').addEventListener('change', e => upd('prio', e.target.value, { priority: e.target.value }));
+    document.getElementById('e-stage').addEventListener('change', e => upd('stage', e.target.value, { stage: e.target.value }));
+    document.getElementById('e-health').addEventListener('change', e => { upd('health', e.target.value, { status: e.target.value }); });
+    document.getElementById('e-assignee').addEventListener('change', e => upd('assignee_id', e.target.value ? parseInt(e.target.value) : null, { assignee_id: e.target.value || null }));
+    document.getElementById('e-gate').addEventListener('change', e => upd('gateDue', e.target.value, { gate_due: e.target.value || null }));
+    document.getElementById('e-comp').addEventListener('change', e => { upd('compDue', e.target.value, { completion_due: e.target.value || null }); });
+    document.getElementById('e-prog').addEventListener('input', e => { p.progress = +e.target.value; document.getElementById('pv').textContent = e.target.value; });
+    document.getElementById('e-prog').addEventListener('change', e => { upd('progress', +e.target.value, { progress: +e.target.value }); });
+
+    if (isNew) {
+        document.getElementById('e-create').addEventListener('click', async () => {
+            const name = document.getElementById('e-name').value.trim();
+            if (!name) { alert('Project name is required.'); return; }
+            const data = {
+                name: name,
+                business_unit_id: p.companyDbId,
+                stage: document.getElementById('e-stage').value,
+                status: document.getElementById('e-health').value,
+                owner: document.getElementById('e-owner').value,
+                priority: document.getElementById('e-prio').value,
+                assignee_id: document.getElementById('e-assignee').value || null,
+                gate_due: document.getElementById('e-gate').value || null,
+                completion_due: document.getElementById('e-comp').value || null,
+                progress: parseInt(document.getElementById('e-prog').value) || 0,
+                current_update: document.getElementById('e-upd')?.value || '',
+                next_steps: document.getElementById('e-next')?.value || ''
+            };
+            try {
+                const response = await apiRequest('api/projects/create.php', { method: 'POST', body: JSON.stringify(data) });
+                const realId = response.id || response.data?.id;
+                if (realId) {
+                    const c = co(p.company);
+                    c.projects = c.projects.filter(x => x.id !== p.id);
+                    const newProject = mapApiProject({ ...data, id: realId, ...response.data });
+                    c.projects.push(newProject);
+                    closeDrawer();
+                    openDrawer(realId);
+                    renderAll();
+                }
+            } catch (err) { alert('Creation failed: ' + err.message); }
+        });
+    } else {
+        document.getElementById('e-del').addEventListener('click', async () => {
+            if (!confirm('Delete this project? This cannot be undone.')) return;
+            try {
+                await apiRequest(`api/projects/delete.php?id=${encodeURIComponent(p.id)}`, { method: 'DELETE', headers: {} });
+                const c = co(p.company);
+                c.projects = c.projects.filter(x => x.id !== p.id);
+                closeDrawer();
+                renderAll();
+            } catch (err) { alert(err.message); }
+        });
+    }
 }
 
 function drawerUpdates(p) {
-  $('drBody').innerHTML = `
-    <div class="fld"><label>Current update / comment</label><textarea id="e-upd" placeholder="Where things stand right now…">${esc(p.currentUpdate)}</textarea></div>
-    <div class="fld"><label>Next steps</label><textarea id="e-next" placeholder="What happens next, and who owns it…">${esc(p.nextSteps)}</textarea></div>
-    <div class="save-row"><button class="pill-btn primary" id="e-save">Save Update</button><span class="saved-tag" id="savedTag">Saved ✓</span></div>
-  `;
-  document.getElementById('e-save').addEventListener('click', async () => {
-    p.currentUpdate = document.getElementById('e-upd').value;
-    p.nextSteps = document.getElementById('e-next').value;
-    try { await persistProject(p, { current_update: p.currentUpdate, next_steps: p.nextSteps }); } catch (err) { alert(err.message); return; }
-    const t = document.getElementById('savedTag');
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1600);
-  });
+    fetch(`api/projects/history.php?id=${p.id}`)
+        .then(res => res.json())
+        .then(data => {
+            const historyHtml = data.data.map(h => `
+                <div style="border-bottom:1px solid var(--line);padding:8px 0;font-size:13px;">
+                    <div style="font-weight:500;">${esc(h.update_text)}</div>
+                    <div style="display:flex;gap:12px;color:var(--muted);font-size:12px;">
+                        <span>${esc(h.full_name)}</span>
+                        <span>${new Date(h.created_at).toLocaleString()}</span>
+                    </div>
+                    ${h.next_steps ? `<div style="color:var(--muted-2);font-style:italic;margin-top:4px;">Next: ${esc(h.next_steps)}</div>` : ''}
+                </div>
+            `).join('') || '<div style="color:var(--muted);padding:12px 0;">No previous updates.</div>';
+
+            const container = document.getElementById('drBody');
+            container.innerHTML = `
+                <div class="fld"><label>Current update / comment</label><textarea id="e-upd" placeholder="Where things stand right now…">${esc(p.currentUpdate)}</textarea></div>
+                <div class="fld"><label>Next steps</label><textarea id="e-next" placeholder="What happens next, and who owns it…">${esc(p.nextSteps)}</textarea></div>
+                <div class="save-row"><button class="pill-btn primary" id="e-save">Save Update</button><span class="saved-tag" id="savedTag">Saved ✓</span></div>
+                <div style="margin-top:24px;border-top:2px solid var(--line);padding-top:16px;">
+                    <h4 style="font-size:14px;font-weight:600;margin-bottom:12px;">📜 History</h4>
+                    ${historyHtml}
+                </div>
+            `;
+            document.getElementById('e-save').addEventListener('click', async () => {
+                p.currentUpdate = document.getElementById('e-upd').value;
+                p.nextSteps = document.getElementById('e-next').value;
+                try { await persistProject(p, { current_update: p.currentUpdate, next_steps: p.nextSteps }); } catch (err) { alert(err.message); return; }
+                const t = document.getElementById('savedTag');
+                t.classList.add('show');
+                setTimeout(() => t.classList.remove('show'), 1600);
+                drawerUpdates(p);
+            });
+        })
+        .catch(err => {
+            console.error('Failed to load history', err);
+            document.getElementById('drBody').innerHTML = `<div style="color:red;">Error loading history</div>`;
+        });
 }
 
 function drawerGov(p) {
-  let html = `<div class="gov-overall"><span>Governance <b>${govPct(p)}%</b> signed off</span><div class="bar"><i style="width:${govPct(p)}%"></i></div></div>`;
-  STAGES.forEach((s, i) => {
-    const items = GOVERNANCE.filter(g => g.stage === s.id);
-    html += `<div class="gstage"><div class="gstage-h"><span class="num">${i + 1}</span>${s.label}${p.stage === s.id ? '<span class="cur-tag">CURRENT</span>' : ''}</div>`;
-    html += items.length ? items.map(it => `<div class="gitem"><span class="gname">${it.label}</span><select data-gid="${it.id}">${Object.entries(GOV_ST).map(([k, v]) => `<option value="${k}" ${p.governance[it.id] === k ? 'selected' : ''}>${v.l}</option>`).join('')}</select></div>`).join('') : `<div class="none">No formal deliverable at this gate.</div>`;
-    html += `</div>`;
-  });
-  $('drBody').innerHTML = html;
-  $('drBody').querySelectorAll('select[data-gid]').forEach(sel => {
-    const setColor = () => { sel.style.color = GOV_ST[sel.value].c; };
-    setColor();
-    sel.addEventListener('change', () => {
-      const gid = sel.getAttribute('data-gid');
-      p.governance[gid] = sel.value;
-      setColor();
-      renderSidebar();
-      renderContent();
-      apiRequest('api/governance/update.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, item_key: apiGovKey(gid), status: apiGovStatus(sel.value) }) }).catch(err => alert(err.message));
-      drawerGov(p);
+    let html = `<div class="gov-overall"><span>Governance <b>${govPct(p)}%</b> signed off</span><div class="bar"><i style="width:${govPct(p)}%"></i></div></div>`;
+    STAGES.forEach((s, i) => {
+        const items = GOVERNANCE.filter(g => g.stage === s.id);
+        html += `<div class="gstage"><div class="gstage-h"><span class="num">${i + 1}</span>${s.label}${p.stage === s.id ? '<span class="cur-tag">CURRENT</span>' : ''}</div>`;
+        html += items.length ? items.map(it => `<div class="gitem"><span class="gname">${it.label}</span><select data-gid="${it.id}">${Object.entries(GOV_ST).map(([k, v]) => `<option value="${k}" ${p.governance[it.id] === k ? 'selected' : ''}>${v.l}</option>`).join('')}</select></div>`).join('') : `<div class="none">No formal deliverable at this gate.</div>`;
+        html += `</div>`;
     });
-  });
+    $('drBody').innerHTML = html;
+    $('drBody').querySelectorAll('select[data-gid]').forEach(sel => {
+        const setColor = () => { sel.style.color = GOV_ST[sel.value].c; };
+        setColor();
+        sel.addEventListener('change', () => {
+            const gid = sel.getAttribute('data-gid');
+            p.governance[gid] = sel.value;
+            setColor();
+            renderSidebar();
+            renderContent();
+            apiRequest('api/governance/update.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, item_key: apiGovKey(gid), status: apiGovStatus(sel.value) }) }).catch(err => alert(err.message));
+            drawerGov(p);
+        });
+    });
 }
 
 // ----- NAVIGATION -----
 $('navPortfolio').addEventListener('click', () => {
-  screen = 'portfolio';
-  selected = null;
-  currentTab = 'dashboard';
-  renderAll();
+    screen = 'portfolio';
+    selected = null;
+    currentTab = 'dashboard';
+    renderAll();
 });
-
-// Business unit clicks are handled in renderSidebar
-
-function renderAll() {
-  renderSidebar();
-  renderHeader();
-  renderToolbar();
-  renderContent();
-}
 
 // ----- ADD PROJECT -----
 $('addProjectBtn').addEventListener('click', async () => {
-  const cid = (screen === 'company' && selected) ? selected : DATA[0].id;
-  const c = co(cid);
-  if (!c) return;
-  const np = {
-    id: cid + '-n' + uid(),
-    company: cid,
-    companyDbId: c.dbId,
-    companyName: c.name,
-    companyColor: c.color,
-    name: 'Untitled Project',
-    stage: 'initiation',
-    health: 'ontrack',
-    owner: '',
-    prio: 'normal',
-    gateDue: '',
-    compDue: '',
-    progress: 0,
-    currentUpdate: '',
-    nextSteps: '',
-    governance: seedGov('initiation', false)
-  };
-  try {
-    if (c.dbId) {
-      const payload = await apiRequest('api/projects/create.php', {
-        method: 'POST',
-        body: JSON.stringify({ name: np.name, business_unit_id: c.dbId, stage: np.stage, status: np.health, owner: np.owner, priority: np.prio, progress: np.progress })
-      });
-      np.id = payload.id || payload.data?.id || np.id;
+    if (loadError || DATA.length === 0) {
+        alert('Cannot add project – data not loaded.');
+        return;
     }
+    const cid = (screen === 'company' && selected) ? selected : DATA[0].id;
+    const c = co(cid);
+    if (!c) return;
+    const np = {
+        id: cid + '-n' + uid(),
+        company: cid,
+        companyDbId: c.dbId,
+        companyName: c.name,
+        companyColor: c.color,
+        name: '',
+        stage: 'initiation',
+        health: 'ontrack',
+        owner: '',
+        assignee_id: null,
+        prio: 'normal',
+        gateDue: '',
+        compDue: '',
+        progress: 0,
+        currentUpdate: '',
+        nextSteps: '',
+        is_gate_overdue: 0,
+        governance: Object.fromEntries(GOVERNANCE.map(g => [g.id, 'pending']))
+    };
     c.projects.push(np);
-  } catch (err) { alert(err.message); return; }
-  selected = cid;
-  screen = 'company';
-  renderAll();
-  openDrawer(np.id);
-  setTimeout(() => { const el = document.getElementById('e-name'); if (el) { el.focus(); el.select(); } }, 150);
+    selected = cid;
+    screen = 'company';
+    renderAll();
+    openDrawer(np.id);
+    setTimeout(() => { const el = document.getElementById('e-name'); if (el) { el.focus(); el.select(); } }, 150);
 });
 
 // ----- IMPORT, EXPORT, SHARE -----
 function initImport() {
-  const overlay = document.getElementById('importOverlay');
-  document.getElementById('importBtn').addEventListener('click', () => overlay.classList.add('open'));
-  document.getElementById('importClose').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
-  document.getElementById('importCancelBtn').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) { overlay.classList.remove('open'); resetImport(); } });
-  function resetImport() {
-    document.getElementById('importFile').value = '';
-    document.getElementById('dzFileName').style.display = 'none';
-    document.getElementById('dzFileName').textContent = '';
-    document.getElementById('dropZone').classList.remove('file-selected');
-    document.getElementById('importConfirmBtn').disabled = true;
-    document.getElementById('importConfirmBtn').style.opacity = '0.5';
-    document.getElementById('importConfirmBtn').style.cursor = 'not-allowed';
-  }
-  document.getElementById('importFile').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      document.getElementById('dzFileName').textContent = '✓ ' + file.name;
-      document.getElementById('dzFileName').style.display = 'block';
-      document.getElementById('dropZone').classList.add('file-selected');
-      document.getElementById('importConfirmBtn').disabled = false;
-      document.getElementById('importConfirmBtn').style.opacity = '1';
-      document.getElementById('importConfirmBtn').style.cursor = 'pointer';
+    const overlay = document.getElementById('importOverlay');
+    document.getElementById('importBtn').addEventListener('click', () => overlay.classList.add('open'));
+    document.getElementById('importClose').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
+    document.getElementById('importCancelBtn').addEventListener('click', () => { overlay.classList.remove('open'); resetImport(); });
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) { overlay.classList.remove('open'); resetImport(); } });
+    function resetImport() {
+        document.getElementById('importFile').value = '';
+        document.getElementById('dzFileName').style.display = 'none';
+        document.getElementById('dzFileName').textContent = '';
+        document.getElementById('dropZone').classList.remove('file-selected');
+        document.getElementById('importConfirmBtn').disabled = true;
+        document.getElementById('importConfirmBtn').style.opacity = '0.5';
+        document.getElementById('importConfirmBtn').style.cursor = 'not-allowed';
     }
-  });
-  const dropZone = document.getElementById('dropZone');
-  dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.csv'))) {
-      document.getElementById('dzFileName').textContent = '✓ ' + file.name;
-      document.getElementById('dzFileName').style.display = 'block';
-      document.getElementById('dropZone').classList.add('file-selected');
-      document.getElementById('importConfirmBtn').disabled = false;
-      document.getElementById('importConfirmBtn').style.opacity = '1';
-      document.getElementById('importConfirmBtn').style.cursor = 'pointer';
-    } else alert('Please upload a .xlsx or .csv file.');
-  });
-  document.getElementById('importConfirmBtn').addEventListener('click', () => {
-    const fileInput = document.getElementById('importFile');
-    const file = fileInput.files[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    fetch('api/import/excel.php', { method: 'POST', body: formData, credentials: 'same-origin' })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message || data.error || 'Import completed');
-        if (data.status === 'success') {
-          overlay.classList.remove('open');
-          resetImport();
-          loadData();
+    document.getElementById('importFile').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            document.getElementById('dzFileName').textContent = '✓ ' + file.name;
+            document.getElementById('dzFileName').style.display = 'block';
+            document.getElementById('dropZone').classList.add('file-selected');
+            document.getElementById('importConfirmBtn').disabled = false;
+            document.getElementById('importConfirmBtn').style.opacity = '1';
+            document.getElementById('importConfirmBtn').style.cursor = 'pointer';
         }
-      }).catch(err => alert('Import error: ' + err.message));
-  });
+    });
+    const dropZone = document.getElementById('dropZone');
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.csv'))) {
+            document.getElementById('dzFileName').textContent = '✓ ' + file.name;
+            document.getElementById('dzFileName').style.display = 'block';
+            document.getElementById('dropZone').classList.add('file-selected');
+            document.getElementById('importConfirmBtn').disabled = false;
+            document.getElementById('importConfirmBtn').style.opacity = '1';
+            document.getElementById('importConfirmBtn').style.cursor = 'pointer';
+        } else alert('Please upload a .xlsx or .csv file.');
+    });
+    document.getElementById('importConfirmBtn').addEventListener('click', () => {
+        const fileInput = document.getElementById('importFile');
+        const file = fileInput.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append('file', file);
+        fetch('api/import/excel.php', { method: 'POST', body: formData, credentials: 'same-origin' })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || data.error || 'Import completed');
+                if (data.status === 'success') {
+                    overlay.classList.remove('open');
+                    resetImport();
+                    loadData();
+                }
+            }).catch(err => alert('Import error: ' + err.message));
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Export dropdown toggle
-  document.addEventListener('click', function(e) {
-    const menu = document.getElementById('exportMenu');
-    if (e.target.closest('#exportDropdownBtn')) {
-      menu.classList.toggle('show');
-    } else if (!e.target.closest('.dropdown')) {
-      menu.classList.remove('show');
-    }
-  });
-  // Export links
-  document.querySelectorAll('#exportMenu a[data-export]').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
-      const type = this.dataset.export;
-      if (type === 'print') {
-        window.print();
-      } else {
-        const params = new URLSearchParams();
-        const search = document.getElementById('search').value;
-        const company = document.getElementById('fCompany').value;
-        const status = document.getElementById('fStatus').value;
-        const assignee = document.getElementById('fAssignee').value;
-        if (search) params.append('search', search);
-        if (company) params.append('unit', company);
-        if (status) params.append('status', status);
-        if (assignee) params.append('assignee', assignee);
-        window.location.href = `api/export/${type}.php?${params.toString()}`;
-      }
-      document.getElementById('exportMenu').classList.remove('show');
+    document.addEventListener('click', function(e) {
+        const menu = document.getElementById('exportMenu');
+        if (e.target.closest('#exportDropdownBtn')) {
+            menu.classList.toggle('show');
+        } else if (!e.target.closest('.dropdown')) {
+            menu.classList.remove('show');
+        }
     });
-  });
-  // Share
-  document.getElementById('shareBtn').addEventListener('click', function() {
-    fetch('api/share/create.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ report_type: 'portfolio', expires_in: 7 }),
-      credentials: 'same-origin'
-    }).then(res => res.json()).then(data => {
-      if (data.status === 'success') alert('Shareable link:\n' + data.url);
-      else alert('Error creating share link: ' + (data.error || 'Unknown error'));
-    }).catch(err => alert('Share error: ' + err.message));
-  });
-  initImport();
+    document.querySelectorAll('#exportMenu a[data-export]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const type = this.dataset.export;
+            if (type === 'print') {
+                window.print();
+            } else {
+                const params = new URLSearchParams();
+                const search = document.getElementById('search').value;
+                const company = document.getElementById('fCompany').value;
+                const status = document.getElementById('fStatus').value;
+                const assignee = document.getElementById('fAssignee').value;
+                if (search) params.append('search', search);
+                if (company) params.append('unit', company);
+                if (status) params.append('status', status);
+                if (assignee) params.append('assignee', assignee);
+                window.location.href = `api/export/${type}.php?${params.toString()}`;
+            }
+            document.getElementById('exportMenu').classList.remove('show');
+        });
+    });
+    document.getElementById('shareBtn').addEventListener('click', function() {
+        fetch('api/share/create.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ report_type: 'portfolio', expires_in: 7 }),
+            credentials: 'same-origin'
+        }).then(res => res.json()).then(data => {
+            if (data.status === 'success') alert('Shareable link:\n' + data.url);
+            else alert('Error creating share link: ' + (data.error || 'Unknown error'));
+        }).catch(err => alert('Share error: ' + err.message));
+    });
+    initImport();
 
-  // Filter change events
-  document.getElementById('fCompany').addEventListener('change', function() {
-    if (currentTab === 'dashboard') renderContent();
-    else loadView(currentTab);
-  });
-  document.getElementById('fStatus').addEventListener('change', function() {
-    if (currentTab === 'dashboard') renderContent();
-    else loadView(currentTab);
-  });
-  document.getElementById('fAssignee').addEventListener('change', function() {
-    if (currentTab === 'dashboard') renderContent();
-    else loadView(currentTab);
-  });
+    document.getElementById('fCompany').addEventListener('change', function() {
+        if (currentTab === 'dashboard') renderContent();
+        else loadView(currentTab);
+    });
+    document.getElementById('fStatus').addEventListener('change', function() {
+        if (currentTab === 'dashboard') renderContent();
+        else loadView(currentTab);
+    });
+    document.getElementById('fAssignee').addEventListener('change', function() {
+        if (currentTab === 'dashboard') renderContent();
+        else loadView(currentTab);
+    });
 });
 
 // ----- INIT -----
-function initApp() {
-  loadData();
+async function initApp() {
+    await loadData();
 }
-
-const origLoadData = loadData;
-loadData = async function() {
-  await origLoadData();
-  renderToolbar();
-};
-
-initApp();
-console.log('🏢 Zimnat Project Management Portal loaded successfully!');
 </script>
 </body>
 </html>

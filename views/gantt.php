@@ -5,9 +5,9 @@ use App\Config\Database;
 $db = Database::getInstance();
 $conn = $db->getConnection();
 
-$assignee = $_GET['assignee'] ?? null;
-$status = $_GET['status'] ?? null;
-$business_unit = $_GET['business_unit'] ?? null;
+$assignee = isset($_GET['assignee']) ? (int)$_GET['assignee'] : null;
+$status = isset($_GET['status']) ? $_GET['status'] : null;
+$business_unit = isset($_GET['business_unit']) ? (int)$_GET['business_unit'] : null;
 
 $sql = "
     SELECT 

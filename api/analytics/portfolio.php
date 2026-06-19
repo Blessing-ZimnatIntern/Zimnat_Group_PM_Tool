@@ -42,7 +42,11 @@ try {
             CASE 
                 WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
                 ELSE p.status
-            END AS effective_status
+            END AS effective_status,
+            CASE 
+                WHEN p.gate_due < CURDATE() AND p.status != 'complete' THEN 1
+                ELSE 0
+            END AS is_gate_overdue
         FROM projects p
         JOIN business_units b ON p.business_unit_id = b.id
         $where
@@ -70,11 +74,13 @@ try {
     ];
 
     $total_progress = 0;
+    $gate_overdue_count = 0;
 
     foreach ($projects as $project) {
         $status = $project['effective_status'];
         $stats['by_status'][$status]++;
         $total_progress += (int)$project['progress'];
+        if ((int)$project['is_gate_overdue'] === 1) $gate_overdue_count++;
 
         // Group by business unit
         $bu = $project['business_unit_name'];
@@ -86,17 +92,20 @@ try {
                 'total' => 0,
                 'complete' => 0,
                 'overdue' => 0,
-                'total_progress' => 0
+                'total_progress' => 0,
+                'gate_overdue' => 0
             ];
         }
         $stats['by_business_unit'][$bu]['total']++;
         if ($status === 'complete') $stats['by_business_unit'][$bu]['complete']++;
         if ($status === 'overdue') $stats['by_business_unit'][$bu]['overdue']++;
+        if ((int)$project['is_gate_overdue'] === 1) $stats['by_business_unit'][$bu]['gate_overdue']++;
         $stats['by_business_unit'][$bu]['total_progress'] += (int)$project['progress'];
     }
 
     // Calculate averages
     $stats['avg_progress'] = $stats['total'] > 0 ? round($total_progress / $stats['total']) : 0;
+    $stats['gate_overdue_total'] = $gate_overdue_count;
     foreach ($stats['by_business_unit'] as &$bu) {
         $bu['avg_progress'] = $bu['total'] > 0 ? round($bu['total_progress'] / $bu['total']) : 0;
         $bu['completion_rate'] = $bu['total'] > 0 ? round(($bu['complete'] / $bu['total']) * 100) : 0;
@@ -104,7 +113,7 @@ try {
 
     // Get needs attention projects
     $attention = array_filter($projects, function($p) {
-        return in_array($p['effective_status'], ['overdue', 'behind', 'atrisk']);
+        return in_array($p['effective_status'], ['overdue', 'behind', 'atrisk']) || (int)$p['is_gate_overdue'] === 1;
     });
     usort($attention, function($a, $b) {
         return strcmp($a['completion_due'] ?? '9999-12-31', $b['completion_due'] ?? '9999-12-31');

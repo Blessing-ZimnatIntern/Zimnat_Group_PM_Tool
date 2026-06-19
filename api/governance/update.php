@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../helpers/ProjectHelper.php';
 
 use App\Config\Database;
 use App\Middleware\Auth;
@@ -24,15 +25,18 @@ try {
     $conn = Database::getInstance()->getConnection();
     $conn->begin_transaction();
 
-    $projectStmt = $conn->prepare("SELECT id FROM projects WHERE id = ?");
+    // 1. Validate project
+    $projectStmt = $conn->prepare("SELECT id, stage FROM projects WHERE id = ?");
     $projectStmt->bind_param("s", $projectId);
     $projectStmt->execute();
-    if (!$projectStmt->get_result()->fetch_assoc()) {
+    $project = $projectStmt->get_result()->fetch_assoc();
+    if (!$project) {
         http_response_code(404);
         echo json_encode(['status' => 'error', 'error' => 'Project not found']);
         exit;
     }
 
+    // 2. Get template details
     $templateStmt = $conn->prepare("
         SELECT item_label, stage_gate
         FROM governance_items
@@ -43,6 +47,7 @@ try {
     $templateStmt->execute();
     $template = $templateStmt->get_result()->fetch_assoc() ?: ['item_label' => $itemKey, 'stage_gate' => null];
 
+    // 3. Upsert governance item
     $upsert = $conn->prepare("
         INSERT INTO governance_items (project_id, item_key, item_label, stage_gate, status, updated_by, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, NOW())
@@ -64,6 +69,13 @@ try {
     );
     $upsert->execute();
 
+    // 4. 🔥 NEW: Recalculate and update project progress
+    $newProgress = calculateAutoProgress($project['stage'], $conn, $projectId);
+    $progressStmt = $conn->prepare("UPDATE projects SET progress = ?, updated_by = ?, updated_at = NOW() WHERE id = ?");
+    $progressStmt->bind_param("iis", $newProgress, $user['id'], $projectId);
+    $progressStmt->execute();
+
+    // 5. Update governance completion percent
     $pctStmt = $conn->prepare("
         SELECT
             SUM(CASE WHEN status != 'na' THEN 1 ELSE 0 END) AS applicable,
@@ -92,11 +104,12 @@ try {
         $projectUpdate->execute();
     }
 
+    // 6. Log activity
     $logStmt = $conn->prepare("
         INSERT INTO activity_logs (user_id, action, entity_type, entity_id, details, ip_address, user_agent)
         VALUES (?, 'governance_update', 'project', ?, ?, ?, ?)
     ");
-    $details = json_encode(['item_key' => $itemKey, 'status' => $status, 'governance_completion_percent' => $completion]);
+    $details = json_encode(['item_key' => $itemKey, 'status' => $status, 'governance_completion_percent' => $completion, 'progress' => $newProgress]);
     $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
     $logStmt->bind_param("issss", $user['id'], $projectId, $details, $ip, $userAgent);
@@ -107,7 +120,8 @@ try {
         'status' => 'success',
         'project_id' => $projectId,
         'item_key' => $itemKey,
-        'governance_completion_percent' => $completion
+        'governance_completion_percent' => $completion,
+        'auto_progress' => $newProgress
     ]);
 } catch (Throwable $e) {
     if (isset($conn)) {

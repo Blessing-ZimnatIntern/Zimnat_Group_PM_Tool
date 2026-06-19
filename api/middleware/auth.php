@@ -2,13 +2,20 @@
 
 namespace App\Middleware;
 
-// This file is already included after bootstrap, so session is started.
 class Auth {
     public static function requireAuth() {
+        // Ensure session is started
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         if (!isset($_SESSION['user'])) {
             http_response_code(401);
             header('Content-Type: application/json');
-            echo json_encode(['error' => 'Authentication required']);
+            echo json_encode([
+                'error' => 'Authentication required',
+                'session' => session_id(),
+                'cookies' => $_COOKIE
+            ]);
             exit;
         }
         return $_SESSION['user'];
@@ -27,10 +34,12 @@ class Auth {
     }
 
     public static function check() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
         return isset($_SESSION['user']);
     }
 
     public static function getUser() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
         return $_SESSION['user'] ?? null;
     }
 }
