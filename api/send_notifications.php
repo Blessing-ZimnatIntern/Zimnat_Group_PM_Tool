@@ -10,8 +10,10 @@ $conn = $db->getConnection();
 
 // Find projects that are overdue or at risk and have an assignee with email
 $sql = "
-    SELECT 
-        p.id, p.name, p.status, p.owner, p.assignee_id, p.completion_due,
+    SELECT
+        p.id, p.name,
+        CASE WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue' ELSE p.status END AS status,
+        p.owner, p.assignee_id, p.completion_due,
         u.email AS assignee_email,
         u.full_name AS assignee_name,
         b.name AS business_unit
@@ -19,7 +21,7 @@ $sql = "
     LEFT JOIN users u ON p.assignee_id = u.id
     JOIN business_units b ON p.business_unit_id = b.id
     WHERE p.deleted_at IS NULL
-      AND p.status IN ('overdue', 'atrisk')
+      AND (p.status = 'atrisk' OR (p.status != 'complete' AND p.completion_due < CURDATE()))
       AND (p.email_sent = 0 OR p.email_sent IS NULL)
       AND u.email IS NOT NULL
 ";

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../helpers/Notifications.php';
 
 use App\Config\Database;
 use App\Middleware\Auth;
@@ -56,60 +57,83 @@ try {
     // Set default values
     $stage = $data['stage'] ?? 'initiation';
     $status = $data['status'] ?? 'ontrack';
+    $ownerId = !empty($data['owner_id']) ? (int)$data['owner_id'] : null;
     $owner = $data['owner'] ?? '';
-    $assignee = $data['assignee'] ?? '';
+    if ($ownerId) {
+        $ownerStmt = $conn->prepare("SELECT full_name FROM users WHERE id = ?");
+        $ownerStmt->bind_param("i", $ownerId);
+        $ownerStmt->execute();
+        $ownerRow = $ownerStmt->get_result()->fetch_assoc();
+        if (!$ownerRow) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid owner_id']);
+            exit;
+        }
+        $owner = $ownerRow['full_name'];
+    }
+    $assigneeId = !empty($data['assignee_id']) ? (int)$data['assignee_id'] : null;
+    if ($assigneeId) {
+        $assigneeRoleStmt = $conn->prepare("SELECT role FROM users WHERE id = ?");
+        $assigneeRoleStmt->bind_param("i", $assigneeId);
+        $assigneeRoleStmt->execute();
+        $assigneeRoleRow = $assigneeRoleStmt->get_result()->fetch_assoc();
+        if (!$assigneeRoleRow || !in_array($assigneeRoleRow['role'], ['admin', 'editor'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Assignee must be an editor or admin']);
+            exit;
+        }
+    }
     $priority = $data['priority'] ?? 'normal';
     $gateDue = !empty($data['gate_due']) ? date('Y-m-d', strtotime($data['gate_due'])) : null;
     $completionDue = !empty($data['completion_due']) ? date('Y-m-d', strtotime($data['completion_due'])) : null;
     $progress = isset($data['progress']) ? max(0, min(100, (int)$data['progress'])) : 0;
     $currentUpdate = $data['current_update'] ?? '';
     $nextSteps = $data['next_steps'] ?? '';
+    $budget = (isset($data['budget']) && $data['budget'] !== '') ? (float)$data['budget'] : null;
+    $actualCost = (isset($data['actual_cost']) && $data['actual_cost'] !== '') ? (float)$data['actual_cost'] : null;
+    $currency = $data['currency'] ?? 'USD';
 
-    // Check if assignee column exists
+    // Check if assignee_id column exists
     $colStmt = $conn->prepare("
         SELECT COUNT(*) AS total
         FROM INFORMATION_SCHEMA.COLUMNS
         WHERE TABLE_SCHEMA = DATABASE()
           AND TABLE_NAME = 'projects'
-          AND COLUMN_NAME = 'assignee'
+          AND COLUMN_NAME = 'assignee_id'
     ");
     $colStmt->execute();
     $hasAssignee = ((int)$colStmt->get_result()->fetch_assoc()['total']) > 0;
 
-    // Build insert statement dynamically
-    $fields = [
-        'id', 'business_unit_id', 'name', 'stage', 'status', 'owner', 
-        'priority', 'gate_due', 'completion_due', 'progress', 
-        'current_update', 'next_steps', 'created_by', 'created_at', 'updated_at'
-    ];
-    $placeholders = [
-        '?', '?', '?', '?', '?', '?', 
-        '?', '?', '?', '?', 
-        '?', '?', '?', 'NOW()', 'NOW()'
-    ];
-    $bindTypes = 'sissssssssssi';
-    $bindValues = [
-        $projectId,
-        $data['business_unit_id'],
-        $data['name'],
-        $stage,
-        $status,
-        $owner,
-        $priority,
-        $gateDue,
-        $completionDue,
-        $progress,
-        $currentUpdate,
-        $nextSteps,
-        $user['id']
+    // Build insert statement dynamically. Each entry is [column, value, bind type]
+    // so the field list, placeholders, and bind-type string can never drift out of sync.
+    $columns = [
+        ['id', $projectId, 's'],
+        ['business_unit_id', $data['business_unit_id'], 'i'],
+        ['name', $data['name'], 's'],
+        ['stage', $stage, 's'],
+        ['status', $status, 's'],
+        ['owner', $owner, 's'],
+        ['owner_id', $ownerId, 'i'],
+        ['priority', $priority, 's'],
+        ['gate_due', $gateDue, 's'],
+        ['completion_due', $completionDue, 's'],
+        ['progress', $progress, 'i'],
+        ['current_update', $currentUpdate, 's'],
+        ['next_steps', $nextSteps, 's'],
+        ['budget', $budget, 'd'],
+        ['actual_cost', $actualCost, 'd'],
+        ['currency', $currency, 's'],
+        ['created_by', $user['id'], 'i'],
     ];
 
     if ($hasAssignee) {
-        $fields[] = 'assignee';
-        $placeholders[] = '?';
-        $bindTypes .= 's';
-        $bindValues[] = $assignee;
+        $columns[] = ['assignee_id', $assigneeId, 'i'];
     }
+
+    $fields = array_merge(array_column($columns, 0), ['created_at', 'updated_at']);
+    $placeholders = array_merge(array_fill(0, count($columns), '?'), ['NOW()', 'NOW()']);
+    $bindTypes = implode('', array_column($columns, 2));
+    $bindValues = array_column($columns, 1);
 
     $sql = "INSERT INTO projects (" . implode(', ', $fields) . ") 
             VALUES (" . implode(', ', $placeholders) . ")";
@@ -119,6 +143,10 @@ try {
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to create project: ' . $stmt->error);
+    }
+
+    if ($ownerId) {
+        notifyNewOwner($conn, $projectId, $ownerId, $data['name'], $user['id']);
     }
 
     // Initialize governance items for the new project
@@ -186,7 +214,8 @@ try {
             'stage' => $stage,
             'status' => $status,
             'owner' => $owner,
-            'assignee' => $assignee,
+            'owner_id' => $ownerId,
+            'assignee_id' => $assigneeId,
             'priority' => $priority,
             'gate_due' => $gateDue,
             'completion_due' => $completionDue,

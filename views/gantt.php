@@ -8,6 +8,7 @@ $conn = $db->getConnection();
 $assignee = isset($_GET['assignee']) ? (int)$_GET['assignee'] : null;
 $status = isset($_GET['status']) ? $_GET['status'] : null;
 $business_unit = isset($_GET['business_unit']) ? (int)$_GET['business_unit'] : null;
+$projectId = isset($_GET['project']) ? $_GET['project'] : null;
 
 $sql = "
     SELECT 
@@ -41,6 +42,11 @@ if ($business_unit) {
     $params[] = $business_unit;
     $types .= 'i';
 }
+if ($projectId) {
+    $sql .= " AND p.id = ?";
+    $params[] = $projectId;
+    $types .= 's';
+}
 
 $stmt = $conn->prepare($sql);
 if ($params) {
@@ -57,6 +63,7 @@ $colorMap = [
     'behind'   => '#9ca3af',
 ];
 $ganttData = [];
+$includedIds = [];
 foreach ($tasks as $t) {
     if (!$t['start'] || !$t['end']) continue;
     $ganttData[] = [
@@ -66,18 +73,46 @@ foreach ($tasks as $t) {
         'end'         => $t['end'],
         'progress'    => (int)$t['progress'] / 100,
         'custom_class'=> 'gantt-' . $t['effective_status'],
+        'dependencies'=> '',
     ];
+    $includedIds[] = $t['id'];
+}
+
+// Attach dependency arrows — only reference IDs actually present on this chart
+if ($includedIds) {
+    $placeholders = implode(',', array_fill(0, count($includedIds), '?'));
+    $depStmt = $conn->prepare("SELECT project_id, depends_on_project_id FROM project_dependencies WHERE project_id IN ($placeholders) AND depends_on_project_id IN ($placeholders)");
+    $depTypes = str_repeat('s', count($includedIds) * 2);
+    $depParams = array_merge($includedIds, $includedIds);
+    $depStmt->bind_param($depTypes, ...$depParams);
+    $depStmt->execute();
+    $depResult = $depStmt->get_result();
+    $depsByProject = [];
+    while ($row = $depResult->fetch_assoc()) {
+        $depsByProject[$row['project_id']][] = $row['depends_on_project_id'];
+    }
+    foreach ($ganttData as &$task) {
+        if (!empty($depsByProject[$task['id']])) {
+            $task['dependencies'] = implode(',', $depsByProject[$task['id']]);
+        }
+    }
+    unset($task);
 }
 ?>
 <div class="view-content" style="padding:24px;">
-    <h2 style="font-size:20px;font-weight:700;margin-bottom:16px;color:#1a2332;">Gantt Chart</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <h2 style="font-size:20px;font-weight:700;color:#1a2332;margin:0;"><?= $projectId ? 'Project Gantt Chart' : 'Gantt Chart' ?></h2>
+        <button type="button" class="pill-btn" onclick="window.print()">Download / Print</button>
+    </div>
     <div style="background:#fff;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);padding:20px;">
         <div id="ganttChart" style="height:400px;"></div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/frappe-gantt@0.5.0/dist/frappe-gantt.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+    // This view is loaded via AJAX and its script is eval()'d after injection —
+    // document's DOMContentLoaded has already fired by then, so run immediately instead.
     var tasks = <?= json_encode($ganttData) ?>;
     if (tasks.length === 0) {
         document.getElementById('ganttChart').innerHTML = '<p style="color:#6b7280;text-align:center;padding:40px;">No projects with valid dates to display.</p>';
@@ -90,5 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-});
+
+    if (typeof scrollGanttToToday === 'function') scrollGanttToToday('ganttChart');
+})();
 </script>

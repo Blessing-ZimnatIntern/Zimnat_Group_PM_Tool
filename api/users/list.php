@@ -11,10 +11,25 @@ try {
     $db = Database::getInstance();
     $conn = $db->getConnection();
 
-    // Fetch active users who are editors/admins (or all, depending on your permission model)
-    $sql = "SELECT id, full_name, email FROM users WHERE is_active = 1 ORDER BY full_name";
-    $result = $conn->query($sql);
-    $users = $result->fetch_all(MYSQLI_ASSOC);
+    // Optional ?roles=editor,admin to restrict the list (e.g. for assignee/allocator pickers)
+    $rolesParam = isset($_GET['roles']) ? array_filter(array_map('trim', explode(',', $_GET['roles']))) : [];
+    $allowedRoles = array_intersect($rolesParam, ['admin', 'editor', 'viewer']);
+
+    $sql = "SELECT id, full_name, email, role FROM users WHERE is_active = 1";
+    $params = [];
+    $types = '';
+    if (!empty($allowedRoles)) {
+        $placeholders = implode(',', array_fill(0, count($allowedRoles), '?'));
+        $sql .= " AND role IN ($placeholders)";
+        $params = array_values($allowedRoles);
+        $types = str_repeat('s', count($allowedRoles));
+    }
+    $sql .= " ORDER BY full_name";
+
+    $stmt = $conn->prepare($sql);
+    if (!empty($params)) $stmt->bind_param($types, ...$params);
+    $stmt->execute();
+    $users = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     echo json_encode(['status' => 'success', 'data' => $users]);
 } catch (Throwable $e) {

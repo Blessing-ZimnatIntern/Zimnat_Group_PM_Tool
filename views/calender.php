@@ -76,7 +76,9 @@ foreach ($events as $e) {
 </div>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+(function() {
+    // This view is loaded via AJAX and its script is eval()'d after injection —
+    // document's DOMContentLoaded has already fired by then, so run immediately instead.
     var calendarEl = document.getElementById('calendarView');
     var events = <?= json_encode($eventsJson) ?>;
     if (events.length === 0) {
@@ -93,5 +95,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     calendar.render();
-});
+})();
 </script>

@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once __DIR__ . '/../bootstrap.php';
 
 // Clear session
 $_SESSION = array();

@@ -13,11 +13,18 @@ $username = $data['username'] ?? '';
 $email = $data['email'] ?? '';
 $password = $data['password'] ?? '';
 $full_name = $data['full_name'] ?? '';
+$consent = !empty($data['consent']);
 
 // Validate input
 if (empty($username) || empty($email) || empty($password)) {
     http_response_code(400);
     echo json_encode(['error' => 'All fields required']);
+    exit;
+}
+
+if (!$consent) {
+    http_response_code(400);
+    echo json_encode(['error' => 'You must consent to data processing to create an account']);
     exit;
 }
 
@@ -59,8 +66,16 @@ try {
     $userCount = $roleCheck->fetch_assoc()['count'];
     $role = ($userCount == 0) ? 'admin' : 'viewer';
     
-    // Insert new user
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)");
+    // consent_at records when the user agreed to data processing, per the retention policy
+    $colStmt = $conn->prepare("SELECT COUNT(*) AS total FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'consent_at'");
+    $colStmt->execute();
+    $hasConsentAt = ((int)$colStmt->get_result()->fetch_assoc()['total']) > 0;
+
+    if ($hasConsentAt) {
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, full_name, role, consent_at) VALUES (?, ?, ?, ?, ?, NOW())");
+    } else {
+        $stmt = $conn->prepare("INSERT INTO users (username, email, password_hash, full_name, role) VALUES (?, ?, ?, ?, ?)");
+    }
     $stmt->bind_param("sssss", $username, $email, $password_hash, $full_name, $role);
     
     if ($stmt->execute()) {

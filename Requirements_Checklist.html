@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zimnat Project Management Tool — Requirements & Feature Checklist</title>
+<style>
+  @media print {
+    body { margin: 0; }
+    .no-print { display: none; }
+    .page-break { page-break-before: always; }
+    section { page-break-inside: avoid; }
+  }
+  body {
+    font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+    color: #1a2332;
+    max-width: 820px;
+    margin: 40px auto;
+    padding: 0 24px;
+    line-height: 1.5;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 3px solid #12A052;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  header img { height: 40px; }
+  header h1 { font-size: 22px; margin: 0; color: #1a4a7a; }
+  header p { margin: 2px 0 0; color: #6b7280; font-size: 13px; }
+  h2 {
+    font-size: 17px;
+    color: #1a4a7a;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 6px;
+    margin-top: 36px;
+  }
+  h3 { font-size: 14px; color: #1a2332; margin: 18px 0 8px; }
+  ul.checklist { list-style: none; padding-left: 0; margin: 0 0 14px; }
+  ul.checklist li {
+    padding: 5px 0 5px 30px;
+    position: relative;
+    font-size: 13.5px;
+  }
+  ul.checklist li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    font-size: 16px;
+    color: #9ca3af;
+  }
+  ul.checklist li.done::before { content: "☑"; color: #12A052; }
+  ul.checklist li.partial::before { content: "◐"; color: #d97706; }
+  ul.checklist li.no::before { content: "☐"; color: #dc2626; }
+  ul.checklist li span.spec-ref { color: #9ca3af; font-size: 11px; margin-left: 6px; }
+  .note {
+    background: #fff8e1;
+    border: 1px solid #ffe0a3;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #8a6d1f;
+    margin: 10px 0 20px;
+  }
+  .deviation {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    color: #991b1b;
+    margin: 6px 0 16px;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 13px; }
+  th, td { border: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
+  th { background: #f9fafb; }
+  code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; }
+  .legend { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+  .legend span { margin-right: 16px; }
+  button.print-btn {
+    background: #12A052; color: #fff; border: none; border-radius: 6px;
+    padding: 10px 18px; font-size: 14px; cursor: pointer; margin-bottom: 20px;
+  }
+  footer { margin-top: 40px; font-size: 11.5px; color: #9ca3af; text-align: center; }
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+
+<header>
+  <img src="logo.png" alt="Zimnat">
+  <div>
+    <h1>Project Management Tool — Requirements & Feature Checklist</h1>
+    <p>Reconciled against "Z Group — Project Portfolio Management Tool: Requirements Specification" · Generated 2026-06-22</p>
+  </div>
+</header>
+
+<div class="legend">
+  <span>☑ <b style="color:#12A052;">Met</b></span>
+  <span>◐ <b style="color:#d97706;">Partially met / deviation</b></span>
+  <span>☐ <b style="color:#dc2626;">Not addressed</b></span>
+</div>
+
+<h2>1. Overview &amp; access (Spec §1–2)</h2>
+<ul class="checklist">
+  <li class="done">Multi-user web app, ClickUp-styled, organized by business unit through a stage-gate process <span class="spec-ref">§1</span></li>
+  <li class="done">Business units: ZFS, ZAM, ZGI, ZLA, Group Projects, ICT Initiatives — every project belongs to exactly one <span class="spec-ref">§1</span></li>
+  <li class="done">Multiple users can log in and enter/update data <span class="spec-ref">§2</span></li>
+  <li class="done">Read-only "viewer" role for stakeholders to view dashboards/reports <span class="spec-ref">§2</span></li>
+  <li class="partial">Authentication: spec asked for an established, audited backend-as-a-service (Supabase/Firebase-style). Built instead as custom PHP sessions — bcrypt-hashed passwords, prepared statements throughout, role checks on every endpoint, so it is <i>functionally</i> secure, but it is not the suggested managed provider. <span class="spec-ref">§2, §5</span></li>
+</ul>
+
+<h2>2. Information architecture &amp; project fields (Spec §3–4.3)</h2>
+<ul class="checklist">
+  <li class="done">Workspace → Portfolio Summary + per-Business-Unit → Project → Overview / Update &amp; Next Steps / Governance <span class="spec-ref">§3</span></li>
+  <li class="done">Business units shown as top-level spaces in the left sidebar with project counts, expandable <span class="spec-ref">§4.1</span></li>
+  <li class="done">Selecting a business unit opens its dashboard <span class="spec-ref">§4.1</span></li>
+  <li class="done">Add / edit / delete a project, with delete confirmation; every project requires a business unit <span class="spec-ref">§4.2</span></li>
+  <li class="done">All data-model fields present: name, business unit, stage gate, status, owner, priority, two independent dates, progress, current update, next steps, governance <span class="spec-ref">§4.3</span></li>
+  <li class="partial">Owner field: spec defined it as free text ("person or dept responsible"). At the stakeholder's later request this evolved into a real user reference, so productivity could be tracked reliably — any role can be an owner, matching the spirit of the original field. <span class="spec-ref">§4.3</span></li>
+</ul>
+
+<h2>3. Stage gates, status &amp; governance (Spec §4.4, 4.6, 4.7)</h2>
+<ul class="checklist">
+  <li class="done">Six stage gates in order: Initiation → Planning → Execution/Development → QA → UAT → Project Closure <span class="spec-ref">§4.4</span></li>
+  <li class="done">Update &amp; Next Steps tab, free text, saved per project, with history retained <span class="spec-ref">§4.5</span></li>
+  <li class="done">Status: On Track / At Risk / Behind Schedule / Complete, with Overdue auto-derived (red) when the completion date has passed and the project isn't Complete <span class="spec-ref">§4.6</span></li>
+  <li class="done">Stage gate due date also flags separately when passed <span class="spec-ref">§4.6</span></li>
+  <li class="done">Governance checklist — the exact 7 deliverables from the spec table, each with all 4 states (Pending / In progress / Signed off / N/A) and a roll-up % <span class="spec-ref">§4.7</span></li>
+</ul>
+
+<h2>4. Views, filtering &amp; summaries (Spec §4.8–4.10)</h2>
+<ul class="checklist">
+  <li class="done">List view grouped by stage gate, columns for status/owner/governance %/dates, collapsible groups <span class="spec-ref">§4.8</span></li>
+  <li class="done">Kanban Board view, one column per stage gate <span class="spec-ref">§4.8</span></li>
+  <li class="done">Search by project name <span class="spec-ref">§4.9</span></li>
+  <li class="done">Filter by status (including Overdue / Behind Schedule), business unit, and assignee <span class="spec-ref">§4.9</span></li>
+  <li class="done">Portfolio Summary: totals, status counts, average progress, per-business-unit breakdown cards, and a cross-portfolio "Needs Attention" list of overdue/behind/at-risk projects <span class="spec-ref">§4.10</span></li>
+  <li class="done">Per-business-unit summary with the same statistics plus a stage-gate distribution <span class="spec-ref">§4.10</span></li>
+  <li class="done">Full project list viewable both per-business-unit and as a whole portfolio <span class="spec-ref">§8 (closing note)</span></li>
+</ul>
+
+<h2>5. Reporting, import &amp; sharing (Spec §4.11–4.13)</h2>
+<ul class="checklist">
+  <li class="done">Status report for the current selection / date range <span class="spec-ref">§4.11</span></li>
+  <li class="done">Report copyable, downloadable (text and CSV — Excel and PDF added beyond spec), and printable/PDF <span class="spec-ref">§4.11</span></li>
+  <li class="done">Gantt chart downloadable for sharing with stakeholders <span class="spec-ref">§4.11</span></li>
+  <li class="done">History of updates retained over time <span class="spec-ref">§4.11</span></li>
+  <li class="done">Excel import, one row per project, flexible case-insensitive column-header mapping <span class="spec-ref">§4.12</span></li>
+  <li class="partial">Import: most fields blank when absent as required (owner, dates, progress, update text); stage/status/priority specifically fall back to a sensible default (e.g. "Initiation"/"On Track"/"Normal") rather than blank, since those three are required enums the rest of the app depends on <span class="spec-ref">§4.12</span></li>
+  <li class="done">Multiple users contribute updates; shareable read-only link for stakeholder dashboards/reports <span class="spec-ref">§4.13</span></li>
+</ul>
+
+<h2>6. Non-functional requirements (Spec §5)</h2>
+<ul class="checklist">
+  <li class="done">Multi-user, server-side persistence (MySQL) — no data loss on refresh <span class="spec-ref">§5</span></li>
+  <li class="partial">Security: bcrypt password hashing, RBAC on every endpoint, prepared statements everywhere (no SQL injection surface) — but not the suggested managed auth provider; "encrypted in transit" depends on TLS being configured at the hosting/deployment layer, not yet verified for production <span class="spec-ref">§5</span></li>
+  <li class="done">Server-side validation on every write endpoint (the real gatekeeper, per spec wording); client-side validation on required fields <span class="spec-ref">§5</span></li>
+  <li class="no">Privacy &amp; compliance: no consent flow or documented data-retention policy implemented yet <span class="spec-ref">§5</span></li>
+  <li class="partial">Reliability under concurrent edits: handled via database transactions on multi-step writes; no explicit conflict-detection UI (e.g. "this project changed since you opened it") <span class="spec-ref">§5</span></li>
+  <li class="partial">Responsive: works on desktop and mobile (off-canvas nav, stacked drawer). Keyboard/contrast accessibility not formally audited <span class="spec-ref">§5</span></li>
+</ul>
+<div class="deviation"><b>Flagged for your attention:</b> privacy/compliance (consent + retention policy) and a formal accessibility pass are the two items from the non-functional requirements that haven't been addressed — worth a decision on whether they're in scope before go-live.</div>
+
+<h2>7. Stretch items explicitly listed in the spec (Spec §7)</h2>
+<ul class="checklist">
+  <li class="done">Calendar and Gantt views as tabs</li>
+  <li class="done">Automated notifications / email alerts — daily overdue alerts, weekly digest, <b>and</b> in-app notifications (assignment/accept/reject/@mentions) added beyond what was asked</li>
+  <li class="done">Time tracking, budgets/financials, resource allocation — all three built, plus automatic red-flagging when actual cost exceeds budget</li>
+  <li class="done">Gantt chart for each individual project</li>
+</ul>
+
+<h2 class="page-break">8. Beyond the spec — additional features added</h2>
+
+<h3>Productivity &amp; visibility</h3>
+<ul class="checklist">
+  <li class="done">Activity feed — human-readable log of who did what, when</li>
+  <li class="done">Global Cmd/Ctrl+K command palette — instant project search</li>
+  <li class="done">Filters popover — owner, assignee, status, business unit, tag, stakeholder, all combinable</li>
+  <li class="done">Tags/labels on projects</li>
+  <li class="done">Threaded comments with @mentions — mentioned users get an in-app notification</li>
+  <li class="done">File attachments on governance checklist items</li>
+  <li class="done">Auto-generated Executive Summary (rule-based narrative, no external AI cost)</li>
+</ul>
+
+<h3>Owner / Assignee / Stakeholder model</h3>
+<ul class="checklist">
+  <li class="done">Owner ("Assigned To") — the developer doing the work, any role, tracked for productivity</li>
+  <li class="done">Assignee — the editor/admin who allocated the project, tracked for allocation performance (role-restricted visibility: editors see only their own, admins see everyone)</li>
+  <li class="done">Stakeholder — a new entity for people with expectations of / contributions to a project, separate from owner and assignee</li>
+  <li class="done">Stakeholders tab (first tab in the project drawer) with notes and requirements document upload (pdf/doc/docx/txt)</li>
+  <li class="done">Multi-assignee allocation % with a Resources heatmap and over-allocation warnings</li>
+  <li class="done">Cross-project dependencies with cycle detection</li>
+</ul>
+
+<h3>In-app notifications &amp; allocation workflow</h3>
+<ul class="checklist">
+  <li class="done">Notification bell with unread-count badge</li>
+  <li class="done">New/reassigned owner notified automatically; can accept ("Start Working") or reject with a reason</li>
+  <li class="done">Rejection notifies the assignee(s), who can reassign — full cycle repeats, history retained</li>
+  <li class="done">@mention in a comment notifies the mentioned person</li>
+  <li class="done">Clicking any notification opens the relevant project directly</li>
+</ul>
+
+<h3>Reporting &amp; analytics</h3>
+<ul class="checklist">
+  <li class="done">Owner (Developer) Productivity report — completion rate, average days to close, active workload vs. team-average "sweet spot," over/under-capacity flagging</li>
+  <li class="done">Assignee (Allocator) Performance report — role-restricted as above</li>
+  <li class="done">Per-project and portfolio-wide over-budget figures shown in red automatically</li>
+</ul>
+
+<h3>UI / UX</h3>
+<ul class="checklist">
+  <li class="done">Unified List/Board view, loading skeletons, Gantt auto-scroll-to-today</li>
+  <li class="done">Custom confirm/share-link modals replacing native browser dialogs, with copy-to-clipboard</li>
+  <li class="done">Dashboard de-duplication — removed stat cards that repeated the status rings below them</li>
+</ul>
+
+<h2 class="page-break">9. Login credentials for the walkthrough</h2>
+<table>
+  <tr><th>Role</th><th>Email</th><th>Password</th><th>Why this account</th></tr>
+  <tr><td>Admin</td><td><code>admin@zimnat.co.zw</code></td><td><code>password</code></td><td>Full visibility — every assignee's allocation performance, can override any allocation</td></tr>
+  <tr><td>Editor</td><td><code>mc@zimnat.co.zw</code> (Miriam Charehwa)</td><td><code>password</code></td><td>A real assignee/allocator in the seed data — see "my allocated projects" and rejection notifications</td></tr>
+  <tr><td>Viewer</td><td><code>blessingmaisiri29@gmail.com</code> (Blessing Maisiri)</td><td><code>password</code></td><td>A real owner in the seed data, viewer role — shows owners can hold any role</td></tr>
+</table>
+
+<footer>Zimnat Group Project Management Tool · Internal walkthrough document</footer>
+
+</body>
+</html>

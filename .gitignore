@@ -26,7 +26,8 @@ cache/
 *.cache
 
 # Uploads
-uploads/
+uploads/*
+!uploads/.htaccess
 tmp/
 
 # Backup

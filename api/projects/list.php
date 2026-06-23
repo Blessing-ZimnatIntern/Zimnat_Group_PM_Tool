@@ -24,25 +24,28 @@ try {
     $unitFilter = $_GET['unit'] ?? null;
     $statusFilter = $_GET['status'] ?? null;
     $ownerFilter = $_GET['owner'] ?? null;
+    $ownerIdFilter = $_GET['owner_id'] ?? null;
     $assigneeFilter = $_GET['assignee'] ?? null; // now expects INT
     $search = $_GET['search'] ?? null;
 
     $sql = "
-        SELECT 
+        SELECT
             p.*,
+            ou.full_name AS owner_name,
             b.id AS business_unit_id,
             b.name AS business_unit_name,
             b.color AS business_unit_color,
-            CASE 
+            CASE
                 WHEN p.status != 'complete' AND p.completion_due < CURDATE() THEN 'overdue'
                 ELSE p.status
             END AS effective_status,
-            CASE 
+            CASE
                 WHEN p.gate_due < CURDATE() AND p.status != 'complete' THEN 1
                 ELSE 0
             END AS is_gate_overdue
         FROM projects p
         JOIN business_units b ON p.business_unit_id = b.id
+        LEFT JOIN users ou ON p.owner_id = ou.id
     ";
 
     $where = [];
@@ -53,6 +56,7 @@ try {
     if ($unitFilter) { $where[] = "b.name = ?"; $params[] = $unitFilter; $types .= 's'; }
     if ($statusFilter) { $where[] = "p.status = ?"; $params[] = $statusFilter; $types .= 's'; }
     if ($ownerFilter) { $where[] = "p.owner = ?"; $params[] = $ownerFilter; $types .= 's'; }
+    if ($ownerIdFilter) { $where[] = "p.owner_id = ?"; $params[] = (int)$ownerIdFilter; $types .= 'i'; }
     if ($assigneeFilter && $hasAssigneeId) { $where[] = "p.assignee_id = ?"; $params[] = (int)$assigneeFilter; $types .= 'i'; }
     if ($search) {
         $like = '%' . $search . '%';
@@ -73,6 +77,8 @@ try {
     $projectIds = [];
     while ($row = $projectResult->fetch_assoc()) {
         $row['governance'] = [];
+        $row['tags'] = [];
+        $row['stakeholders'] = [];
         $projects[$row['id']] = $row;
         $projectIds[] = $row['id'];
     }
@@ -88,6 +94,30 @@ try {
         while ($row = $govResult->fetch_assoc()) {
             if (isset($projects[$row['project_id']])) {
                 $projects[$row['project_id']]['governance'][] = $row;
+            }
+        }
+
+        $tagStmt = $conn->prepare("
+            SELECT pt.project_id, t.id, t.name, t.color
+            FROM project_tags pt JOIN tags t ON pt.tag_id = t.id
+            WHERE pt.project_id IN ($placeholders)
+        ");
+        $tagStmt->bind_param($types, ...$projectIds);
+        $tagStmt->execute();
+        $tagResult = $tagStmt->get_result();
+        while ($row = $tagResult->fetch_assoc()) {
+            if (isset($projects[$row['project_id']])) {
+                $projects[$row['project_id']]['tags'][] = ['id' => $row['id'], 'name' => $row['name'], 'color' => $row['color']];
+            }
+        }
+
+        $stakeholderStmt = $conn->prepare("SELECT id, project_id, name FROM stakeholders WHERE project_id IN ($placeholders)");
+        $stakeholderStmt->bind_param($types, ...$projectIds);
+        $stakeholderStmt->execute();
+        $stakeholderResult = $stakeholderStmt->get_result();
+        while ($row = $stakeholderResult->fetch_assoc()) {
+            if (isset($projects[$row['project_id']])) {
+                $projects[$row['project_id']]['stakeholders'][] = ['id' => $row['id'], 'name' => $row['name']];
             }
         }
     }

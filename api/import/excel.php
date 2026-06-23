@@ -36,23 +36,33 @@ try {
         throw new Exception('File is empty');
     }
 
-    // Headers: map to expected columns
+    // Headers: map flexibly to expected columns (aliases accepted, missing columns import as blank)
     $headers = array_map('trim', $rows[0]);
-    $expectedHeaders = ['Business Unit', 'Project', 'Stage', 'Status', 'Owner', 'Priority', 'Gate Due', 'Completion Due', 'Progress', 'Current Update', 'Next Steps'];
-    // Validate headers (case-insensitive)
+    $headerAliases = [
+        'Business Unit' => ['business unit'],
+        'Project' => ['project', 'project name'],
+        'Stage' => ['stage', 'stage gate'],
+        'Status' => ['status'],
+        'Owner' => ['owner'],
+        'Priority' => ['priority'],
+        'Gate Due' => ['gate due', 'stage gate due date', 'gate due date'],
+        'Completion Due' => ['completion due', 'completion date', 'project completion date'],
+        'Progress' => ['progress', 'progress %', 'progress%'],
+        'Current Update' => ['current update', 'current update / comment', 'update'],
+        'Next Steps' => ['next steps'],
+    ];
     $headerMap = [];
-    foreach ($expectedHeaders as $expected) {
-        $found = false;
+    foreach ($headerAliases as $expected => $aliases) {
         foreach ($headers as $idx => $h) {
-            if (strtolower(trim($h)) === strtolower($expected)) {
+            if (in_array(strtolower(trim($h)), $aliases, true)) {
                 $headerMap[$expected] = $idx;
-                $found = true;
                 break;
             }
         }
-        if (!$found) {
-            throw new Exception("Missing expected column: '$expected'");
-        }
+        // Column not found in sheet — leave unmapped; values for it will import as blank.
+    }
+    if (!isset($headerMap['Business Unit']) || !isset($headerMap['Project'])) {
+        throw new Exception("Sheet must include at least a 'Business Unit' and 'Project' column.");
     }
 
     // Remove header row
@@ -79,18 +89,21 @@ try {
     foreach ($rows as $rowIndex => $row) {
         if (empty(array_filter($row))) continue;
 
-        // Extract values using header map
-        $businessUnit = trim($row[$headerMap['Business Unit']] ?? '');
-        $projectName = trim($row[$headerMap['Project']] ?? '');
-        $stage = trim($row[$headerMap['Stage']] ?? 'initiation');
-        $status = trim($row[$headerMap['Status']] ?? 'ontrack');
-        $owner = trim($row[$headerMap['Owner']] ?? '');
-        $priority = trim($row[$headerMap['Priority']] ?? 'normal');
-        $gateDue = trim($row[$headerMap['Gate Due']] ?? '');
-        $completionDue = trim($row[$headerMap['Completion Due']] ?? '');
-        $progress = (int)($row[$headerMap['Progress']] ?? 0);
-        $currentUpdate = trim($row[$headerMap['Current Update']] ?? '');
-        $nextSteps = trim($row[$headerMap['Next Steps']] ?? '');
+        // Extract values using header map; columns absent from the sheet import as blank, never invented
+        $col = function($name, $default = '') use ($row, $headerMap) {
+            return isset($headerMap[$name]) ? trim($row[$headerMap[$name]] ?? '') : $default;
+        };
+        $businessUnit = $col('Business Unit');
+        $projectName = $col('Project');
+        $stage = $col('Stage', 'initiation');
+        $status = $col('Status', 'ontrack');
+        $owner = $col('Owner');
+        $priority = $col('Priority', 'normal');
+        $gateDue = $col('Gate Due');
+        $completionDue = $col('Completion Due');
+        $progress = (int)$col('Progress', 0);
+        $currentUpdate = $col('Current Update');
+        $nextSteps = $col('Next Steps');
 
         if (empty($businessUnit) || empty($projectName)) {
             $errors[] = "Row " . ($rowIndex + 2) . ": Business Unit and Project are required.";
@@ -112,10 +125,18 @@ try {
         }
         $buId = $buCache[$buKey];
 
-        // Check duplicate (name + business_unit_id)
+        // Check duplicate (name + business_unit_id) — both within this batch and against existing rows
         $dupKey = $projectName . '|' . $buId;
         if (isset($existingProjects[$dupKey])) {
             $duplicates++;
+            continue;
+        }
+        $existsStmt = $conn->prepare("SELECT 1 FROM projects WHERE name = ? AND business_unit_id = ? AND deleted_at IS NULL LIMIT 1");
+        $existsStmt->bind_param("si", $projectName, $buId);
+        $existsStmt->execute();
+        if ($existsStmt->get_result()->num_rows > 0) {
+            $duplicates++;
+            $existingProjects[$dupKey] = true;
             continue;
         }
 
@@ -147,8 +168,13 @@ try {
         // Generate ID
         $projectId = 'proj_' . bin2hex(random_bytes(16));
 
+        // Types must align 1:1 with the INSERT column order above:
+        // id(s) business_unit_id(i) name(s) stage(s) status(s) owner(s) priority(s)
+        // gate_due(s) completion_due(s) progress(i) current_update(s) next_steps(s) created_by(i)
+        $bindTypes = 's' . 'i' . str_repeat('s', 7) . 'i' . 'ss' . 'i';
+        $createdBy = (int)$user['id'];
         $insertStmt->bind_param(
-            "sissssssssiss",
+            $bindTypes,
             $projectId,
             $buId,
             $projectName,
@@ -161,7 +187,7 @@ try {
             $progress,
             $currentUpdate,
             $nextSteps,
-            $user['id']
+            $createdBy
         );
 
         if ($insertStmt->execute()) {

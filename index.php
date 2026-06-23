@@ -322,8 +322,9 @@
   }
   .sidebar-logo-wrapper {
     width: 100%;
+    min-width: 0;
     background: transparent;
-    padding: 0;
+    padding: 0 18px;
     margin: 0;
     display: flex;
     justify-content: center;
@@ -331,6 +332,8 @@
   }
   .sidebar-logo-img {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: auto;
     object-fit: contain;
     display: block;
@@ -542,7 +545,22 @@
     align-items: center;
     justify-content: space-between;
     margin: 8px 0 6px;
+    gap: 10px;
   }
+  .mobile-menu-btn {
+    display: none;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #fff;
+  }
+  .mobile-menu-btn svg { width: 20px; height: 20px; }
   .title-row h1 {
     font-family: 'Aptos', 'Segoe UI', 'Inter', sans-serif;
     font-weight: 600;
@@ -585,6 +603,17 @@
   .pill-btn.primary:hover {
     background: #0e8a45;
     box-shadow: 0 4px 16px rgba(18, 160, 82, 0.3);
+    transform: translateY(-1px);
+  }
+  .pill-btn.danger {
+    background: var(--overdue);
+    border-color: var(--overdue);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.25);
+  }
+  .pill-btn.danger:hover {
+    background: #b42318;
+    box-shadow: 0 4px 16px rgba(220, 53, 69, 0.35);
     transform: translateY(-1px);
   }
 
@@ -872,6 +901,7 @@
   .flag { width: 14px; height: 14px; flex-shrink: 0; }
   .avatar { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 600; display: grid; place-items: center; }
   .pill { font-size: 11px; font-weight: 600; color: #fff; padding: 3px 12px; border-radius: 5px; display: inline-block; }
+  .tag-chip { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 9px; margin-left: 5px; display: inline-block; white-space: nowrap; }
   .due { font-size: 12.5px; color: var(--muted); }
   .due.over { color: var(--overdue); font-weight: 600; }
   .gov-mini { font-size: 11px; color: var(--muted); }
@@ -891,7 +921,7 @@
   /* Drawer */
   .scrim { position: fixed; inset: 0; background: rgba(13,31,51,0.5); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 40; backdrop-filter: blur(2px); }
   .scrim.open { opacity: 1; pointer-events: auto; }
-  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 50%; max-width: 680px; min-width: 480px; background: #fff; box-shadow: -8px 0 40px rgba(0,0,0,0.12); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 50; display: flex; flex-direction: column; }
+  .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 68%; max-width: 1000px; min-width: 600px; background: #fff; box-shadow: -8px 0 40px rgba(0,0,0,0.12); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); z-index: 50; display: flex; flex-direction: column; }
   .drawer.open { transform: none; }
   .dr-head { padding: 22px 28px 0; border-bottom: 1px solid var(--line); background: #fff; }
   .dr-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
@@ -899,8 +929,8 @@
   .dr-head h2 { font-size: 20px; margin: 0; font-weight: 700; color: var(--zimnat-primary); letter-spacing: -0.3px; }
   .x { background: none; border: none; font-size: 28px; color: var(--muted); cursor: pointer; line-height: 1; padding: 4px 10px; border-radius: 6px; transition: background 0.15s; }
   .x:hover { background: var(--hover); }
-  .dr-tabs { display: flex; gap: 4px; margin-top: 16px; }
-  .dr-tab { padding: 9px 16px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .dr-tabs { display: flex; gap: 4px; margin-top: 16px; overflow-x: auto; scrollbar-width: thin; }
+  .dr-tab { padding: 9px 14px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; white-space: nowrap; flex-shrink: 0; }
   .dr-tab:hover { color: var(--text); }
   .dr-tab.active { color: var(--cu); border-bottom-color: var(--cu); font-weight: 600; }
   .dr-body { padding: 24px 28px; overflow-y: auto; flex: 1; background: var(--bg); }
@@ -1015,8 +1045,40 @@
   @media (max-width: 768px) {
     .dashboard-grid { grid-template-columns: 1fr; }
     .ring-grid-custom { grid-template-columns: 1fr 1fr; }
-    .tabs-wrapper { padding: 0 16px; }
-    .tab { padding: 6px 12px; font-size: 12px; }
+    .tabs-wrapper { padding: 0 16px; overflow-x: auto; }
+    .tab { padding: 6px 12px; font-size: 12px; white-space: nowrap; }
+
+    /* Sidebar becomes an off-canvas overlay instead of a permanent column */
+    .mobile-menu-btn { display: flex; }
+    .rail { display: none; }
+    .side {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      z-index: 60;
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.2);
+    }
+    .side.mobile-open { transform: translateX(0); }
+    #sideScrim { z-index: 59; }
+    #sideScrim.open { opacity: 1; pointer-events: auto; }
+    .main { width: 100%; }
+
+    .title-row h1 { font-size: 1.4rem; }
+    .title-actions { flex-wrap: wrap; gap: 6px; }
+    .title-actions .pill-btn { padding: 6px 10px; font-size: 12px; }
+    .toolbar { padding: 10px 16px; }
+    .search input { width: 100%; }
+    .content { padding: 0 0 24px; }
+    .sumwrap, .dr-body { padding: 16px; }
+
+    /* Drawer becomes full-width on small screens instead of a fixed-minimum side panel */
+    .drawer { width: 100%; min-width: 0; max-width: 100%; }
+    .two { grid-template-columns: 1fr; }
+    .attn-row { grid-template-columns: 1fr; gap: 4px; }
+    .lh, .lrow { grid-template-columns: 1fr; }
   }
 
   @media print {
@@ -1063,6 +1125,17 @@
   .drill-progress { font-size: 12px; color: var(--muted); justify-self: end; }
   .empty-state { color: var(--muted); text-align: center; padding: 40px 16px; border: 1px dashed var(--line-2); border-radius: 8px; background: var(--bg); }
 
+  /* Loading skeletons */
+  @keyframes skeleton-sweep { 0% { background-position: -200px 0; } 100% { background-position: 200px 0; } }
+  .skeleton-row { display: flex; align-items: center; gap: 10px; padding: 10px 18px; }
+  .skeleton-bar {
+    height: 12px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #eef0f3 0%, #f7f8fa 50%, #eef0f3 100%);
+    background-size: 200px 100%;
+    animation: skeleton-sweep 1.2s ease-in-out infinite;
+  }
+
   .bu-icon { width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; }
   .bu-icon svg { width: 20px; height: 20px; }
   .space-icon.bu { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: transparent; }
@@ -1073,6 +1146,10 @@
   .dropdown-menu.show { display: block; }
   .dropdown-menu a { display: block; padding: 8px 16px; color: var(--text); text-decoration: none; font-size: 13px; }
   .dropdown-menu a:hover { background: var(--hover); }
+  .filter-popover { width: 280px; min-width: 280px; padding: 16px; overflow: visible; }
+  .filter-popover .fld { margin-bottom: 12px; }
+  .filter-popover .fld label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+  .filter-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; margin-left: 5px; background: #12A052; color: #fff; border-radius: 8px; font-size: 10px; font-weight: 700; }
 
   #calendar { background: #fff; padding: 20px; border-radius: 12px; margin-top: 16px; }
   #ganttChart { height: 400px; }
@@ -1123,6 +1200,12 @@
       <div class="form-group"><label>Employee Number</label><input type="text" id="regUsername" placeholder="EMP-XXXX" required></div>
       <div class="form-group"><label>Email Address</label><input type="email" id="regEmail" placeholder="you@zimnat.com" required></div>
       <div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Min 8 characters" required minlength="8"></div>
+      <div class="form-group" style="display:flex;align-items:flex-start;gap:8px;">
+        <input type="checkbox" id="regConsent" required style="margin-top:3px;width:auto;">
+        <label for="regConsent" style="font-size:12px;color:var(--zimnat-muted);font-weight:400;margin-bottom:0;">
+          I consent to Zimnat processing my name, employee number and email to operate this portal, retained for as long as my account is active, in line with company data-protection policy.
+        </label>
+      </div>
       <button type="submit" class="auth-btn">Create Account</button>
     </form>
     <div class="auth-switch">Already have an account? <a id="showLogin">Sign in</a></div>
@@ -1133,8 +1216,9 @@
 <!-- MAIN APP -->
 <!-- ============================================================ -->
 <div class="app" id="mainApp">
+  <div class="scrim" id="sideScrim"></div>
   <nav class="rail"></nav>
-  <aside class="side">
+  <aside class="side" id="sideNav">
     <div class="side-head">
       <div class="sidebar-logo-wrapper"><img src="logo.png" alt="Zimnat" class="sidebar-logo-img"></div>
       <div class="ws-sub" id="wsSub">Portfolio &middot; Business units</div>
@@ -1156,16 +1240,34 @@
   <section class="main">
     <div class="topbar">
       <div class="title-row">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+        </button>
         <h1 id="mainTitle">Project Management</h1>
         <div class="title-actions">
+          <div class="dropdown" id="notifDropdownWrap">
+            <button class="pill-btn" id="notifBtn" title="Notifications" style="position:relative;">
+              🔔<span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--overdue);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;line-height:1.4;"></span>
+            </button>
+            <div class="dropdown-menu" id="notifPanel" style="width:380px;max-height:480px;overflow-y:auto;padding:0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);">
+                <b style="font-size:13px;">Notifications</b>
+                <button class="pill-btn" id="notifMarkAllBtn" style="font-size:11px;padding:4px 10px;">Mark all read</button>
+              </div>
+              <div id="notifList"></div>
+            </div>
+          </div>
           <div class="dropdown">
             <button class="pill-btn" id="exportDropdownBtn">Export ▾</button>
             <div class="dropdown-menu" id="exportMenu">
               <a href="#" data-export="csv">CSV</a>
               <a href="#" data-export="excel">Excel</a>
-              <a href="#" data-export="print">Print</a>
+              <a href="#" data-export="text">Text</a>
+              <a href="#" data-export="copy">Copy to clipboard</a>
+              <a href="#" data-export="print">Print / PDF</a>
             </div>
           </div>
+          <button class="pill-btn" id="cmdkBtn" title="Search everything (Ctrl/Cmd+K)">🔎 Search <span style="opacity:.6;font-size:11px;">Ctrl K</span></button>
           <button class="pill-btn" id="shareBtn">Share</button>
           <button class="pill-btn" id="importBtn">Import</button>
           <button class="pill-btn primary" id="addProjectBtn">+ Add Project</button>
@@ -1181,16 +1283,31 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
         <input id="search" placeholder="Search projects...">
       </div>
-      <select class="fsel" id="fCompany"><option value="">All business units</option></select>
-      <select class="fsel" id="fStatus">
-        <option value="">All statuses</option>
-        <option value="ontrack">On Track</option>
-        <option value="atrisk">At Risk</option>
-        <option value="behind">Behind</option>
-        <option value="overdue">Overdue</option>
-        <option value="complete">Complete</option>
-      </select>
-      <select class="fsel" id="fAssignee"><option value="">All assignees</option></select>
+      <div class="dropdown" id="filterDropdownWrap">
+        <button class="pill-btn" id="filterBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+          Filters<span id="filterBadge" class="filter-badge" style="display:none;"></span>
+        </button>
+        <div class="dropdown-menu filter-popover" id="filterPopover">
+          <div class="fld"><label>Business Unit</label><select class="fsel" id="fCompany"><option value="">All business units</option></select></div>
+          <div class="fld">
+            <label>Status</label>
+            <select class="fsel" id="fStatus">
+              <option value="">All statuses</option>
+              <option value="ontrack">On Track</option>
+              <option value="atrisk">At Risk</option>
+              <option value="behind">Behind</option>
+              <option value="overdue">Overdue</option>
+              <option value="complete">Complete</option>
+            </select>
+          </div>
+          <div class="fld"><label>Assigned To (Owner)</label><select class="fsel" id="fOwner"><option value="">All owners</option></select></div>
+          <div class="fld"><label>Assignee (Allocator)</label><select class="fsel" id="fAssignee"><option value="">All assignees</option></select></div>
+          <div class="fld"><label>Tag</label><select class="fsel" id="fTag"><option value="">All tags</option></select></div>
+          <div class="fld" style="margin-bottom:10px;"><label>Stakeholder</label><select class="fsel" id="fStakeholder"><option value="">All stakeholders</option></select></div>
+          <button class="pill-btn" id="clearFiltersBtn" type="button" style="width:100%;justify-content:center;">Clear all filters</button>
+        </div>
+      </div>
       <div class="tspacer"></div>
     </div>
     <div class="content" id="content"></div>
@@ -1221,6 +1338,65 @@
   </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- CONFIRM MODAL -->
+<!-- ============================================================ -->
+<div class="import-overlay" id="confirmOverlay">
+  <div class="import-modal" style="max-width:400px;text-align:center;">
+    <div id="confirmIcon" style="font-size:32px;margin-bottom:8px;">⚠️</div>
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p class="sub" id="confirmMessage" style="margin-bottom:24px;"></p>
+    <div class="import-actions" style="justify-content:center;">
+      <button class="pill-btn" id="confirmCancelBtn">Cancel</button>
+      <button class="pill-btn primary" id="confirmOkBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- REJECT ALLOCATION MODAL -->
+<!-- ============================================================ -->
+<div class="import-overlay" id="rejectAllocOverlay">
+  <div class="import-modal" style="max-width:440px;">
+    <button class="import-close" id="rejectAllocClose" type="button">&times;</button>
+    <h3>Reject this allocation</h3>
+    <p class="sub">Give the assignee a reason so they can reassign it — they'll see this in their notifications.</p>
+    <div class="fld"><textarea id="rejectAllocReason" placeholder="e.g. I'm at full capacity this sprint, please reassign." style="min-height:90px;"></textarea></div>
+    <div class="import-actions">
+      <button class="pill-btn" id="rejectAllocCancel">Cancel</button>
+      <button class="pill-btn danger" id="rejectAllocConfirm">Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SHARE LINK MODAL -->
+<!-- ============================================================ -->
+<div class="import-overlay" id="shareLinkOverlay">
+  <div class="import-modal" style="max-width:480px;">
+    <button class="import-close" id="shareLinkClose" type="button">&times;</button>
+    <h3>Shareable link created</h3>
+    <p class="sub">Anyone with this link can view a read-only snapshot of this report. It expires in 7 days.</p>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="shareLinkInput" readonly style="flex:1;padding:10px 14px;border:1px solid var(--line-2);border-radius:8px;font-size:13px;background:var(--bg);">
+      <button class="pill-btn primary" id="shareLinkCopyBtn">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- GLOBAL SEARCH (Cmd/Ctrl+K) -->
+<!-- ============================================================ -->
+<div class="import-overlay" id="cmdkOverlay">
+  <div class="import-modal" style="max-width:560px;padding:0;overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--line);">
+      <input id="cmdkInput" placeholder="Search projects, owners, business units…" style="width:100%;border:none;outline:none;font-size:16px;font-family:var(--font);">
+    </div>
+    <div id="cmdkResults" style="max-height:420px;overflow-y:auto;padding:8px;"></div>
+    <div style="padding:8px 18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted-2);">↑↓ to navigate &middot; Enter to open &middot; Esc to close</div>
+  </div>
+</div>
+
 <!-- Drill-Down Panel -->
 <div class="drill-overlay" id="drillOverlay"></div>
 <aside class="drill-panel" id="drillPanel">
@@ -1242,9 +1418,15 @@
       <button class="x" id="drClose">&times;</button>
     </div>
     <div class="dr-tabs" id="drTabs">
+      <div class="dr-tab" data-dt="stakeholders">Stakeholders</div>
       <div class="dr-tab active" data-dt="overview">Overview</div>
       <div class="dr-tab" data-dt="updates">Update &amp; Next Steps</div>
       <div class="dr-tab" data-dt="gov">Governance</div>
+      <div class="dr-tab" data-dt="gantt">Gantt</div>
+      <div class="dr-tab" data-dt="time">Time</div>
+      <div class="dr-tab" data-dt="assignees">Assignees</div>
+      <div class="dr-tab" data-dt="deps">Dependencies</div>
+      <div class="dr-tab" data-dt="comments">Comments</div>
     </div>
   </div>
   <div class="dr-body" id="drBody"></div>
@@ -1305,6 +1487,7 @@ loginForm.addEventListener('submit', async (e) => {
         });
         const data = await response.json();
         if (data.status === 'success') {
+            CURRENT_USER = data.user || null;
             loginScreen.style.display = 'none';
             mainApp.classList.add('active');
             initApp();
@@ -1326,6 +1509,7 @@ registerForm.addEventListener('submit', async (e) => {
     const username = document.getElementById('regUsername').value;
     const email = document.getElementById('regEmail').value;
     const password = document.getElementById('regPassword').value;
+    const consent = document.getElementById('regConsent').checked;
     if (!fullName || !username || !email || !password) {
         registerError.textContent = 'All fields are required.';
         registerError.classList.add('show');
@@ -1336,11 +1520,16 @@ registerForm.addEventListener('submit', async (e) => {
         registerError.classList.add('show');
         return;
     }
+    if (!consent) {
+        registerError.textContent = 'You must consent to data processing to create an account.';
+        registerError.classList.add('show');
+        return;
+    }
     try {
         const response = await fetch('api/auth/register.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ full_name: fullName, username, email, password })
+            body: JSON.stringify({ full_name: fullName, username, email, password, consent })
         });
         const data = await response.json();
         if (data.status === 'success') {
@@ -1362,8 +1551,8 @@ registerForm.addEventListener('submit', async (e) => {
     }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (confirm('Are you sure you want to logout?')) {
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    if (await confirmDialog('Are you sure you want to logout?', { danger: false, confirmLabel: 'Logout' })) {
         fetch('api/auth/logout.php', { method: 'POST' }).then(() => {
             mainApp.classList.remove('active');
             loginScreen.style.display = 'flex';
@@ -1411,12 +1600,19 @@ const PRIO = {
     low: '#9ca3af'
 };
 const AV = ['#1a3a5c', '#2d9b6e', '#e8a838', '#2a5a8c', '#dc3545', '#6c5ce7', '#00b894'];
+const CURRENCIES = ['USD', 'ZWL', 'ZAR', 'EUR', 'GBP'];
 const TODAY = new Date().toISOString().split('T')[0];
 
 // ----- DATA LAYER -----
 let DATA = [];
 let USERS = [];
+let ALL_TAGS = [];
+let ALL_STAKEHOLDER_NAMES = [];
+let CURRENT_USER = null;
 let loadError = null;
+// Assignees are the allocator/manager who handed the project out — restricted to editor/admin.
+// Owners ("Assigned To") are the developer doing the work and can be any role.
+function allocatorUsers() { return USERS.filter(u => u.role === 'editor' || u.role === 'admin'); }
 
 async function loadData() {
     try {
@@ -1435,6 +1631,24 @@ async function loadData() {
             USERS = [];
         }
 
+        try {
+            const tagRes = await fetch('api/tags/list.php', { credentials: 'same-origin' });
+            const tagData = await tagRes.json();
+            ALL_TAGS = tagData.data || [];
+        } catch (e) {
+            console.warn('Could not fetch tags, using empty list', e);
+            ALL_TAGS = [];
+        }
+
+        try {
+            const stakeholderRes = await fetch('api/stakeholders/names.php', { credentials: 'same-origin' });
+            const stakeholderData = await stakeholderRes.json();
+            ALL_STAKEHOLDER_NAMES = stakeholderData.data || [];
+        } catch (e) {
+            console.warn('Could not fetch stakeholder names, using empty list', e);
+            ALL_STAKEHOLDER_NAMES = [];
+        }
+
         DATA = mapApiData(payload.data.business_units, payload.data.projects);
         loadError = null;
     } catch (error) {
@@ -1449,14 +1663,15 @@ async function loadData() {
 function mapApiData(units, projects) {
     return units.map(unit => {
         const slug = (unit.slug || unit.name.toLowerCase().replace(/[^a-z0-9]+/g, '')).trim();
+        const id = slug || 'unit-' + unit.id;
         return {
             dbId: Number(unit.id),
-            id: slug || 'unit-' + unit.id,
+            id: id,
             name: unit.name,
             color: unit.color || '#12A052',
             projects: projects
                 .filter(p => Number(p.business_unit_id) === Number(unit.id))
-                .map(p => mapApiProject(p))
+                .map(p => ({ ...mapApiProject(p), company: id }))
         };
     });
 }
@@ -1472,7 +1687,10 @@ function mapApiProject(p) {
         name: p.name || '',
         stage: p.stage || 'initiation',
         health: p.status || 'ontrack',
-        owner: p.owner || '',
+        owner: p.owner_name || p.owner || '',
+        ownerId: p.owner_id || null,
+        ownerAcceptanceStatus: p.owner_acceptance_status || 'pending',
+        ownerRejectionReason: p.owner_rejection_reason || null,
         assignee_id: p.assignee_id || null,
         prio: p.priority || 'normal',
         gateDue: p.gate_due || '',
@@ -1481,6 +1699,11 @@ function mapApiProject(p) {
         currentUpdate: p.current_update || '',
         nextSteps: p.next_steps || '',
         is_gate_overdue: p.is_gate_overdue || 0,
+        budget: p.budget !== null && p.budget !== undefined ? Number(p.budget) : null,
+        actualCost: p.actual_cost !== null && p.actual_cost !== undefined ? Number(p.actual_cost) : null,
+        currency: p.currency || 'USD',
+        tags: p.tags || [],
+        stakeholders: p.stakeholders || [],
         governance: normalizeGovernance(p.governance || [])
     };
 }
@@ -1548,8 +1771,11 @@ async function persistProject(p, patch = {}) {
         body: JSON.stringify({ id: p.id, ...payload })
     });
     if (response.data) {
-        // Merge updated fields back into local project
+        // Merge updated fields back into local project. mapApiProject can't resolve the
+        // correct business-unit slug on its own (the API doesn't return one per-project),
+        // so keep the slug already assigned by mapApiData rather than letting it be overwritten.
         const updated = mapApiProject(response.data);
+        delete updated.company;
         Object.assign(p, updated);
         renderSidebar();
         renderContent();
@@ -1574,8 +1800,22 @@ function findP(id) {
 function avC(i) { let s = 0; for (const ch of i) s += ch.charCodeAt(0); return AV[s % AV.length]; }
 function esc(s) { return (s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
 function fmt(d) { if (!d) return '—'; return new Date(d + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: '2-digit' }); }
+function fmtMoney(n) { return '$' + Math.round(n || 0).toLocaleString(); }
 function flag(p) { return `<svg class="flag" viewBox="0 0 24 24" fill="${PRIO[p]}"><path d="M5 3v18M5 4h12l-2 4 2 4H5"/></svg>`; }
 function av(i) { return `<span class="avatar" style="background:${avC(i)}">${esc(i)}</span>`; }
+function tagChips(p) {
+    return (p.tags || []).map(t =>
+        `<span class="tag-chip" style="background:${t.color}1a;color:${t.color};border:1px solid ${t.color}55;">${esc(t.name)}</span>`
+    ).join('');
+}
+function skeletonRows(n = 3) {
+    return Array.from({ length: n }, (_, i) => `
+        <div class="skeleton-row">
+            <div class="skeleton-bar" style="width:${i % 2 ? '55%' : '70%'};"></div>
+            <div class="skeleton-bar" style="width:60px;margin-left:auto;"></div>
+        </div>
+    `).join('');
+}
 function effStatus(p) { if (p.health === 'complete') return 'complete'; if (p.compDue && p.compDue < TODAY) return 'overdue'; return p.health; }
 function gateOverdue(p) { return p.is_gate_overdue == 1; }
 function govPct(p) { const items = GOVERNANCE.filter(g => p.governance[g.id] !== 'na'); if (!items.length) return 100; const signed = items.filter(g => p.governance[g.id] === 'signed').length; return Math.round(signed / items.length * 100); }
@@ -1584,8 +1824,8 @@ function uid() { return Date.now().toString(36) + Math.random().toString(36).sli
 // ----- STATE -----
 let screen = 'portfolio';
 let selected = null;
-let view = 'list';
 let currentTab = 'dashboard';
+let ganttProjectFilter = null;
 let collapsed = {};
 let drawerTab = 'overview';
 let openId = null;
@@ -1632,13 +1872,14 @@ function renderSidebar() {
 }
 
 function renderHeader() {
-    const tabs = ['dashboard', 'list', 'board', 'calendar', 'gantt', 'report', 'mail'];
+    const tabs = ['dashboard', 'list', 'board', 'calendar', 'gantt', 'resources', 'report', 'mail'];
     const labels = {
         dashboard: 'Dashboard',
         list: 'List',
         board: 'Board',
         calendar: 'Calendar',
         gantt: 'Gantt',
+        resources: 'Resources',
         report: 'Reports',
         mail: 'Mail'
     };
@@ -1650,13 +1891,10 @@ function renderHeader() {
         tab.addEventListener('click', function() {
             const viewName = this.dataset.view;
             currentTab = viewName;
+            ganttProjectFilter = null;
             $('tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             this.classList.add('active');
-            if (viewName === 'dashboard') {
-                renderContent();
-            } else {
-                loadView(viewName);
-            }
+            renderContent();
         });
     });
 
@@ -1675,10 +1913,19 @@ function renderToolbar() {
     if (sel) {
         const currentVal = sel.value;
         sel.innerHTML = '<option value="">All assignees</option>';
-        USERS.forEach(u => {
+        allocatorUsers().forEach(u => {
             sel.innerHTML += `<option value="${u.id}">${esc(u.full_name)}</option>`;
         });
         sel.value = currentVal;
+    }
+    const ownerSel = document.getElementById('fOwner');
+    if (ownerSel) {
+        const currentVal = ownerSel.value;
+        ownerSel.innerHTML = '<option value="">All owners</option>';
+        USERS.forEach(u => {
+            ownerSel.innerHTML += `<option value="${u.id}">${esc(u.full_name)}</option>`;
+        });
+        ownerSel.value = currentVal;
     }
     const buSel = document.getElementById('fCompany');
     if (buSel) {
@@ -1687,6 +1934,29 @@ function renderToolbar() {
             DATA.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         buSel.value = current;
     }
+    const tagSel = document.getElementById('fTag');
+    if (tagSel) {
+        const current = tagSel.value;
+        tagSel.innerHTML = '<option value="">All tags</option>' +
+            ALL_TAGS.map(t => `<option value="${esc(t.name)}">${esc(t.name)}</option>`).join('');
+        tagSel.value = current;
+    }
+    const stakeholderSel = document.getElementById('fStakeholder');
+    if (stakeholderSel) {
+        const current = stakeholderSel.value;
+        stakeholderSel.innerHTML = '<option value="">All stakeholders</option>' +
+            ALL_STAKEHOLDER_NAMES.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+        stakeholderSel.value = current;
+    }
+    updateFilterBadge();
+}
+
+function updateFilterBadge() {
+    const badge = $('filterBadge');
+    if (!badge) return;
+    const count = ['fCompany', 'fStatus', 'fOwner', 'fAssignee', 'fTag', 'fStakeholder'].filter(id => $(id)?.value).length;
+    badge.textContent = count;
+    badge.style.display = count ? 'inline-flex' : 'none';
 }
 
 function getFiltered(scope) {
@@ -1694,12 +1964,18 @@ function getFiltered(scope) {
     const fst = $('fStatus')?.value || '';
     const fco = $('fCompany')?.value || '';
     const fAssignee = $('fAssignee')?.value || '';
+    const fOwner = $('fOwner')?.value || '';
+    const fTag = $('fTag')?.value || '';
+    const fStakeholder = $('fStakeholder')?.value || '';
 
     return scope.filter(p => {
         if (q && !p.name.toLowerCase().includes(q)) return false;
         if (fst && effStatus(p) !== fst) return false;
         if (fco && p.company !== fco) return false;
         if (fAssignee && String(p.assignee_id) !== fAssignee) return false;
+        if (fOwner && String(p.ownerId) !== fOwner) return false;
+        if (fTag && !(p.tags || []).some(t => t.name === fTag)) return false;
+        if (fStakeholder && !(p.stakeholders || []).some(s => s.name === fStakeholder)) return false;
         return true;
     });
 }
@@ -1732,20 +2008,33 @@ function renderDashboard() {
     }
     const projs = getFiltered(allProjects());
     const { c, avg, total } = statBlock(projs);
+    const totalBudget = projs.reduce((a, p) => a + (p.budget || 0), 0);
+    const totalActual = projs.reduce((a, p) => a + (p.actualCost || 0), 0);
+    const totalOwners = new Set(projs.map(p => p.ownerId).filter(Boolean)).size;
 
     const stats = [
-        { label: 'Total Projects', value: total, color: '#1a4a7a' },
-        { label: 'On Track', value: c.ontrack, color: HEALTH.ontrack.color },
-        { label: 'Overdue', value: c.overdue, color: HEALTH.overdue.color },
-        { label: 'Behind', value: c.behind, color: HEALTH.behind.color },
-        { label: 'At Risk', value: c.atrisk, color: HEALTH.atrisk.color },
-        { label: 'Complete', value: c.complete, color: HEALTH.complete.color },
+        { label: 'Total Projects', key: 'all', value: total, color: '#1a4a7a' },
+        { label: 'Total Budget', value: fmtMoney(totalBudget), color: '#2a5a8c', noDrill: true },
+        { label: 'Total Actual Cost', value: fmtMoney(totalActual), color: totalActual > totalBudget && totalBudget > 0 ? HEALTH.overdue.color : '#2d9b6e', noDrill: true },
+        { label: 'Total Owners / Assigned To', value: totalOwners, color: '#6b46c1', noDrill: true },
     ];
 
-    let html = `<div class="dashboard-grid">`;
+    let html = `
+        <div style="margin:24px 24px 0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-weight:700;font-size:14px;color:#1a2332;">📋 Executive Summary</span>
+                <span style="display:flex;gap:8px;">
+                    <button class="pill-btn" id="execSummaryCopy" style="display:none;font-size:12px;padding:5px 10px;">Copy</button>
+                    <button class="pill-btn" id="execSummaryRefresh" style="font-size:12px;padding:5px 10px;">Generate</button>
+                </span>
+            </div>
+            <div id="execSummaryBody" style="font-size:13.5px;line-height:1.6;color:var(--text);">Click "Generate" for an auto-written summary of portfolio health, risk, budget, and resourcing.</div>
+        </div>
+    `;
+    html += `<div class="dashboard-grid">`;
     stats.forEach(stat => {
         html += `
-            <div class="stat-card" data-drill="${stat.label.toLowerCase().replace(' ', '')}" data-title="${esc(stat.label)}">
+            <div class="stat-card" ${stat.noDrill ? '' : `data-drill="${stat.key}" data-title="${esc(stat.label)}"`}>
                 <div class="stat-number" style="color:${stat.color}">${stat.value}</div>
                 <div class="stat-label"><span class="stat-color-dot" style="background:${stat.color}"></span>${stat.label}</div>
             </div>
@@ -1809,7 +2098,14 @@ function renderDashboard() {
             <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Progress Distribution</h4>
             <canvas id="progressBarChart"></canvas>
         </div>
+        <div class="chart-card">
+            <h4 style="margin-bottom:12px;font-size:14px;font-weight:600;color:#1f2937;">Budget vs Actual by Business Unit</h4>
+            <canvas id="budgetVsActualChart"></canvas>
+        </div>
     </div>`;
+
+    html += `<div class="sec-title" style="margin:0 0 12px;padding:0 24px;">Recent Activity</div>
+        <div class="attn" id="activityFeed" style="margin:0 24px 24px;max-height:340px;overflow-y:auto;">${skeletonRows(4)}</div>`;
 
     const attn = projs.filter(p => ['overdue', 'behind', 'atrisk'].includes(effStatus(p)) || gateOverdue(p))
         .sort((a, b) => (a.compDue || '').localeCompare(b.compDue || ''));
@@ -1825,10 +2121,17 @@ function renderDashboard() {
         `).join('') : `<div style="padding:16px;color:var(--muted)">Nothing flagged. 🎉</div>`}</div>
     `;
 
+    html += `<div class="sec-title" style="margin:0 0 12px;padding:0 24px;">Overallocated Team Members</div>
+        <div class="attn" id="overallocList" style="margin:0 24px 24px;">${skeletonRows(2)}</div>`;
+
     $('content').innerHTML = html;
     renderCharts(c, total, projs);
+    renderOverallocation();
+    renderActivityFeed();
+    initExecSummary();
 
     $('content').querySelectorAll('.stat-card, .ring-card-custom').forEach(el => {
+        if (!el.dataset.drill) { el.style.cursor = 'default'; return; }
         el.addEventListener('click', function() {
             const key = this.dataset.drill;
             const title = this.dataset.title;
@@ -1836,6 +2139,304 @@ function renderDashboard() {
         });
     });
     $('content').querySelectorAll('.attn-row').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
+}
+
+function renderOverallocation() {
+    const el = document.getElementById('overallocList');
+    if (!el) return;
+    fetch('api/resources/heatmap.php', { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const list = data.overallocated || [];
+            el.innerHTML = list.length ? list.map(u => `
+                <div class="attn-row" style="grid-template-columns:1fr 100px;cursor:default;">
+                    <span>${esc(u.full_name)}</span>
+                    <span class="pill" style="background:#dc2626;">${u.total_pct}%</span>
+                </div>
+            `).join('') : `<div style="padding:16px;color:var(--muted)">No one is over-allocated. 🎉</div>`;
+        })
+        .catch(() => { el.innerHTML = '<div style="padding:16px;color:var(--muted)">Could not load resource allocation.</div>'; });
+}
+
+function timeAgo(iso) {
+    const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso.replace(' ', 'T'))) / 1000));
+    if (seconds < 60) return 'just now';
+    const mins = Math.floor(seconds / 60);
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+    return new Date(iso.replace(' ', 'T')).toLocaleDateString();
+}
+
+function renderActivityFeed(businessUnitId) {
+    const el = document.getElementById('activityFeed');
+    if (!el) return;
+    const params = new URLSearchParams({ limit: 25 });
+    if (businessUnitId) params.append('business_unit', businessUnitId);
+    fetch(`api/activity/list.php?${params.toString()}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const items = data.data || [];
+            el.innerHTML = items.length ? items.map(a => `
+                <div class="attn-row" style="grid-template-columns:1fr 90px;${a.project_id ? 'cursor:pointer;' : 'cursor:default;'}" ${a.project_id ? `data-pid="${a.project_id}"` : ''}>
+                    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><b>${esc(a.user_name)}</b> ${esc(a.description)}</span>
+                    <span style="font-size:11px;color:var(--muted-2);text-align:right;">${timeAgo(a.created_at)}</span>
+                </div>
+            `).join('') : `<div style="padding:16px;color:var(--muted)">No activity yet.</div>`;
+            el.querySelectorAll('[data-pid]').forEach(row => row.addEventListener('click', () => openDrawer(row.dataset.pid)));
+        })
+        .catch(() => { el.innerHTML = '<div style="padding:16px;color:var(--muted)">Could not load recent activity.</div>'; });
+}
+
+function initExecSummary(businessUnitId) {
+    const refreshBtn = document.getElementById('execSummaryRefresh');
+    const copyBtn = document.getElementById('execSummaryCopy');
+    const body = document.getElementById('execSummaryBody');
+    if (!refreshBtn) return;
+    let lastSummary = '';
+    refreshBtn.addEventListener('click', () => {
+        body.textContent = 'Generating…';
+        const params = new URLSearchParams();
+        if (businessUnitId) params.append('business_unit', businessUnitId);
+        fetch(`api/insights/executive_summary.php?${params.toString()}`, { credentials: 'same-origin' })
+            .then(res => res.json())
+            .then(data => {
+                lastSummary = data.summary || 'No summary available.';
+                body.textContent = lastSummary;
+                copyBtn.style.display = 'inline-flex';
+            })
+            .catch(() => { body.textContent = 'Could not generate summary.'; });
+    });
+    copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(lastSummary).then(() => alert('Summary copied to clipboard.'));
+    });
+}
+
+// ----- MOBILE SIDEBAR (off-canvas nav below 768px) -----
+function initMobileNav() {
+    const sideNav = $('sideNav');
+    const scrim = $('sideScrim');
+    const openNav = () => { sideNav.classList.add('mobile-open'); scrim.classList.add('open'); };
+    const closeNav = () => { sideNav.classList.remove('mobile-open'); scrim.classList.remove('open'); };
+    $('mobileMenuBtn').addEventListener('click', openNav);
+    scrim.addEventListener('click', closeNav);
+    // Close the overlay whenever the user picks something from the sidebar.
+    // Capture phase: .proj-row's own handler calls stopPropagation(), which would
+    // otherwise prevent a bubble-phase listener here from ever seeing the click.
+    sideNav.addEventListener('click', e => {
+        if (e.target.closest('.nav-item, .space-row, .proj-row')) closeNav();
+    }, { capture: true });
+}
+
+// ----- NOTIFICATIONS (owner allocation accept/reject workflow) -----
+async function refreshNotifBadge() {
+    if (!CURRENT_USER) return;
+    try {
+        const res = await fetch('api/notifications/unread_count.php', { credentials: 'same-origin' });
+        const data = await res.json();
+        const count = data.data?.count || 0;
+        const badge = document.getElementById('notifBadge');
+        if (!badge) return;
+        badge.textContent = count > 9 ? '9+' : count;
+        badge.style.display = count ? 'inline-block' : 'none';
+    } catch (e) { /* non-fatal */ }
+}
+
+async function loadNotifications() {
+    const list = document.getElementById('notifList');
+    list.innerHTML = skeletonRows(3);
+    try {
+        const res = await fetch('api/notifications/list.php', { credentials: 'same-origin' });
+        const data = await res.json();
+        const items = data.data || [];
+        list.innerHTML = items.map(n => {
+            const canRespond = n.type === 'project_assigned' && n.owner_acceptance_status === 'pending';
+            return `
+                <div style="padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer;${n.is_read ? '' : 'background:#f0f7ff;'}" data-nid="${n.id}" data-pid="${n.project_id}">
+                    <div style="font-size:13px;line-height:1.5;margin-bottom:4px;">${esc(n.message)}</div>
+                    <div style="font-size:11px;color:var(--muted-2);margin-bottom:${canRespond ? '8' : '0'}px;">${timeAgo(n.created_at)}</div>
+                    ${canRespond ? `
+                        <div style="display:flex;gap:6px;">
+                            <button class="pill-btn primary notif-accept" data-pid="${n.project_id}" data-nid="${n.id}" style="font-size:11px;padding:4px 10px;">Start Working</button>
+                            <button class="pill-btn notif-reject" data-pid="${n.project_id}" data-nid="${n.id}" style="font-size:11px;padding:4px 10px;">Reject</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }).join('') || '<div style="padding:24px 14px;text-align:center;color:var(--muted);font-size:13px;">No notifications yet.</div>';
+
+        list.querySelectorAll('.notif-accept').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                try {
+                    await apiRequest('api/projects/respond.php', { method: 'POST', body: JSON.stringify({ project_id: btn.dataset.pid, action: 'accept' }) });
+                    await apiRequest('api/notifications/mark_read.php', { method: 'POST', body: JSON.stringify({ id: +btn.dataset.nid }) });
+                    await loadData();
+                    loadNotifications();
+                    refreshNotifBadge();
+                } catch (err) { alert(err.message); }
+            });
+        });
+        list.querySelectorAll('.notif-reject').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openRejectAllocModal(btn.dataset.pid, btn.dataset.nid);
+            });
+        });
+        list.querySelectorAll('[data-nid]').forEach(row => {
+            row.addEventListener('click', async () => {
+                const nid = +row.dataset.nid;
+                try { await apiRequest('api/notifications/mark_read.php', { method: 'POST', body: JSON.stringify({ id: nid }) }); refreshNotifBadge(); } catch (e) {}
+                document.getElementById('notifPanel').classList.remove('show');
+                openDrawer(row.dataset.pid);
+            }, { once: true });
+        });
+    } catch (e) {
+        list.innerHTML = '<div style="padding:16px;color:var(--zimnat-danger);font-size:13px;">Could not load notifications.</div>';
+    }
+}
+
+function openRejectAllocModal(projectId, notifId) {
+    const overlay = document.getElementById('rejectAllocOverlay');
+    document.getElementById('rejectAllocReason').value = '';
+    overlay.classList.add('open');
+    const confirmBtn = document.getElementById('rejectAllocConfirm');
+    const cancelBtn = document.getElementById('rejectAllocCancel');
+    const closeBtn = document.getElementById('rejectAllocClose');
+    const cleanup = () => {
+        overlay.classList.remove('open');
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+        closeBtn.replaceWith(closeBtn.cloneNode(true));
+        bindRejectModalCloseHandlers();
+    };
+    const onConfirm = async () => {
+        const reason = document.getElementById('rejectAllocReason').value.trim();
+        if (!reason) { alert('Please give a reason for rejecting this allocation.'); return; }
+        try {
+            await apiRequest('api/projects/respond.php', { method: 'POST', body: JSON.stringify({ project_id: projectId, action: 'reject', reason }) });
+            await apiRequest('api/notifications/mark_read.php', { method: 'POST', body: JSON.stringify({ id: +notifId }) });
+            cleanup();
+            await loadData();
+            loadNotifications();
+            refreshNotifBadge();
+        } catch (err) { alert(err.message); }
+    };
+    document.getElementById('rejectAllocConfirm').addEventListener('click', onConfirm);
+    document.getElementById('rejectAllocCancel').addEventListener('click', cleanup);
+    document.getElementById('rejectAllocClose').addEventListener('click', cleanup);
+}
+function bindRejectModalCloseHandlers() {
+    document.getElementById('rejectAllocCancel').addEventListener('click', () => document.getElementById('rejectAllocOverlay').classList.remove('open'));
+    document.getElementById('rejectAllocClose').addEventListener('click', () => document.getElementById('rejectAllocOverlay').classList.remove('open'));
+}
+
+// ----- CUSTOM CONFIRM MODAL (Promise-based replacement for window.confirm) -----
+function showShareLinkModal(url) {
+    document.getElementById('shareLinkInput').value = url;
+    document.getElementById('shareLinkOverlay').classList.add('open');
+}
+
+function confirmDialog(message, opts = {}) {
+    const overlay = $('confirmOverlay');
+    $('confirmTitle').textContent = opts.title || 'Are you sure?';
+    $('confirmMessage').textContent = message;
+    $('confirmIcon').textContent = opts.danger === false ? '❓' : '⚠️';
+    const okBtn = $('confirmOkBtn');
+    okBtn.textContent = opts.confirmLabel || (opts.danger === false ? 'Confirm' : 'Delete');
+    okBtn.className = 'pill-btn ' + (opts.danger === false ? 'primary' : 'danger');
+    overlay.classList.add('open');
+
+    return new Promise(resolve => {
+        const cleanup = (result) => {
+            overlay.classList.remove('open');
+            okBtn.removeEventListener('click', onOk);
+            $('confirmCancelBtn').removeEventListener('click', onCancel);
+            overlay.removeEventListener('click', onOverlay);
+            resolve(result);
+        };
+        const onOk = () => cleanup(true);
+        const onCancel = () => cleanup(false);
+        const onOverlay = (e) => { if (e.target === overlay) cleanup(false); };
+        okBtn.addEventListener('click', onOk);
+        $('confirmCancelBtn').addEventListener('click', onCancel);
+        overlay.addEventListener('click', onOverlay);
+    });
+}
+
+// ----- GLOBAL SEARCH (Cmd/Ctrl+K) -----
+function initCommandPalette() {
+    const overlay = $('cmdkOverlay');
+    const input = $('cmdkInput');
+    const results = $('cmdkResults');
+    let activeIdx = -1;
+    let matches = [];
+
+    function openPalette() {
+        overlay.classList.add('open');
+        input.value = '';
+        renderResults('');
+        setTimeout(() => input.focus(), 30);
+    }
+    function closePalette() {
+        overlay.classList.remove('open');
+    }
+    function renderResults(q) {
+        q = q.trim().toLowerCase();
+        const all = DATA.flatMap(c => c.projects);
+        matches = !q ? all.slice(0, 8) : all.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            (p.owner || '').toLowerCase().includes(q) ||
+            (p.companyName || '').toLowerCase().includes(q) ||
+            (p.currentUpdate || '').toLowerCase().includes(q) ||
+            (p.tags || []).some(t => t.name.toLowerCase().includes(q))
+        ).slice(0, 15);
+        activeIdx = matches.length ? 0 : -1;
+        renderList();
+    }
+    function renderList() {
+        results.innerHTML = matches.length ? matches.map((p, i) => `
+            <div class="cmdk-row" data-idx="${i}" style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;${i === activeIdx ? 'background:var(--hover);' : ''}">
+                <span style="width:8px;height:8px;border-radius:50%;background:${p.companyColor};flex-shrink:0;"></span>
+                <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;">${esc(p.name)}</span>
+                <span style="font-size:11px;color:var(--muted-2);">${esc(p.companyName)}</span>
+                <span class="pill" style="background:${HEALTH[effStatus(p)].color};">${HEALTH[effStatus(p)].label}</span>
+            </div>
+        `).join('') : `<div style="padding:20px;text-align:center;color:var(--muted)">No matching projects.</div>`;
+        results.querySelectorAll('.cmdk-row').forEach(row => {
+            row.addEventListener('mouseenter', () => { activeIdx = +row.dataset.idx; renderList(); });
+            row.addEventListener('click', () => selectMatch(+row.dataset.idx));
+        });
+    }
+    function selectMatch(i) {
+        const p = matches[i];
+        if (!p) return;
+        closePalette();
+        screen = 'company';
+        selected = p.company;
+        currentTab = 'dashboard';
+        renderAll();
+        openDrawer(p.id);
+    }
+
+    document.getElementById('cmdkBtn').addEventListener('click', openPalette);
+    document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            overlay.classList.contains('open') ? closePalette() : openPalette();
+        } else if (e.key === 'Escape' && overlay.classList.contains('open')) {
+            closePalette();
+        }
+    });
+    overlay.addEventListener('click', e => { if (e.target === overlay) closePalette(); });
+    input.addEventListener('input', () => renderResults(input.value));
+    input.addEventListener('keydown', e => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, matches.length - 1); renderList(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, 0); renderList(); }
+        else if (e.key === 'Enter') { e.preventDefault(); selectMatch(activeIdx); }
+    });
 }
 
 // ----- CHARTS -----
@@ -1899,6 +2500,33 @@ function renderCharts(c, total, filteredProjects) {
             }
         });
     }
+
+    const ctx3 = document.getElementById('budgetVsActualChart');
+    if (ctx3) {
+        if (window._budgetVsActual) window._budgetVsActual.destroy();
+        const byUnit = {};
+        filteredProjects.forEach(p => {
+            if (!byUnit[p.companyName]) byUnit[p.companyName] = { budget: 0, actual: 0 };
+            byUnit[p.companyName].budget += p.budget || 0;
+            byUnit[p.companyName].actual += p.actualCost || 0;
+        });
+        const unitNames = Object.keys(byUnit);
+        window._budgetVsActual = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: unitNames,
+                datasets: [
+                    { label: 'Budget', data: unitNames.map(u => byUnit[u].budget), backgroundColor: '#2a5a8c' },
+                    { label: 'Actual', data: unitNames.map(u => byUnit[u].actual), backgroundColor: '#dc2626' }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    }
 }
 
 // ----- COMPANY VIEW -----
@@ -1925,15 +2553,49 @@ function renderCompany() {
     const stg = {};
     STAGES.forEach(s => stg[s.id] = 0);
     comp.projects.forEach(p => stg[p.stage]++);
-    let html = `<div class="sumwrap" style="padding-bottom:6px"><div class="stat-row">${cards.map(([l, n, col, key]) => `
+    const unitBudget = projs.reduce((a, p) => a + (p.budget || 0), 0);
+    const unitActual = projs.reduce((a, p) => a + (p.actualCost || 0), 0);
+    const unitOwners = new Set(projs.map(p => p.ownerId).filter(Boolean)).size;
+    let html = `<div class="sumwrap" style="padding-bottom:6px">
+        <div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:18px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <span style="font-weight:700;font-size:14px;color:#1a2332;">📋 Executive Summary</span>
+                <span style="display:flex;gap:8px;">
+                    <button class="pill-btn" id="execSummaryCopy" style="display:none;font-size:12px;padding:5px 10px;">Copy</button>
+                    <button class="pill-btn" id="execSummaryRefresh" style="font-size:12px;padding:5px 10px;">Generate</button>
+                </span>
+            </div>
+            <div id="execSummaryBody" style="font-size:13.5px;line-height:1.6;color:var(--text);">Click "Generate" for an auto-written summary of this business unit's health, risk, and budget.</div>
+        </div>
+        <div class="stat-row">${cards.map(([l, n, col, key]) => `
             <div class="scard" data-drill="${key}" data-title="${esc(l)}"><div class="n" style="color:${col}">${n}</div><div class="l">${l}</div></div>
         `).join('')}</div>
+        <div class="stat-row" style="margin-top:10px">
+            <div class="scard" style="cursor:default"><div class="n" style="color:#2a5a8c">${fmtMoney(unitBudget)}</div><div class="l">Total Budget</div></div>
+            <div class="scard" style="cursor:default"><div class="n" style="color:${unitActual > unitBudget && unitBudget > 0 ? HEALTH.overdue.color : '#2d9b6e'}">${fmtMoney(unitActual)}</div><div class="l">Total Actual Cost</div></div>
+            <div class="scard" style="cursor:default"><div class="n" style="color:#6b46c1">${unitOwners}</div><div class="l">Total Owners / Assigned To</div></div>
+        </div>
         <div class="sec-title" style="margin:18px 0 10px">Stage Gate Distribution</div>
-        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">${STAGES.map(s => `<span style="background:var(--bg);padding:4px 12px;border-radius:6px;border:1px solid var(--line)"><b>${stg[s.id]}</b> ${s.label}</span>`).join('')}</div></div>`;
-    $('content').innerHTML = html + (view === 'list' ? listHtml(projs) : boardHtml(projs));
+        <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">${STAGES.map(s => `<span style="background:var(--bg);padding:4px 12px;border-radius:6px;border:1px solid var(--line)"><b>${stg[s.id]}</b> ${s.label}</span>`).join('')}</div>
+        <div class="sec-title" style="margin:18px 0 10px">Recent Activity</div>
+        <div class="attn" id="activityFeed" style="max-height:280px;overflow-y:auto;">${skeletonRows(4)}</div>
+        </div>`;
+    $('content').innerHTML = html;
     $('content').querySelectorAll('.scard[data-drill]').forEach(card => card.addEventListener('click', () => openDrill(`${card.dataset.title} Projects`, card.dataset.drill, projs)));
-    wireList();
-    wireBoard();
+    renderActivityFeed(comp.dbId);
+    initExecSummary(comp.dbId);
+}
+
+// ----- LIST / BOARD TABS (single rendering path for both portfolio-wide and BU-scoped views) -----
+function renderProjectsView(viewName) {
+    if (loadError) {
+        $('content').innerHTML = `<div style="padding:40px;text-align:center;color:var(--zimnat-danger);">⚠️ ${esc(loadError)}</div>`;
+        return;
+    }
+    const scope = (screen === 'company' && selected) ? (co(selected)?.projects || []) : allProjects();
+    const projs = getFiltered(scope);
+    $('content').innerHTML = viewName === 'board' ? boardHtml(projs) : listHtml(projs);
+    if (viewName === 'board') wireBoard(); else wireList();
 }
 
 // ----- LIST HTML (with gate overdue) -----
@@ -1946,14 +2608,14 @@ function listHtml(projs) {
         const isCol = collapsed[colKey];
         html += `<div class="group ${isCol ? 'collapsed' : ''}" data-st="${st.id}"><div class="group-head"><span class="gcaret">▼</span><span class="group-bar" style="background:var(--cu)">${st.label.toUpperCase()}</span><span class="group-count">${items.length}</span></div>
             <div class="rows"><div class="lh"><span>Project</span><span>Status</span><span>Owner</span><span>Gov</span><span>Gate due</span><span>Completion</span></div>
-            ${items.map(p => { const es = effStatus(p); const gateFlag = gateOverdue(p); return `<div class="lrow" data-pid="${p.id}"><div class="lname">${flag(p.prio)}<span class="ptxt">${esc(p.name)}</span></div><div><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div><div>${av(p.owner)}</div><div class="gov-mini">${govPct(p)}%</div><div class="due ${gateFlag ? 'over' : ''}">${fmt(p.gateDue)}${gateFlag ? ' ⚠' : ''}</div><div class="due ${p.compDue < TODAY && es !== 'complete' ? 'over' : ''}">${fmt(p.compDue)}</div></div>`; }).join('')}</div></div>`;
+            ${items.map(p => { const es = effStatus(p); const gateFlag = gateOverdue(p); return `<div class="lrow" data-pid="${p.id}"><div class="lname">${flag(p.prio)}<span class="ptxt">${esc(p.name)}</span>${tagChips(p)}</div><div><span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div><div>${av(p.owner)}</div><div class="gov-mini">${govPct(p)}%</div><div class="due ${gateFlag ? 'over' : ''}">${fmt(p.gateDue)}${gateFlag ? ' ⚠' : ''}</div><div class="due ${p.compDue < TODAY && es !== 'complete' ? 'over' : ''}">${fmt(p.compDue)}</div></div>`; }).join('')}</div></div>`;
     });
     html += `</div>`;
     return html;
 }
 
 function wireList() {
-    $('content').querySelectorAll('.group-head').forEach(h => h.addEventListener('click', () => { const st = h.closest('.group').getAttribute('data-st'); collapsed[selected + st] = !collapsed[selected + st]; renderCompany(); }));
+    $('content').querySelectorAll('.group-head').forEach(h => h.addEventListener('click', () => { const st = h.closest('.group').getAttribute('data-st'); collapsed[selected + st] = !collapsed[selected + st]; renderProjectsView('list'); }));
     $('content').querySelectorAll('.lrow').forEach(r => r.addEventListener('click', () => openDrawer(r.getAttribute('data-pid'))));
 }
 
@@ -1961,7 +2623,7 @@ function boardHtml(projs) {
     return `<div class="board">` + STAGES.map(st => {
         const items = projs.filter(p => p.stage === st.id);
         return `<div class="col"><div class="col-head"><span class="col-dot" style="background:var(--cu)"></span><span class="ct">${st.label}</span><span class="cc">${items.length}</span></div>
-            <div class="col-body">${items.map(p => { const es = effStatus(p); return `<div class="card" data-pid="${p.id}"><div class="cn">${flag(p.prio)}<span>${esc(p.name)}</span></div><div class="cm">${av(p.owner)}<span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div>`; }).join('') || '<div style="color:var(--muted-2);font-size:12px;padding:4px;text-align:center">—</div>'}</div></div>`;
+            <div class="col-body">${items.map(p => { const es = effStatus(p); return `<div class="card" data-pid="${p.id}"><div class="cn">${flag(p.prio)}<span>${esc(p.name)}</span>${tagChips(p)}</div><div class="cm">${av(p.owner)}<span class="pill" style="background:${HEALTH[es].color}">${HEALTH[es].label}</span></div></div>`; }).join('') || '<div style="color:var(--muted-2);font-size:12px;padding:4px;text-align:center">—</div>'}</div></div>`;
     }).join('') + `</div>`;
 }
 function wireBoard() {
@@ -1971,10 +2633,9 @@ function wireBoard() {
 // 🔥 FIXED: loadView passes numeric business_unit ID
 function loadView(viewName) {
     const urlMap = {
-        'list': 'views/list.php',
-        'board': 'views/board.php',
-        'calendar': 'views/calendar.php',
+        'calendar': 'views/calender.php',
         'gantt': 'views/gantt.php',
+        'resources': 'views/resources.php',
         'report': 'views/reports.php',
         'mail': 'views/mail.php'
     };
@@ -1989,12 +2650,17 @@ function loadView(viewName) {
     const company = document.getElementById('fCompany').value;
     const status = document.getElementById('fStatus').value;
     const assignee = document.getElementById('fAssignee').value;
+    const tag = document.getElementById('fTag').value;
     if (company) params.append('business_unit', company);
     if (status) params.append('status', status);
     if (assignee) params.append('assignee', assignee);
+    if (tag) params.append('tag', tag);
     if (screen === 'company' && selected) {
         const unit = co(selected);
         if (unit) params.append('business_unit', unit.dbId); // 🔥 FIX: send numeric ID
+    }
+    if (viewName === 'gantt' && ganttProjectFilter) {
+        params.append('project', ganttProjectFilter);
     }
 
     fetch(`${url}?${params}`)
@@ -2019,18 +2685,12 @@ function loadView(viewName) {
 }
 
 function renderContent() {
-    if (screen === 'portfolio') {
-        if (currentTab === 'dashboard') {
-            renderDashboard();
-        } else {
-            loadView(currentTab);
-        }
+    if (currentTab === 'dashboard') {
+        screen === 'portfolio' ? renderDashboard() : renderCompany();
+    } else if (currentTab === 'list' || currentTab === 'board') {
+        renderProjectsView(currentTab);
     } else {
-        if (currentTab === 'dashboard') {
-            renderCompany();
-        } else {
-            loadView(currentTab);
-        }
+        loadView(currentTab);
     }
 }
 
@@ -2047,6 +2707,7 @@ function renderAll() {
     } else {
         buFilter.value = '';
     }
+    updateFilterBadge();
     renderContent();
 }
 
@@ -2091,9 +2752,421 @@ function renderDrawer() {
     $('drCo').style.background = p.companyColor;
     $('drName').textContent = p.name;
     $('drTabs').querySelectorAll('.dr-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-dt') === drawerTab));
-    if (drawerTab === 'overview') drawerOverview(p);
+    if (drawerTab === 'stakeholders') drawerStakeholders(p);
+    else if (drawerTab === 'overview') drawerOverview(p);
     else if (drawerTab === 'updates') drawerUpdates(p);
-    else drawerGov(p);
+    else if (drawerTab === 'gov') drawerGov(p);
+    else if (drawerTab === 'gantt') drawerGantt(p);
+    else if (drawerTab === 'time') drawerTime(p);
+    else if (drawerTab === 'assignees') drawerAssignees(p);
+    else if (drawerTab === 'deps') drawerDependencies(p);
+    else drawerComments(p);
+}
+
+function drawerGantt(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before viewing its Gantt chart.</p>';
+        return;
+    }
+    if (!p.gateDue && !p.compDue) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Set a stage gate due date and/or completion date to see this project on a Gantt chart.</p>';
+        return;
+    }
+    $('drBody').innerHTML = `
+        <div style="margin-bottom:14px;display:flex;justify-content:flex-end;">
+            <button class="pill-btn" id="dr-gantt-print">Download / Print</button>
+        </div>
+        <div id="drGanttChart"></div>
+    `;
+    const start = p.gateDue || p.compDue;
+    const end = p.compDue || p.gateDue;
+    const task = {
+        id: p.id,
+        name: p.name,
+        start: start,
+        end: start === end ? end : end,
+        progress: p.progress / 100,
+        custom_class: 'gantt-' + effStatus(p)
+    };
+    // Frappe Gantt needs distinct start/end dates
+    if (task.start === task.end) {
+        const d = new Date(task.end);
+        d.setDate(d.getDate() + 1);
+        task.end = d.toISOString().split('T')[0];
+    }
+    new Gantt('#drGanttChart', [task], {});
+    scrollGanttToToday('drGanttChart');
+    document.getElementById('dr-gantt-print').addEventListener('click', () => window.print());
+}
+
+// Frappe Gantt defaults to the start of its date range, not today — scroll the
+// inner .gantt-container so today's highlighted column is centered in view.
+function scrollGanttToToday(mountId) {
+    const mount = document.getElementById(mountId);
+    if (!mount) return;
+    const wrapper = mount.querySelector('.gantt-container') || mount;
+    const todayRect = mount.querySelector('.today-highlight');
+    if (!todayRect) return;
+    const rectBox = todayRect.getBoundingClientRect();
+    const wrapperBox = wrapper.getBoundingClientRect();
+    const offset = (rectBox.left - wrapperBox.left) + wrapper.scrollLeft - wrapper.clientWidth / 2;
+    wrapper.scrollLeft = Math.max(0, offset);
+}
+
+function drawerTime(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before logging time against it.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(4);
+    fetch(`api/time/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const entries = data.data || [];
+            const totalHours = data.total_hours || 0;
+            const rowsHtml = entries.map(e => `
+                <tr>
+                    <td style="padding:6px 8px;">${esc(e.date)}</td>
+                    <td style="padding:6px 8px;text-align:right;">${Number(e.hours)}</td>
+                    <td style="padding:6px 8px;">${esc(e.description || '')}</td>
+                    <td style="padding:6px 8px;color:var(--muted);">${esc(e.logged_by)}</td>
+                    <td style="padding:6px 8px;text-align:right;"><button class="x" style="font-size:16px;" data-tid="${e.id}" title="Delete entry">&times;</button></td>
+                </tr>
+            `).join('') || `<tr><td colspan="5" style="padding:12px 8px;color:var(--muted);text-align:center;">No time logged yet.</td></tr>`;
+
+            $('drBody').innerHTML = `
+                <div class="fld"><label>Log time</label></div>
+                <div class="two">
+                    <div class="fld"><label>Date</label><input type="date" id="t-date" value="${TODAY}"></div>
+                    <div class="fld"><label>Hours</label><input type="number" id="t-hours" min="0.25" step="0.25" placeholder="e.g. 2.5"></div>
+                </div>
+                <div class="fld"><label>Description</label><input id="t-desc" placeholder="What did you work on?"></div>
+                <button class="pill-btn primary" id="t-log">Log Time</button>
+                <div style="margin-top:24px;border-top:2px solid var(--line);padding-top:16px;">
+                    <h4 style="font-size:14px;font-weight:600;margin-bottom:12px;">⏱ Logged Time — Total: ${totalHours} hrs</h4>
+                    <table style="width:100%;font-size:13px;border-collapse:collapse;">
+                        <thead><tr style="text-align:left;border-bottom:1px solid var(--line);color:var(--muted-2);font-size:11px;text-transform:uppercase;">
+                            <th style="padding:6px 8px;">Date</th><th style="padding:6px 8px;text-align:right;">Hours</th><th style="padding:6px 8px;">Description</th><th style="padding:6px 8px;">Logged by</th><th></th>
+                        </tr></thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('t-log').addEventListener('click', async () => {
+                const date = document.getElementById('t-date').value;
+                const hours = parseFloat(document.getElementById('t-hours').value);
+                const description = document.getElementById('t-desc').value;
+                if (!date || !hours || hours <= 0) { alert('Date and a positive number of hours are required.'); return; }
+                try {
+                    await apiRequest('api/time/create.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, date, hours, description }) });
+                    drawerTime(p);
+                } catch (err) { alert(err.message); }
+            });
+            $('drBody').querySelectorAll('[data-tid]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!(await confirmDialog('This will permanently remove the logged time entry.', { title: 'Delete time entry?' }))) return;
+                    try {
+                        await apiRequest(`api/time/delete.php?id=${btn.dataset.tid}`, { method: 'DELETE', headers: {} });
+                        drawerTime(p);
+                    } catch (err) { alert(err.message); }
+                });
+            });
+        });
+}
+
+function drawerAssignees(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before assigning team members to it.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(4);
+    fetch(`api/assignees/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const current = {};
+            (data.data || []).forEach(a => current[a.user_id] = a.allocation_pct);
+
+            const rowsHtml = allocatorUsers().map(u => {
+                const checked = current[u.id] !== undefined;
+                const pct = current[u.id] ?? 100;
+                return `
+                    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);">
+                        <input type="checkbox" class="a-check" data-uid="${u.id}" ${checked ? 'checked' : ''} style="width:auto;">
+                        <span style="flex:1;font-size:13.5px;">${esc(u.full_name)}</span>
+                        <input type="number" class="a-pct" data-uid="${u.id}" min="1" max="100" value="${pct}" ${checked ? '' : 'disabled'} style="width:70px;padding:5px 8px;">
+                        <span style="font-size:12px;color:var(--muted);">%</span>
+                    </div>
+                `;
+            }).join('') || '<p style="color:var(--muted)">No editor/admin users available.</p>';
+
+            $('drBody').innerHTML = `
+                <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Assign the editor(s)/admin(s) who are allocating and managing this project, and set each person's allocation — the percentage of their capacity this project consumes.</p>
+                ${rowsHtml}
+                <button class="pill-btn primary" id="a-save" style="margin-top:16px;">Save Assignees</button>
+                <span class="saved-tag" id="aSavedTag">Saved ✓</span>
+            `;
+
+            $('drBody').querySelectorAll('.a-check').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const pctInput = $('drBody').querySelector(`.a-pct[data-uid="${cb.dataset.uid}"]`);
+                    pctInput.disabled = !cb.checked;
+                });
+            });
+
+            document.getElementById('a-save').addEventListener('click', async () => {
+                const assignees = [];
+                $('drBody').querySelectorAll('.a-check:checked').forEach(cb => {
+                    const pctInput = $('drBody').querySelector(`.a-pct[data-uid="${cb.dataset.uid}"]`);
+                    assignees.push({ user_id: parseInt(cb.dataset.uid), allocation_pct: parseInt(pctInput.value) || 100 });
+                });
+                try {
+                    const res = await apiRequest('api/assignees/set.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, assignees }) });
+                    const t = document.getElementById('aSavedTag');
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 1600);
+                    if (res.warnings && res.warnings.length) {
+                        alert('Heads up — these team members are now allocated over 100% of their capacity across all projects:\n\n' +
+                            res.warnings.map(w => `${w.full_name}: ${w.total_pct}%`).join('\n'));
+                    }
+                } catch (err) { alert(err.message); }
+            });
+        });
+}
+
+function drawerDependencies(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before setting dependencies.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(4);
+    fetch(`api/dependencies/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const blockedBy = data.blocked_by || [];
+            const blocking = data.blocking || [];
+            const blockedIds = new Set(blockedBy.map(b => b.project_id));
+            const allOthers = allProjects().filter(other => other.id !== p.id);
+
+            const rowsHtml = allOthers.map(other => {
+                const checked = blockedIds.has(other.id);
+                const es = effStatus(other);
+                return `
+                    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--line);">
+                        <input type="checkbox" class="dep-check" data-pid="${other.id}" ${checked ? 'checked' : ''} style="width:auto;">
+                        <span style="flex:1;font-size:13px;">${esc(other.name)}</span>
+                        <span style="font-size:11px;color:var(--muted-2);">${esc(other.companyName)}</span>
+                        <span class="pill" style="background:${HEALTH[es].color};font-size:10px;">${HEALTH[es].label}</span>
+                    </div>
+                `;
+            }).join('') || '<p style="color:var(--muted)">No other projects exist yet.</p>';
+
+            const blockingHtml = blocking.length ? blocking.map(b => `
+                <div class="attn-row" style="grid-template-columns:1fr 90px;cursor:pointer;" data-pid="${b.project_id}">
+                    <span>${esc(b.name)}</span>
+                    <span class="pill" style="background:${HEALTH[b.effective_status]?.color || '#6b7280'};">${HEALTH[b.effective_status]?.label || b.effective_status}</span>
+                </div>
+            `).join('') : '<div style="padding:12px;color:var(--muted);">No other project depends on this one.</div>';
+
+            $('drBody').innerHTML = `
+                <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Select the projects this one is blocked by. A dependency that isn't yet Complete is a risk to this project's timeline.</p>
+                <div style="max-height:260px;overflow-y:auto;border:1px solid var(--line);border-radius:8px;padding:0 10px;">${rowsHtml}</div>
+                <button class="pill-btn primary" id="dep-save" style="margin-top:14px;">Save Dependencies</button>
+                <span class="saved-tag" id="depSavedTag">Saved ✓</span>
+                <div class="sec-title" style="margin:20px 0 8px;">Blocked by this project</div>
+                <div class="attn">${blockingHtml}</div>
+            `;
+
+            $('drBody').querySelectorAll('.attn-row[data-pid]').forEach(row => row.addEventListener('click', () => openDrawer(row.dataset.pid)));
+
+            document.getElementById('dep-save').addEventListener('click', async () => {
+                const dependsOn = Array.from($('drBody').querySelectorAll('.dep-check:checked')).map(c => c.dataset.pid);
+                try {
+                    const res = await apiRequest('api/dependencies/set.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, depends_on: dependsOn }) });
+                    const t = document.getElementById('depSavedTag');
+                    t.classList.add('show');
+                    setTimeout(() => t.classList.remove('show'), 1600);
+                    if (res.rejected_cycles && res.rejected_cycles.length) {
+                        alert('Some dependencies were rejected because they would create a circular dependency: ' + res.rejected_cycles.map(id => findP(id)?.name || id).join(', '));
+                    }
+                    drawerDependencies(p);
+                } catch (err) { alert(err.message); }
+            });
+        });
+}
+
+function drawerComments(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before commenting on it.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(3);
+    fetch(`api/comments/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const comments = data.data || [];
+            const renderBody = (text) => esc(text).replace(/@([A-Za-z][A-Za-z .'-]*)/g, (m, name) => {
+                return USERS.some(u => u.full_name.toLowerCase() === name.trim().toLowerCase()) ? `<span style="color:var(--cu);font-weight:600;">@${esc(name)}</span>` : m;
+            });
+            const commentsHtml = comments.map(c => `
+                <div style="padding:10px 0;border-bottom:1px solid var(--line);">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;">
+                        <span style="font-weight:600;font-size:13px;">${esc(c.full_name)}</span>
+                        <span style="font-size:11px;color:var(--muted-2);">${new Date(c.created_at.replace(' ', 'T')).toLocaleString()}</span>
+                    </div>
+                    <div style="font-size:13px;line-height:1.5;">${renderBody(c.body)}</div>
+                    <button class="comment-del" data-cid="${c.id}" style="border:none;background:none;color:var(--muted-2);font-size:11px;cursor:pointer;padding:2px 0;margin-top:2px;">Delete</button>
+                </div>
+            `).join('') || '<div style="padding:16px 0;color:var(--muted);text-align:center;">No comments yet. Start the discussion below.</div>';
+
+            $('drBody').innerHTML = `
+                <div style="max-height:340px;overflow-y:auto;margin-bottom:14px;">${commentsHtml}</div>
+                <div class="fld"><label>Add a comment — type @ to mention someone</label>
+                    <textarea id="c-body" placeholder="Share an update, ask a question, mention a teammate with @Name…" style="min-height:70px;"></textarea>
+                </div>
+                <div id="c-mention-box" style="display:none;border:1px solid var(--line);border-radius:8px;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.1);max-height:160px;overflow-y:auto;margin-top:-6px;margin-bottom:8px;"></div>
+                <button class="pill-btn primary" id="c-post">Post Comment</button>
+            `;
+
+            const textarea = document.getElementById('c-body');
+            const mentionBox = document.getElementById('c-mention-box');
+            textarea.addEventListener('input', () => {
+                const cursor = textarea.selectionStart;
+                const upToCursor = textarea.value.slice(0, cursor);
+                const match = upToCursor.match(/@([A-Za-z]*)$/);
+                if (!match) { mentionBox.style.display = 'none'; return; }
+                const q = match[1].toLowerCase();
+                const matches = USERS.filter(u => u.full_name.toLowerCase().includes(q)).slice(0, 6);
+                if (!matches.length) { mentionBox.style.display = 'none'; return; }
+                mentionBox.innerHTML = matches.map(u => `<div class="mention-opt" data-name="${esc(u.full_name)}" style="padding:7px 12px;cursor:pointer;font-size:13px;">${esc(u.full_name)}</div>`).join('');
+                mentionBox.style.display = 'block';
+                mentionBox.querySelectorAll('.mention-opt').forEach(opt => {
+                    opt.addEventListener('mouseenter', () => opt.style.background = 'var(--hover)');
+                    opt.addEventListener('mouseleave', () => opt.style.background = '');
+                    opt.addEventListener('click', () => {
+                        const name = opt.dataset.name;
+                        textarea.value = upToCursor.replace(/@([A-Za-z]*)$/, '@' + name + ' ') + textarea.value.slice(cursor);
+                        mentionBox.style.display = 'none';
+                        textarea.focus();
+                    });
+                });
+            });
+
+            document.getElementById('c-post').addEventListener('click', async () => {
+                const body = textarea.value.trim();
+                if (!body) return;
+                try {
+                    await apiRequest('api/comments/create.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, body }) });
+                    drawerComments(p);
+                } catch (err) { alert(err.message); }
+            });
+            $('drBody').querySelectorAll('.comment-del').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!(await confirmDialog('This will permanently remove the comment.', { title: 'Delete comment?' }))) return;
+                    try {
+                        await apiRequest(`api/comments/delete.php?id=${btn.dataset.cid}`, { method: 'DELETE', headers: {} });
+                        drawerComments(p);
+                    } catch (err) { alert(err.message); }
+                });
+            });
+        });
+}
+
+function drawerStakeholders(p) {
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before adding stakeholders.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(3);
+    fetch(`api/stakeholders/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const stakeholders = data.data || [];
+
+            const stakeholderHtml = stakeholders.map(s => `
+                <div class="stakeholder-card" data-sid="${s.id}" style="border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;">
+                        <div>
+                            <div style="font-weight:600;font-size:14px;">${esc(s.name)}</div>
+                            ${s.role_title ? `<div style="font-size:12px;color:var(--muted);">${esc(s.role_title)}</div>` : ''}
+                        </div>
+                        <button class="stakeholder-del" data-sid="${s.id}" style="border:none;background:none;color:var(--muted-2);font-size:11px;cursor:pointer;">Remove</button>
+                    </div>
+                    <textarea class="stakeholder-notes" data-sid="${s.id}" placeholder="How have they contributed, or what are their expectations of this project?" style="min-height:60px;margin-bottom:10px;">${esc(s.notes || '')}</textarea>
+                    <div class="stakeholder-docs" style="margin-bottom:8px;">
+                        ${(s.documents || []).map(d => `
+                            <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;">
+                                <a href="api/stakeholders/download.php?id=${d.id}" style="color:var(--cu);text-decoration:none;flex:1;">📄 ${esc(d.original_name)}</a>
+                                <span style="color:var(--muted-2);">${(d.size_bytes / 1024).toFixed(0)} KB</span>
+                                <button class="stakeholder-doc-del" data-did="${d.id}" data-sid="${s.id}" style="border:none;background:none;color:var(--muted-2);font-size:11px;cursor:pointer;">&times;</button>
+                            </div>
+                        `).join('') || '<div style="font-size:12px;color:var(--muted-2);">No requirements document uploaded yet.</div>'}
+                    </div>
+                    <label class="pill-btn" style="font-size:12px;display:inline-flex;cursor:pointer;">
+                        Upload requirements (pdf, doc, docx, txt)
+                        <input type="file" class="stakeholder-upload-input" data-sid="${s.id}" accept=".pdf,.doc,.docx,.txt" style="display:none;">
+                    </label>
+                </div>
+            `).join('') || '<p style="color:var(--muted);text-align:center;padding:12px 0;">No stakeholders added yet.</p>';
+
+            $('drBody').innerHTML = `
+                <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Stakeholders have expectations of or contribute to this project, separate from the owner (developer) and assignee (allocator). Capture their requirements as notes, or upload a requirements document.</p>
+                ${stakeholderHtml}
+                <div class="fld"><label>Name</label><input id="sh-name" placeholder="Stakeholder name"></div>
+                <div class="fld"><label>Role / Title (optional)</label><input id="sh-role" placeholder="e.g. Head of Compliance"></div>
+                <button class="pill-btn primary" id="sh-add">Add Stakeholder</button>
+            `;
+
+            document.getElementById('sh-add').addEventListener('click', async () => {
+                const name = document.getElementById('sh-name').value.trim();
+                if (!name) { alert('Stakeholder name is required.'); return; }
+                const role_title = document.getElementById('sh-role').value.trim();
+                try {
+                    await apiRequest('api/stakeholders/create.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, name, role_title }) });
+                    drawerStakeholders(p);
+                } catch (err) { alert(err.message); }
+            });
+
+            $('drBody').querySelectorAll('.stakeholder-notes').forEach(ta => {
+                ta.addEventListener('change', async () => {
+                    try {
+                        await apiRequest('api/stakeholders/update.php', { method: 'PUT', body: JSON.stringify({ id: +ta.dataset.sid, notes: ta.value }) });
+                    } catch (err) { alert(err.message); }
+                });
+            });
+            $('drBody').querySelectorAll('.stakeholder-del').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!(await confirmDialog('This will remove the stakeholder and any uploaded documents.', { title: 'Remove stakeholder?' }))) return;
+                    try {
+                        await apiRequest('api/stakeholders/delete.php', { method: 'DELETE', body: JSON.stringify({ id: +btn.dataset.sid }) });
+                        drawerStakeholders(p);
+                    } catch (err) { alert(err.message); }
+                });
+            });
+            $('drBody').querySelectorAll('.stakeholder-upload-input').forEach(input => {
+                input.addEventListener('change', async () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const formData = new FormData();
+                    formData.append('stakeholder_id', input.dataset.sid);
+                    formData.append('file', file);
+                    try {
+                        const res = await fetch('api/stakeholders/upload.php', { method: 'POST', body: formData, credentials: 'same-origin' });
+                        const json = await res.json();
+                        if (!res.ok || json.status !== 'success') throw new Error(json.error || 'Upload failed');
+                        drawerStakeholders(p);
+                    } catch (err) { alert('Upload failed: ' + err.message); }
+                });
+            });
+            $('drBody').querySelectorAll('.stakeholder-doc-del').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!(await confirmDialog('This will permanently remove the document.', { title: 'Delete document?' }))) return;
+                    try {
+                        await apiRequest('api/stakeholders/delete_document.php', { method: 'DELETE', body: JSON.stringify({ id: +btn.dataset.did }) });
+                        drawerStakeholders(p);
+                    } catch (err) { alert(err.message); }
+                });
+            });
+        });
 }
 
 // 🔥 FIXED: drawerOverview with Create/Delete button and async save
@@ -2103,7 +3176,18 @@ function drawerOverview(p) {
     const isNew = p.id.includes('-n');
 
     let html = `
-        <div class="fld"><label>Assigned To (Owner)</label><input id="e-owner" value="${esc(p.owner)}"></div>
+        <div class="fld"><label>Assigned To (Owner — the developer doing the work)</label><select id="e-owner"><option value="">None</option>${USERS.map(u => `<option value="${u.id}" ${p.ownerId == u.id ? 'selected' : ''}>${esc(u.full_name)}</option>`).join('')}</select></div>
+        ${p.ownerId ? (() => {
+            const statusMap = {
+                pending: { label: 'Pending response', bg: '#fff8e1', border: '#ffe0a3', color: '#8a6d1f' },
+                accepted: { label: 'Accepted — in progress', bg: '#e8f8ee', border: '#bfe8cf', color: '#1c7a43' },
+                rejected: { label: 'Rejected', bg: '#fde8e8', border: '#f5c6c6', color: '#b42318' },
+            };
+            const meta = statusMap[p.ownerAcceptanceStatus] || statusMap.pending;
+            return `<div class="sample-note" style="margin:0 0 16px;background:${meta.bg};border-color:${meta.border};color:${meta.color}">
+                Allocation status: <b>${meta.label}</b>${p.ownerAcceptanceStatus === 'rejected' && p.ownerRejectionReason ? `<br>Reason: ${esc(p.ownerRejectionReason)}` : ''}
+            </div>`;
+        })() : ''}
         ${gateFlag ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Stage gate due date has passed!</div>` : ''}
         ${es === 'overdue' ? `<div class="sample-note" style="margin:0 0 16px;background:#fde8e8;border-color:#f5c6c6;color:#b42318">⚠️ Completion date has passed — this project is overdue.</div>` : ''}
         <div class="fld"><label>Project name <span style="color:red;">*</span></label><input id="e-name" value="${esc(p.name)}" ${isNew ? 'required' : ''}></div>
@@ -2113,7 +3197,7 @@ function drawerOverview(p) {
         </div>
         <div class="two">
             <div class="fld"><label>Status</label><select id="e-health">${['ontrack', 'atrisk', 'behind', 'complete'].map(k => `<option value="${k}" ${p.health === k ? 'selected' : ''}>${HEALTH[k].label}</option>`).join('')}</select></div>
-            <div class="fld"><label>Assignee (User)</label><select id="e-assignee"><option value="">None</option>${USERS.map(u => `<option value="${u.id}" ${p.assignee_id == u.id ? 'selected' : ''}>${esc(u.full_name)}</option>`).join('')}</select></div>
+            <div class="fld"><label>Assignee (allocator — editor/admin who assigned this out)</label><select id="e-assignee"><option value="">None</option>${allocatorUsers().map(u => `<option value="${u.id}" ${p.assignee_id == u.id ? 'selected' : ''}>${esc(u.full_name)}</option>`).join('')}</select></div>
         </div>
         <div class="two">
             <div class="fld"><label>Stage gate due date</label><input type="date" id="e-gate" value="${p.gateDue || ''}"></div>
@@ -2123,13 +3207,28 @@ function drawerOverview(p) {
             <label>Progress — <span id="pv">${p.progress}</span>%</label>
             <div class="rng"><input type="range" id="e-prog" min="0" max="100" value="${p.progress}"></div>
         </div>
-        <p style="font-size:12px;color:var(--muted)">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue & Gate overdue are detected automatically).</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:18px">Status shows <b style="color:${HEALTH[es].color}">${HEALTH[es].label}</b> (Overdue & Gate overdue are detected automatically).</p>
+        <div class="two">
+            <div class="fld"><label>Budget</label><input type="number" step="0.01" min="0" id="e-budget" value="${p.budget ?? ''}" placeholder="0.00"></div>
+            <div class="fld"><label>Actual Cost</label><input type="number" step="0.01" min="0" id="e-actual" value="${p.actualCost ?? ''}" placeholder="0.00"></div>
+        </div>
+        <div id="budget-warning"></div>
+        <div class="fld" style="max-width:160px">
+            <label>Currency</label>
+            <select id="e-currency">${CURRENCIES.map(c => `<option value="${c}" ${p.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select>
+        </div>
+        <div class="fld">
+            <label>Tags</label>
+            <div id="e-tag-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">${(p.tags || []).map(t => `<span class="tag-chip" data-tag="${esc(t.name)}" style="background:${t.color}1a;color:${t.color};border:1px solid ${t.color}55;cursor:pointer;">${esc(t.name)} &times;</span>`).join('') || '<span style="font-size:12px;color:var(--muted-2)">No tags yet</span>'}</div>
+            <input id="e-tag-input" list="e-tag-suggestions" placeholder="Type a tag and press Enter…">
+            <datalist id="e-tag-suggestions">${ALL_TAGS.map(t => `<option value="${esc(t.name)}">`).join('')}</datalist>
+        </div>
     `;
 
     if (isNew) {
         html += `<p style="margin-top:18px"><button class="pill-btn primary" id="e-create">Create Project</button></p>`;
     } else {
-        html += `<p style="margin-top:18px"><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>`;
+        html += `<p style="margin-top:18px;display:flex;gap:8px"><button class="pill-btn" id="e-gantt">Full-page Gantt</button><button class="pill-btn" id="e-del" style="color:var(--overdue);border-color:#f5c6c6">Delete Project</button></p>`;
     }
 
     $('drBody').innerHTML = html;
@@ -2145,7 +3244,17 @@ function drawerOverview(p) {
     };
 
     // Bind events
-    document.getElementById('e-owner').addEventListener('change', e => upd('owner', e.target.value, { owner: e.target.value }));
+    document.getElementById('e-owner').addEventListener('change', async e => {
+        const uid = e.target.value ? parseInt(e.target.value) : null;
+        const selectedUser = USERS.find(u => u.id == uid);
+        p.ownerId = uid;
+        p.owner = selectedUser ? selectedUser.full_name : '';
+        try {
+            await persistProject(p, { owner_id: uid });
+        } catch (err) {
+            alert('Update failed: ' + err.message);
+        }
+    });
     document.getElementById('e-name').addEventListener('change', e => upd('name', e.target.value, { name: e.target.value }));
     document.getElementById('e-prio').addEventListener('change', e => upd('prio', e.target.value, { priority: e.target.value }));
     document.getElementById('e-stage').addEventListener('change', e => upd('stage', e.target.value, { stage: e.target.value }));
@@ -2155,6 +3264,58 @@ function drawerOverview(p) {
     document.getElementById('e-comp').addEventListener('change', e => { upd('compDue', e.target.value, { completion_due: e.target.value || null }); });
     document.getElementById('e-prog').addEventListener('input', e => { p.progress = +e.target.value; document.getElementById('pv').textContent = e.target.value; });
     document.getElementById('e-prog').addEventListener('change', e => { upd('progress', +e.target.value, { progress: +e.target.value }); });
+    const refreshBudgetWarning = () => {
+        const budgetEl = document.getElementById('e-budget');
+        const actualEl = document.getElementById('e-actual');
+        const budget = budgetEl.value !== '' ? +budgetEl.value : null;
+        const actual = actualEl.value !== '' ? +actualEl.value : null;
+        const overBudget = budget !== null && actual !== null && actual > budget;
+        actualEl.style.borderColor = overBudget ? 'var(--overdue)' : '';
+        actualEl.style.color = overBudget ? 'var(--overdue)' : '';
+        const warning = document.getElementById('budget-warning');
+        warning.innerHTML = overBudget
+            ? `<p style="font-size:12px;color:var(--overdue);font-weight:600;margin:-10px 0 14px;">⚠️ Over budget by ${esc(p.currency || 'USD')} ${(actual - budget).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>`
+            : '';
+    };
+    refreshBudgetWarning();
+    document.getElementById('e-budget').addEventListener('input', refreshBudgetWarning);
+    document.getElementById('e-actual').addEventListener('input', refreshBudgetWarning);
+    document.getElementById('e-budget').addEventListener('change', e => upd('budget', e.target.value ? +e.target.value : null, { budget: e.target.value || null }));
+    document.getElementById('e-actual').addEventListener('change', e => upd('actualCost', e.target.value ? +e.target.value : null, { actual_cost: e.target.value || null }));
+    document.getElementById('e-currency').addEventListener('change', e => upd('currency', e.target.value, { currency: e.target.value }));
+
+    const saveTags = async () => {
+        try {
+            const res = await apiRequest('api/tags/set.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, tags: (p.tags || []).map(t => t.name) }) });
+            p.tags = res.tags || [];
+            (res.tags || []).forEach(t => { if (!ALL_TAGS.some(at => at.id === t.id)) ALL_TAGS.push(t); });
+            drawerOverview(p);
+            renderSidebar();
+            renderContent();
+        } catch (err) { alert('Could not save tags: ' + err.message); }
+    };
+    if (!isNew) {
+        $('drBody').querySelectorAll('#e-tag-chips .tag-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                p.tags = (p.tags || []).filter(t => t.name !== chip.dataset.tag);
+                saveTags();
+            });
+        });
+        document.getElementById('e-tag-input').addEventListener('keydown', e => {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            const name = e.target.value.trim();
+            if (!name) return;
+            if (!(p.tags || []).some(t => t.name.toLowerCase() === name.toLowerCase())) {
+                p.tags = [...(p.tags || []), { id: null, name, color: '#6b7280' }];
+                saveTags();
+            }
+            e.target.value = '';
+        });
+    } else {
+        document.getElementById('e-tag-input').disabled = true;
+        document.getElementById('e-tag-input').placeholder = 'Save the project first to add tags';
+    }
 
     if (isNew) {
         document.getElementById('e-create').addEventListener('click', async () => {
@@ -2165,14 +3326,17 @@ function drawerOverview(p) {
                 business_unit_id: p.companyDbId,
                 stage: document.getElementById('e-stage').value,
                 status: document.getElementById('e-health').value,
-                owner: document.getElementById('e-owner').value,
+                owner_id: document.getElementById('e-owner').value || null,
                 priority: document.getElementById('e-prio').value,
                 assignee_id: document.getElementById('e-assignee').value || null,
                 gate_due: document.getElementById('e-gate').value || null,
                 completion_due: document.getElementById('e-comp').value || null,
                 progress: parseInt(document.getElementById('e-prog').value) || 0,
                 current_update: document.getElementById('e-upd')?.value || '',
-                next_steps: document.getElementById('e-next')?.value || ''
+                next_steps: document.getElementById('e-next')?.value || '',
+                budget: document.getElementById('e-budget').value || null,
+                actual_cost: document.getElementById('e-actual').value || null,
+                currency: document.getElementById('e-currency').value
             };
             try {
                 const response = await apiRequest('api/projects/create.php', { method: 'POST', body: JSON.stringify(data) });
@@ -2180,7 +3344,7 @@ function drawerOverview(p) {
                 if (realId) {
                     const c = co(p.company);
                     c.projects = c.projects.filter(x => x.id !== p.id);
-                    const newProject = mapApiProject({ ...data, id: realId, ...response.data });
+                    const newProject = { ...mapApiProject({ ...data, id: realId, ...response.data }), company: c.id };
                     c.projects.push(newProject);
                     closeDrawer();
                     openDrawer(realId);
@@ -2189,8 +3353,15 @@ function drawerOverview(p) {
             } catch (err) { alert('Creation failed: ' + err.message); }
         });
     } else {
+        document.getElementById('e-gantt').addEventListener('click', () => {
+            ganttProjectFilter = p.id;
+            currentTab = 'gantt';
+            closeDrawer();
+            $('tabs').querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === 'gantt'));
+            loadView('gantt');
+        });
         document.getElementById('e-del').addEventListener('click', async () => {
-            if (!confirm('Delete this project? This cannot be undone.')) return;
+            if (!(await confirmDialog('This will permanently delete "' + p.name + '" and all of its governance, time, comment, and attachment data. This cannot be undone.', { title: 'Delete project?' }))) return;
             try {
                 await apiRequest(`api/projects/delete.php?id=${encodeURIComponent(p.id)}`, { method: 'DELETE', headers: {} });
                 const c = co(p.company);
@@ -2244,27 +3415,79 @@ function drawerUpdates(p) {
 }
 
 function drawerGov(p) {
-    let html = `<div class="gov-overall"><span>Governance <b>${govPct(p)}%</b> signed off</span><div class="bar"><i style="width:${govPct(p)}%"></i></div></div>`;
-    STAGES.forEach((s, i) => {
-        const items = GOVERNANCE.filter(g => g.stage === s.id);
-        html += `<div class="gstage"><div class="gstage-h"><span class="num">${i + 1}</span>${s.label}${p.stage === s.id ? '<span class="cur-tag">CURRENT</span>' : ''}</div>`;
-        html += items.length ? items.map(it => `<div class="gitem"><span class="gname">${it.label}</span><select data-gid="${it.id}">${Object.entries(GOV_ST).map(([k, v]) => `<option value="${k}" ${p.governance[it.id] === k ? 'selected' : ''}>${v.l}</option>`).join('')}</select></div>`).join('') : `<div class="none">No formal deliverable at this gate.</div>`;
-        html += `</div>`;
-    });
-    $('drBody').innerHTML = html;
-    $('drBody').querySelectorAll('select[data-gid]').forEach(sel => {
-        const setColor = () => { sel.style.color = GOV_ST[sel.value].c; };
-        setColor();
-        sel.addEventListener('change', () => {
-            const gid = sel.getAttribute('data-gid');
-            p.governance[gid] = sel.value;
-            setColor();
-            renderSidebar();
-            renderContent();
-            apiRequest('api/governance/update.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, item_key: apiGovKey(gid), status: apiGovStatus(sel.value) }) }).catch(err => alert(err.message));
-            drawerGov(p);
+    if (p.id.includes('-n')) {
+        $('drBody').innerHTML = '<p style="color:var(--muted)">Save the project before managing governance.</p>';
+        return;
+    }
+    $('drBody').innerHTML = skeletonRows(6);
+    fetch(`api/attachments/list.php?project_id=${encodeURIComponent(p.id)}`, { credentials: 'same-origin' })
+        .then(res => res.json())
+        .then(data => {
+            const attachments = data.data || [];
+            let html = `<div class="gov-overall"><span>Governance <b>${govPct(p)}%</b> signed off</span><div class="bar"><i style="width:${govPct(p)}%"></i></div></div>`;
+            STAGES.forEach((s, i) => {
+                const items = GOVERNANCE.filter(g => g.stage === s.id);
+                html += `<div class="gstage"><div class="gstage-h"><span class="num">${i + 1}</span>${s.label}${p.stage === s.id ? '<span class="cur-tag">CURRENT</span>' : ''}</div>`;
+                html += items.length ? items.map(it => {
+                    const serverKey = apiGovKey(it.id);
+                    const files = attachments.filter(a => a.item_key === serverKey);
+                    const filesHtml = files.map(f => `
+                        <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);padding:3px 0;">
+                            <a href="api/attachments/download.php?id=${f.id}" target="_blank" style="color:var(--cu);text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">📎 ${esc(f.original_name)}</a>
+                            <span style="flex-shrink:0;">${(f.size_bytes / 1024).toFixed(0)}KB</span>
+                            <button class="gov-file-del" data-aid="${f.id}" style="border:none;background:none;color:var(--overdue);cursor:pointer;font-size:14px;flex-shrink:0;">&times;</button>
+                        </div>
+                    `).join('');
+                    return `<div style="padding:10px 16px;border-top:1px solid var(--line);">
+                        <div class="gitem" style="padding:0;border-top:none;"><span class="gname">${it.label}</span><select data-gid="${it.id}">${Object.entries(GOV_ST).map(([k, v]) => `<option value="${k}" ${p.governance[it.id] === k ? 'selected' : ''}>${v.l}</option>`).join('')}</select></div>
+                        <div style="margin-top:6px;">${filesHtml}
+                            <label style="font-size:11px;color:var(--cu);cursor:pointer;display:inline-block;margin-top:2px;">+ Attach file<input type="file" class="gov-upload-input" data-item-key="${serverKey}" style="display:none;"></label>
+                        </div>
+                    </div>`;
+                }).join('') : `<div class="none">No formal deliverable at this gate.</div>`;
+                html += `</div>`;
+            });
+            $('drBody').innerHTML = html;
+
+            $('drBody').querySelectorAll('select[data-gid]').forEach(sel => {
+                const setColor = () => { sel.style.color = GOV_ST[sel.value].c; };
+                setColor();
+                sel.addEventListener('change', () => {
+                    const gid = sel.getAttribute('data-gid');
+                    p.governance[gid] = sel.value;
+                    setColor();
+                    renderSidebar();
+                    renderContent();
+                    apiRequest('api/governance/update.php', { method: 'POST', body: JSON.stringify({ project_id: p.id, item_key: apiGovKey(gid), status: apiGovStatus(sel.value) }) }).catch(err => alert(err.message));
+                    drawerGov(p);
+                });
+            });
+            $('drBody').querySelectorAll('.gov-upload-input').forEach(input => {
+                input.addEventListener('change', async () => {
+                    const file = input.files[0];
+                    if (!file) return;
+                    const formData = new FormData();
+                    formData.append('project_id', p.id);
+                    formData.append('item_key', input.dataset.itemKey);
+                    formData.append('file', file);
+                    try {
+                        const res = await fetch('api/attachments/upload.php', { method: 'POST', body: formData, credentials: 'same-origin' });
+                        const json = await res.json();
+                        if (!res.ok || json.status !== 'success') throw new Error(json.error || 'Upload failed');
+                        drawerGov(p);
+                    } catch (err) { alert('Upload failed: ' + err.message); }
+                });
+            });
+            $('drBody').querySelectorAll('.gov-file-del').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!(await confirmDialog('This will permanently remove the attached file.', { title: 'Delete attachment?' }))) return;
+                    try {
+                        await apiRequest(`api/attachments/delete.php?id=${btn.dataset.aid}`, { method: 'DELETE', headers: {} });
+                        drawerGov(p);
+                    } catch (err) { alert(err.message); }
+                });
+            });
         });
-    });
 }
 
 // ----- NAVIGATION -----
@@ -2294,6 +3517,7 @@ $('addProjectBtn').addEventListener('click', async () => {
         stage: 'initiation',
         health: 'ontrack',
         owner: '',
+        ownerId: null,
         assignee_id: null,
         prio: 'normal',
         gateDue: '',
@@ -2302,6 +3526,10 @@ $('addProjectBtn').addEventListener('click', async () => {
         currentUpdate: '',
         nextSteps: '',
         is_gate_overdue: 0,
+        budget: null,
+        actualCost: null,
+        currency: 'USD',
+        tags: [],
         governance: Object.fromEntries(GOVERNANCE.map(g => [g.id, 'pending']))
     };
     c.projects.push(np);
@@ -2382,6 +3610,27 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (!e.target.closest('.dropdown')) {
             menu.classList.remove('show');
         }
+        const filterPopover = document.getElementById('filterPopover');
+        if (e.target.closest('#filterBtn')) {
+            filterPopover.classList.toggle('show');
+        } else if (!e.target.closest('#filterDropdownWrap')) {
+            filterPopover.classList.remove('show');
+        }
+        const notifPanel = document.getElementById('notifPanel');
+        if (e.target.closest('#notifBtn')) {
+            notifPanel.classList.toggle('show');
+            if (notifPanel.classList.contains('show')) loadNotifications();
+        } else if (!e.target.closest('#notifDropdownWrap')) {
+            notifPanel.classList.remove('show');
+        }
+    });
+    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+        ['fCompany', 'fStatus', 'fOwner', 'fAssignee', 'fTag', 'fStakeholder'].forEach(id => { document.getElementById(id).value = ''; });
+        updateFilterBadge();
+        renderContent();
+    });
+    ['fCompany', 'fStatus', 'fOwner', 'fAssignee', 'fTag', 'fStakeholder'].forEach(id => {
+        document.getElementById(id).addEventListener('change', updateFilterBadge);
     });
     document.querySelectorAll('#exportMenu a[data-export]').forEach(link => {
         link.addEventListener('click', function(e) {
@@ -2389,15 +3638,26 @@ document.addEventListener('DOMContentLoaded', function() {
             const type = this.dataset.export;
             if (type === 'print') {
                 window.print();
+            } else if (type === 'copy') {
+                const allProjects = DATA.flatMap(c => c.projects);
+                const rows = getFiltered(allProjects).map(p =>
+                    `${p.name} | ${p.companyName} | ${HEALTH[effStatus(p)].label} | Owner: ${p.owner || '-'} | Progress: ${p.progress}% | Completion: ${p.compDue || '-'}`
+                );
+                const text = 'Project Report (' + new Date().toISOString().slice(0, 16).replace('T', ' ') + ')\n\n' + rows.join('\n');
+                navigator.clipboard.writeText(text)
+                    .then(() => alert('Report copied to clipboard.'))
+                    .catch(() => alert('Could not copy to clipboard.'));
             } else {
                 const params = new URLSearchParams();
                 const search = document.getElementById('search').value;
                 const company = document.getElementById('fCompany').value;
                 const status = document.getElementById('fStatus').value;
+                const owner = document.getElementById('fOwner').value;
                 const assignee = document.getElementById('fAssignee').value;
                 if (search) params.append('search', search);
                 if (company) params.append('unit', company);
                 if (status) params.append('status', status);
+                if (owner) params.append('owner_id', owner);
                 if (assignee) params.append('assignee', assignee);
                 window.location.href = `api/export/${type}.php?${params.toString()}`;
             }
@@ -2405,36 +3665,80 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     document.getElementById('shareBtn').addEventListener('click', function() {
+        const company = document.getElementById('fCompany').value;
+        const status = document.getElementById('fStatus').value;
+        const owner = document.getElementById('fOwner').value;
+        const assignee = document.getElementById('fAssignee').value;
+        const search = document.getElementById('search').value;
+        const filters = {};
+        if (company) { const unit = co(company); if (unit) filters.business_unit = unit.dbId; }
+        if (status) filters.status = status;
+        if (owner) filters.owner_id = owner;
+        if (assignee) filters.assignee = assignee;
+        if (search) filters.search = search;
         fetch('api/share/create.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ report_type: 'portfolio', expires_in: 7 }),
+            body: JSON.stringify({ report_type: 'portfolio', expires_in: 7, filters }),
             credentials: 'same-origin'
         }).then(res => res.json()).then(data => {
-            if (data.status === 'success') alert('Shareable link:\n' + data.url);
+            if (data.status === 'success') showShareLinkModal(data.url);
             else alert('Error creating share link: ' + (data.error || 'Unknown error'));
         }).catch(err => alert('Share error: ' + err.message));
     });
+    document.getElementById('shareLinkClose').addEventListener('click', () => {
+        document.getElementById('shareLinkOverlay').classList.remove('open');
+    });
+    document.getElementById('shareLinkCopyBtn').addEventListener('click', () => {
+        const input = document.getElementById('shareLinkInput');
+        navigator.clipboard.writeText(input.value).then(() => {
+            const btn = document.getElementById('shareLinkCopyBtn');
+            const original = btn.textContent;
+            btn.textContent = 'Copied ✓';
+            setTimeout(() => { btn.textContent = original; }, 1500);
+        }).catch(() => alert('Could not copy — select the link text and copy manually.'));
+    });
     initImport();
+    initCommandPalette();
+    initMobileNav();
+    document.getElementById('notifMarkAllBtn').addEventListener('click', async () => {
+        try {
+            await apiRequest('api/notifications/mark_read.php', { method: 'POST', body: JSON.stringify({}) });
+            loadNotifications();
+            refreshNotifBadge();
+        } catch (err) { alert(err.message); }
+    });
 
-    document.getElementById('fCompany').addEventListener('change', function() {
-        if (currentTab === 'dashboard') renderContent();
-        else loadView(currentTab);
-    });
-    document.getElementById('fStatus').addEventListener('change', function() {
-        if (currentTab === 'dashboard') renderContent();
-        else loadView(currentTab);
-    });
-    document.getElementById('fAssignee').addEventListener('change', function() {
-        if (currentTab === 'dashboard') renderContent();
-        else loadView(currentTab);
-    });
+    document.getElementById('fCompany').addEventListener('change', renderContent);
+    document.getElementById('fStatus').addEventListener('change', renderContent);
+    document.getElementById('fOwner').addEventListener('change', renderContent);
+    document.getElementById('fAssignee').addEventListener('change', renderContent);
+    document.getElementById('fTag').addEventListener('change', renderContent);
+    document.getElementById('fStakeholder').addEventListener('change', renderContent);
 });
 
 // ----- INIT -----
 async function initApp() {
     await loadData();
+    refreshNotifBadge();
+    setInterval(refreshNotifBadge, 60000);
 }
+
+// On page load (e.g. after a refresh), resume an already-authenticated session instead
+// of forcing a re-login — the server-side session cookie may still be valid.
+(async function resumeSessionIfAuthenticated() {
+    try {
+        const res = await fetch('api/auth/check.php', { credentials: 'same-origin' });
+        const data = await res.json();
+        if (data.status === 'success') {
+            CURRENT_USER = data.user || null;
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'none';
+            mainApp.classList.add('active');
+            initApp();
+        }
+    } catch (e) { /* not authenticated — leave the login screen showing */ }
+})();
 </script>
 </body>
 </html>

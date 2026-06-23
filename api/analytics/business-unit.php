@@ -1,11 +1,6 @@
 <?php
-// Start session
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Load bootstrap
-require_once __DIR__ . '/../../bootstrap.php';
+// Load bootstrap (handles session start with the correct session name)
+require_once __DIR__ . '/../bootstrap.php';
 
 use App\Config\Database;
 use App\Middleware\Auth;
